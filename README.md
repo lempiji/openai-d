@@ -1,5 +1,7 @@
 # OpenAI API for D
 
+[![main CI](https://github.com/lempiji/openai-d/actions/workflows/main-ci.yaml/badge.svg)](https://github.com/lempiji/openai-d/actions/workflows/main-ci.yaml)
+
 This library provides unofficial D clients for OpenAI API
 
 ## Features
