@@ -34,6 +34,12 @@ This library provides unofficial D clients for OpenAI API
 
 # Usage
 
+## Installation
+
+```
+dub add openai-d
+```
+
 ## OpenAIClient
 
 __Completion__
