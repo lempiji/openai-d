@@ -20,4 +20,9 @@ jobs:
         with:
           compiler: ${{ matrix.dlang }}
       - name: Build
-        run: dub build --compiler=$DC
+        run: |
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            dub build --compiler=$Env:DC
+          else
+            dub build --compiler=$DC
+          fi
