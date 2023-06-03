@@ -5,12 +5,11 @@ on:
     branches: [main]
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
+  build-ubuntu:
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
         dlang: [dmd-latest, ldc-latest]
 
     steps:
@@ -20,9 +19,20 @@ jobs:
         with:
           compiler: ${{ matrix.dlang }}
       - name: Build
-        run: |
-          if [[ "${{ runner.os }}" == "Windows" ]]; then
-            dub build --compiler=$Env:DC
-          else
-            dub build --compiler=$DC
-          fi
+        run: dub build --compiler=$DC
+
+  build-windows:
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        dlang: [dmd-latest, ldc-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Dlang
+        uses: dlang-community/setup-dlang@v1
+        with:
+          compiler: ${{ matrix.dlang }}
+      - name: Build
+        run: dub build --compiler=$Env:DC
