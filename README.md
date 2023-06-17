@@ -18,6 +18,7 @@ This library provides unofficial D clients for OpenAI API
 - [x] List models
 - [x] Completions
 - [x] Chat
+  - [x] function_call
 - [ ] Edits
 - [ ] Images
 - [x] Embeddings

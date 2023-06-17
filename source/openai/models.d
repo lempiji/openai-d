@@ -11,6 +11,10 @@ import mir.serde;
 
 // Chat & Completion
 ///
+enum GPT432K0613 = "gpt-4-32k-0613";
+///
+enum GPT40613 = "gpt-4-0613";
+///
 enum GPT432K0314 = "gpt-4-32k-0314";
 ///
 enum GPT432K = "gpt-4-32k";
@@ -18,6 +22,10 @@ enum GPT432K = "gpt-4-32k";
 enum GPT40314 = "gpt-4-0314";
 ///
 enum GPT4 = "gpt-4";
+///
+enum GPT3Dot516K0613 = "gpt-3.5-16k-0613";
+///
+enum GPT3Dot50613 = "gpt-3.5-0613";
 ///
 enum GPT3Dot5Turbo0301 = "gpt-3.5-turbo-0301";
 ///
