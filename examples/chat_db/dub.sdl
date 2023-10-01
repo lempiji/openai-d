@@ -1,0 +1,9 @@
+name "chat_db"
+description "A minimal D application."
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."
+dependency "d2sqlite3" version="~>1.0.0"
+
+subConfiguration "d2sqlite3" "all-included"
