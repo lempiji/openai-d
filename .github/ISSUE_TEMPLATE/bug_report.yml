@@ -1,0 +1,96 @@
+name: Bug report
+description: Report an issue or bug with this library
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: checkboxes
+    id: non_api
+    attributes:
+      label: Confirm this is a D library issue and not an underlying OpenAI API issue
+      description: Issues with the underlying OpenAI API should be reported on our [Developer Community](https://community.openai.com/c/api/7)
+      options:
+        - label: This is an issue with the Node library
+          required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is, and any additional context.
+      placeholder: Tell us what you see!
+    validations:
+      required: true
+  - type: textarea
+    id: repro-steps
+    attributes:
+      label: To Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Fetch a '...'
+        2. Update the '....'
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: code-snippets
+    attributes:
+      label: Code snippets
+      description: If applicable, add code snippets to help explain your problem.
+      placeholder: |
+        <code>
+
+        ---
+        dub build --compiler=... --arch=... ...
+        dub run --compiler=... --arch=... ...
+      render: Dlang
+    validations:
+      required: false
+  - type: textarea
+    id: build-commands
+    attributes:
+      label: Build commands
+      description: If applicable, add build commands to help explain your problem.
+      placeholder: |
+        dub build --compiler=... --arch=... ...
+        dub run --compiler=... --arch=... ...
+      render: console
+    validations:
+      required: false
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: Please describe what you expected to happen after performing the aforementioned steps.
+      placeholder: After doing '...', I expected '...' to happen.
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: Windows, Linux, macOS, Ubuntu, ... (arch:x86/x86_64)
+    validations:
+      required: true
+  - type: input
+    id: language-version
+    attributes:
+      label: Compiler
+      placeholder: dmd 2.105.0, ldc2 1.34.0
+    validations:
+      required: true
+  - type: input
+    id: lib-version
+    attributes:
+      label: Library version
+      placeholder: openai-d v1.0.0
+    validations:
+      required: true
+  - type: input
+    id: other-libs
+    attributes:
+      label: Using libraries or dependencies
+      placeholder: vibe-d, mir-algorithm, etc.
+    validations:
+      required: false
