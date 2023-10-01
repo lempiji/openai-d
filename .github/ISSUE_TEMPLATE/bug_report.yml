@@ -38,12 +38,6 @@ body:
     attributes:
       label: Code snippets
       description: If applicable, add code snippets to help explain your problem.
-      placeholder: |
-        <code>
-
-        ---
-        dub build --compiler=... --arch=... ...
-        dub run --compiler=... --arch=... ...
       render: Dlang
     validations:
       required: false
