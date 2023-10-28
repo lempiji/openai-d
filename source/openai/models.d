@@ -78,57 +78,67 @@ enum Ada = "ada";
 deprecated("'babbage' is to be removed by 2024-01-04. Please use 'gpt-3.5-turbo-instruct' instead")
 enum Babbage = "babbage";
 
-// Codex
-///
-enum AdaCodeSearchCode = "ada-code-search-code";
-///
-enum AdaCodeSearchCode001 = "code-search-ada-code-001";
-///
-enum AdaCodeSearchText = "ada-code-search-text";
-///
-enum AdaCodeSearchText001 = "code-search-ada-text-001";
-///
-enum BabbageCodeSearchCode = "code-search-babbage-code-001";
-///
-enum BabbageCodeSearchCode001 = "code-search-babbage-code-001";
-///
-enum BabbageCodeSearchText = "code-search-babbage-text-001";
-///
-enum BabbageCodeSearchText001 = "code-search-babbage-text-001";
-
 // Embedding
 ///
 enum AdaEmbeddingV2 = "text-embedding-ada-002";
 ///
-deprecated("Please use 'text-embedding-ada-002' instead")
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
 enum AdaSimilarity = "text-similarity-ada-001";
 ///
-deprecated("Please use 'text-embedding-ada-002' instead")
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
 enum BabbageSimilarity = "text-similarity-babbage-001";
 ///
-deprecated("Please use 'text-embedding-ada-002' instead")
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
 enum CurieSimilarity = "text-similarity-curie-001";
 ///
-deprecated("Please use 'text-embedding-ada-002' instead")
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
 enum DavinciSimilarity = "text-similarity-davinci-001";
-
-// Others
 ///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
 enum AdaSearchDocument = "text-search-ada-doc-001";
 ///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
 enum AdaSearchQuery = "text-search-ada-query-001";
 ///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
 enum BabbageSearchDocument = "text-search-babbage-doc-001";
 ///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
 enum BabbageSearchQuery = "text-search-babbage-query-001";
 ///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
 enum CurieSearchDocument = "text-search-curie-doc-001";
 ///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
 enum CurieSearchQuery = "text-search-curie-query-001";
 ///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
 enum DavinciSearchDocument = "text-search-davinci-doc-001";
 ///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
 enum DavinciSearchQuery = "text-search-davinci-query-001";
+///
+enum AdaCodeSearchCode = "ada-code-search-code";
+///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
+enum AdaCodeSearchCode001 = "code-search-ada-code-001";
+///
+enum AdaCodeSearchText = "ada-code-search-text";
+///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
+enum AdaCodeSearchText001 = "code-search-ada-text-001";
+///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
+enum BabbageCodeSearchCode = "code-search-babbage-code-001";
+///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
+enum BabbageCodeSearchCode001 = "code-search-babbage-code-001";
+///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
+enum BabbageCodeSearchText = "code-search-babbage-text-001";
+///
+deprecated("'text-similarity-ada-001' is to be removed by 2024-01-04. Please use 'text-embedding-ada-002' instead")
+enum BabbageCodeSearchText001 = "code-search-babbage-text-001";
 
 // Moderation
 ///
