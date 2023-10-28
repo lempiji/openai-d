@@ -53,7 +53,7 @@ import openai;
 auto client = new OpenAIClient();
 
 // POST /completions
-auto message = completionRequest("text-davinci-003", "Hello, D Programming Language!\n", 10, 0);
+auto message = completionRequest("gpt-3.5-turbo-instruct", "Hello, D Programming Language!\n", 10, 0);
 message.stop = "\n";
 
 auto response = client.completion(message);
