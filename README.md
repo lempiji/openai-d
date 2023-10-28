@@ -19,13 +19,16 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 - [x] Completions
 - [x] Chat
   - [x] function_call
-- [ ] Edits
 - [ ] Images
 - [x] Embeddings
 - [ ] Audio
 - [ ] Files
 - [ ] Fine-tunes
 - [x] Moderations
+
+__deprecated__
+- Edits
+  - Use chat API instead. See: https://platform.openai.com/docs/deprecations/edit-models-endpoint
 
 ### Optimization
 
