@@ -2,6 +2,12 @@
 OpenAI API Models
 
 Standards: https://platform.openai.com/docs/api-reference/models
+
+Remarks:
+- For deprecations, refer to: https://platform.openai.com/docs/deprecations
+- For model details, refer to: https://platform.openai.com/docs/models/
+- If the model is labeled '(Legacy)' or if it's listed under "upgrade"
+- Remove the declaration 3 months after the shutdown date
 */
 module openai.models;
 
@@ -13,12 +19,14 @@ import mir.serde;
 ///
 enum GPT432K0613 = "gpt-4-32k-0613";
 ///
+deprecated("'gpt-4-32k-0314' is to be removed by 2024-06-13. Please use 'gpt-4-32k-0613' instead")
 enum GPT432K0314 = "gpt-4-32k-0314";
 ///
 enum GPT432K = "gpt-4-32k";
 ///
 enum GPT40613 = "gpt-4-0613";
 ///
+deprecated("'gpt-4-0314' is to be removed by 2024-06-13. Please use 'gpt-4-0613' instead")
 enum GPT40314 = "gpt-4-0314";
 ///
 enum GPT4 = "gpt-4";
@@ -31,51 +39,80 @@ enum GPT3Dot5Turbo16K = "gpt-3.5-turbo-16k";
 ///
 enum GPT3Dot5Turbo0613 = "gpt-3.5-turbo-0613";
 ///
+deprecated("'gpt-3-turbo-0314' is to be removed by 2024-06-13. Please use 'gpt-3-turbo-0613' instead")
 enum GPT3Dot5Turbo0301 = "gpt-3.5-turbo-0301";
 ///
 enum GPT3Dot5Turbo = "gpt-3.5-turbo";
 ///
+deprecated("'text-davinci-003' is to be removed by 2024-01-04. Please use 'gpt-3.5-turbo-instruct' instead")
 enum TextDavinci003 = "text-davinci-003";
 ///
+deprecated("'text-davinci-002' is to be removed by 2024-01-04. Please use 'gpt-3.5-turbo-instruct' instead")
 enum TextDavinci002 = "text-davinci-002";
 ///
+deprecated("'text-curie-001' is to be removed by 2024-01-04. Please use 'gpt-3.5-turbo-instruct' instead")
 enum TextCurie001 = "text-curie-001";
 ///
+deprecated("'text-babbage-001' is to be removed by 2024-01-04. Please use 'gpt-3.5-turbo-instruct' instead")
 enum TextBabbage001 = "text-babbage-001";
 ///
+deprecated("'text-ada-001' is to be removed by 2024-01-04. Please use 'gpt-3.5-turbo-instruct' instead")
 enum TextAda001 = "text-ada-001";
 ///
+deprecated("'text-ada-001' is to be removed by 2024-01-04. Please use 'gpt-3.5-turbo-instruct' instead")
 enum TextDavinci001 = "text-davinci-001";
 ///
 enum DavinciInstructBeta = "davinci-instruct-beta";
 ///
+deprecated("'davinci' is to be removed by 2024-01-04. Please use 'gpt-3.5-turbo-instruct' instead")
 enum Davinci = "davinci";
 ///
 enum CurieInstructBeta = "curie-instruct-beta";
 ///
+deprecated("'curie' is to be removed by 2024-01-04. Please use 'gpt-3.5-turbo-instruct' instead")
 enum Curie = "curie";
 ///
+deprecated("'ada' is to be removed by 2024-01-04. Please use 'gpt-3.5-turbo-instruct' instead")
 enum Ada = "ada";
 ///
+deprecated("'babbage' is to be removed by 2024-01-04. Please use 'gpt-3.5-turbo-instruct' instead")
 enum Babbage = "babbage";
 
 // Codex
 ///
-enum CodeDavinci002 = "code-davinci-002";
+enum AdaCodeSearchCode = "ada-code-search-code";
 ///
-enum CodeCushman001 = "code-cushman-001";
+enum AdaCodeSearchCode001 = "code-search-ada-code-001";
 ///
-enum CodeDavinci001 = "code-davinci-001";
+enum AdaCodeSearchText = "ada-code-search-text";
+///
+enum AdaCodeSearchText001 = "code-search-ada-text-001";
+///
+enum BabbageCodeSearchCode = "code-search-babbage-code-001";
+///
+enum BabbageCodeSearchCode001 = "code-search-babbage-code-001";
+///
+enum BabbageCodeSearchText = "code-search-babbage-text-001";
+///
+enum BabbageCodeSearchText001 = "code-search-babbage-text-001";
 
 // Embedding
 ///
+enum AdaEmbeddingV2 = "text-embedding-ada-002";
+///
+deprecated("Please use 'text-embedding-ada-002' instead")
 enum AdaSimilarity = "text-similarity-ada-001";
 ///
+deprecated("Please use 'text-embedding-ada-002' instead")
 enum BabbageSimilarity = "text-similarity-babbage-001";
 ///
+deprecated("Please use 'text-embedding-ada-002' instead")
 enum CurieSimilarity = "text-similarity-curie-001";
 ///
+deprecated("Please use 'text-embedding-ada-002' instead")
 enum DavinciSimilarity = "text-similarity-davinci-001";
+
+// Others
 ///
 enum AdaSearchDocument = "text-search-ada-doc-001";
 ///
@@ -92,16 +129,6 @@ enum CurieSearchQuery = "text-search-curie-query-001";
 enum DavinciSearchDocument = "text-search-davinci-doc-001";
 ///
 enum DavinciSearchQuery = "text-search-davinci-query-001";
-///
-enum AdaCodeSearchCode = "code-search-ada-code-001";
-///
-enum AdaCodeSearchText = "code-search-ada-text-001";
-///
-enum BabbageCodeSearchCode = "code-search-babbage-code-001";
-///
-enum BabbageCodeSearchText = "code-search-babbage-text-001";
-///
-enum AdaEmbeddingV2 = "text-embedding-ada-002";
 
 // Moderation
 ///
