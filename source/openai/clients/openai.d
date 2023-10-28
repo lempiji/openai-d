@@ -152,8 +152,8 @@ class OpenAIClient
         auto requestJson = serializeJson(request);
         auto content = cast(char[]) post!ubyte("https://api.openai.com/v1/completions", requestJson, http);
 
-        import std.stdio;
-        writeln(content);
+        // import std.stdio;
+        // writeln(content);
 
         auto result = content.deserializeJson!CompletionResponse();
         return result;
@@ -206,9 +206,8 @@ class OpenAIClient
         auto requestJson = serializeJson(request);
         auto content = cast(char[]) post!ubyte("https://api.openai.com/v1/moderations", requestJson, http);
 
-        import std.stdio;
-
-        writeln(content);
+        // import std.stdio;
+        // writeln(content);
 
         auto result = content.deserializeJson!ModerationResponse();
         return result;

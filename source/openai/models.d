@@ -23,6 +23,8 @@ enum GPT40314 = "gpt-4-0314";
 ///
 enum GPT4 = "gpt-4";
 ///
+enum GPT3Dot5TurboInstruct = "gpt-3.5-turbo-instruct";
+///
 enum GPT3Dot5Turbo16K0613 = "gpt-3.5-turbo-16k-0613";
 /// 
 enum GPT3Dot5Turbo16K = "gpt-3.5-turbo-16k";
