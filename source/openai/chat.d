@@ -14,6 +14,18 @@ import openai.completion : CompletionUsage;
 
 @safe:
 
+@serdeIgnoreUnexpectedKeys
+struct ChatMessageToolCall
+{
+    string id;
+
+    string type = "function";
+
+    @serdeKeys("function")
+    ChatMessageFunctionCall function_;
+}
+
+@serdeIgnoreUnexpectedKeys
 struct ChatMessageFunctionCall
 {
     /**
@@ -39,6 +51,7 @@ struct CreateChatCompletionRequestFunctionCallOneOf
 /// "none" or "auto" or `{ name: "my_function" }`
 alias CreateChatCompletionRequestFunctionCall = Algebraic!(typeof(null), CreateChatCompletionRequestFunctionCallOneOf, string);
 
+
 ///
 struct ChatCompletionFunction
 {
@@ -59,13 +72,68 @@ struct ChatCompletionFunction
 }
 
 ///
+@serdeIgnoreUnexpectedKeys
+struct ChatCompletionTool
+{
+    string type = "function";
+
+    @serdeKeys("function")
+    ChatCompletionFunction function_;
+}
+
+///
+@serdeIgnoreUnexpectedKeys
+struct ChatCompletionToolChoiceInfo
+{
+    string type = "function";
+
+    @serdeKeys("function")
+    ChatCompletionToolFunctionChoice function_;
+}
+
+///
+@serdeIgnoreUnexpectedKeys
+struct ChatCompletionToolFunctionChoice
+{
+    string name;
+}
+
+///
+alias ChatCompletionToolChoice = Algebraic!(string, ChatCompletionToolChoiceInfo);
+
+///
+@serdeIgnoreUnexpectedKeys
+struct ChatUserMessageTextContent
+{
+    string type = "text";
+    string text;
+}
+
+///
+@serdeIgnoreUnexpectedKeys
+struct ChatUserMessageImageContent
+{
+    string type = "image_url";
+    @serdeKeys("image_url")
+    string imageUrl;
+}
+
+///
+alias ChatUserMessageContentItem = Algebraic!(ChatUserMessageTextContent, ChatUserMessageImageContent);
+///
+alias ChatMessageContent = Algebraic!(typeof(null), string, ChatUserMessageContentItem[]);
+
+///
+@serdeIgnoreUnexpectedKeys
 struct ChatMessage
 {
-    /// **Required**
+    ///
+    @serdeOptional
+    @serdeIgnoreDefault
     string role;
 
     /// **Required**
-    string content;
+    ChatMessageContent content;
 
     /// Optional
     @serdeOptional
@@ -77,30 +145,174 @@ struct ChatMessage
     @serdeOptional
     @serdeIgnoreDefault
     Nullable!ChatMessageFunctionCall functionCall = null;
+
+    /// Optional
+    @serdeKeys("tool_calls")
+    @serdeOptional
+    @serdeIgnoreDefault
+    ChatMessageToolCall[] toolCalls;
+
+    /// Optional
+    @serdeKeys("tool_call_id")
+    @serdeOptional
+    @serdeIgnoreDefault
+    string toolCallId;
 }
 
 ///
 ChatMessage systemChatMessage(string content, string name = null)
 {
-    return ChatMessage("system", content, name);
+    return ChatMessage("system", ChatMessageContent(content), name);
+}
+
+/// ditto
+unittest
+{
+    auto message = systemChatMessage("You are helpful AI assistant.");
+    assert(message.role == "system");
+    assert(message.content.get!string() == "You are helpful AI assistant.");
+
+    import mir.ser.json;
+
+    assert(serializeJson(message) == `{"role":"system","content":"You are helpful AI assistant."}`);
+}
+
+/// ditto
+unittest
+{
+    auto message = systemChatMessage("You are helpful AI assistant.", "ChatGPT");
+    assert(message.role == "system");
+    assert(message.content.get!string() == "You are helpful AI assistant.");
+    assert(message.name == "ChatGPT");
+
+    import mir.ser.json;
+
+    assert(serializeJson(
+            message) == `{"role":"system","content":"You are helpful AI assistant.","name":"ChatGPT"}`);
 }
 
 ///
 ChatMessage userChatMessage(string content, string name = null)
 {
-    return ChatMessage("user", content, name);
+    return ChatMessage("user", ChatMessageContent(content), name);
+}
+
+/// ditto
+unittest
+{
+    auto message = userChatMessage("Hello, how can I help you?");
+    assert(message.role == "user");
+    assert(message.content.get!string() == "Hello, how can I help you?");
+
+    import mir.ser.json;
+
+    assert(serializeJson(message) == `{"role":"user","content":"Hello, how can I help you?"}`);
+}
+
+/// ditto
+unittest
+{
+    auto message = userChatMessage("How does this work?", "User123");
+    assert(message.role == "user");
+    assert(message.content.get!string() == "How does this work?");
+    assert(message.name == "User123");
+
+    import mir.ser.json;
+
+    assert(serializeJson(
+            message) == `{"role":"user","content":"How does this work?","name":"User123"}`);
+}
+
+///
+ChatMessage userChatMessageWithImages(string text, string[] imageUrls, string name = null)
+{
+    ChatUserMessageContentItem[] contentItems;
+
+    ChatUserMessageTextContent textContent;
+    textContent.text = text;
+
+    contentItems ~= ChatUserMessageContentItem(textContent);
+
+    foreach (imageUrl; imageUrls)
+    {
+        ChatUserMessageImageContent imageContent;
+        imageContent.imageUrl = imageUrl;
+        contentItems ~= ChatUserMessageContentItem(imageContent);
+    }
+
+    return ChatMessage("user", ChatMessageContent(contentItems), name);
+}
+
+/// ditto
+unittest
+{
+    string text = "Check out these images:";
+    string[] imageUrls = [
+        "https://example.com/image1.jpg", "https://example.com/image2.jpg"
+    ];
+    string name = "User123";
+
+    auto message = userChatMessageWithImages(text, imageUrls, name);
+
+    assert(message.role == "user");
+    assert(message.name == name);
+
+    auto content = message.content.get!(ChatUserMessageContentItem[]);
+
+    assert(content.length == 3); // テキストメッセージと2つの画像URL
+    assert(content[0].get!ChatUserMessageTextContent().text == text);
+    assert(content[1].get!ChatUserMessageImageContent().imageUrl == imageUrls[0]);
+    assert(content[2].get!ChatUserMessageImageContent().imageUrl == imageUrls[1]);
+}
+
+/// ditto
+unittest
+{
+    string text = "Check out these images:";
+    string[] imageUrls = [
+        "https://example.com/image1.jpg", "https://example.com/image2.jpg"
+    ];
+    string name = "User12345";
+
+    auto message = userChatMessageWithImages(text, imageUrls, name);
+
+    import mir.ser.json;
+
+    string jsonString = serializeJson(message);
+
+    string expectedJson = `{"role":"user","content":[{"type":"text","text":"Check out these images:"},{"type":"image_url","image_url":"https://example.com/image1.jpg"},{"type":"image_url","image_url":"https://example.com/image2.jpg"}],"name":"User12345"}`;
+
+    assert(jsonString == expectedJson);
 }
 
 ///
 ChatMessage assitantChatMessage(string content, string name = null)
 {
-    return ChatMessage("assistant", content, name);
+    return ChatMessage("assistant", ChatMessageContent(content), name);
 }
 
 ///
+ChatMessage toolChatMessage(string name, string content, string toolCallId)
+{
+    ChatMessage message;
+    message.role = "tool";
+    message.name = name;
+    message.content = content;
+    message.toolCallId = toolCallId;
+    return message;
+}
+
+///
+deprecated("Deprecated in favor of toolChatMessage.")
 ChatMessage functionChatMessage(string functionName, string functionResponseJson)
 {
-    return ChatMessage("function", functionResponseJson, functionName);
+    return ChatMessage("function", ChatMessageContent(functionResponseJson), functionName);
+}
+
+struct ResponseFormat
+{
+    /// 
+    string type;
 }
 
 ///
@@ -114,10 +326,12 @@ struct ChatCompletionRequest
     ChatMessage[] messages;
 
     ///
+    deprecated("Deprecated in favor of tools.")
     @serdeIgnoreDefault
     ChatCompletionFunction[] functions = null;
 
     ///
+    deprecated("Deprecated in favor of tool_choice.")
     @serdeIgnoreDefault
     @serdeKeys("function_call")
     CreateChatCompletionRequestFunctionCall functionCall = null;
@@ -133,6 +347,7 @@ struct ChatCompletionRequest
 
     ///
     @serdeIgnoreDefault
+    @serdeKeys("top_p")
     double topP = 1;
 
     ///
@@ -153,27 +368,198 @@ struct ChatCompletionRequest
 
     ///
     @serdeIgnoreDefault
-    @serdeIgnoreOutIf!isNaN double presencePenalty = 0;
+    @serdeIgnoreOutIf!isNaN @serdeKeys("presence_panealty")
+    double presencePenalty = 0;
 
     ///
     @serdeIgnoreDefault
+    @serdeIgnoreOutIf!isNaN @serdeKeys("frequency_penalty")
     double frequencyPenalty = 0;
 
-    ///
     @serdeIgnoreDefault
-    uint bestOf = 1;
+    @serdeKeys("response_format")
+    Nullable!ResponseFormat responseFormat = null;
+
+    @serdeIgnoreDefault
+    Nullable!int seed = null;
+
     version (none)
     {
         ///
         @serdeIgnoreDefault
+        @serdeKeys("logit_bias")
         double[string] logitBias; // TODO test
     }
 
     ///
     @serdeIgnoreDefault
+    ChatCompletionTool[] tools = null;
+
+    ///
+    @serdeIgnoreDefault
+    @serdeKeys("tool_choice")
+    ChatCompletionToolChoice toolChoice = null;
+
+    ///
+    @serdeIgnoreDefault
     string user = null;
+
+    ///
+    @serdeIgnoreDefault
+    Nullable!bool logprobs = null;
+
+    @serdeIgnoreDefault
+    Nullable!uint top_logprobs = null;
 }
 
+unittest
+{
+    ChatCompletionTool tool1;
+    tool1.type = "function";
+    tool1.function_.name = "tool1";
+    tool1.function_.description = "Description of tool1";
+    tool1.function_.parameters = JsonValue("{}");
+
+    ChatCompletionTool tool2;
+    tool2.type = "function";
+    tool2.function_.name = "tool2";
+    tool2.function_.description = "Description of tool2";
+    tool2.function_.parameters = JsonValue("{}");
+
+    ChatCompletionRequest request;
+    request.model = "gpt-3.5-turbo";
+    request.messages = [
+        userChatMessage("Hello, how can I help you?"),
+        toolChatMessage("tool1", "This is a tool1 result", "tool1_call")
+    ];
+
+    request.tools = [tool1, tool2];
+    request.toolChoice = "auto";
+
+    assert(request.tools.length == 2);
+    assert(request.tools[0].type == "function");
+    assert(request.tools[0].function_.name == "tool1");
+    assert(request.tools[1].type == "function");
+    assert(request.tools[1].function_.name == "tool2");
+}
+
+unittest
+{
+    ChatCompletionTool tool3;
+    tool3.type = "function";
+    tool3.function_.name = "tool3";
+    tool3.function_.description = "Description of tool3";
+    tool3.function_.parameters = JsonValue("{}");
+
+    ChatCompletionToolChoiceInfo toolChoiceInfo;
+    toolChoiceInfo.type = "function";
+    toolChoiceInfo.function_.name = "tool3";
+
+    ChatCompletionRequest request;
+    request.model = "gpt-3.5-turbo";
+    request.messages = [
+        userChatMessage("Hello, how can I help you?"),
+        toolChatMessage("tool1", "This is a tool1 result", "tool1_call")
+    ];
+    request.tools = [tool3];
+    request.toolChoice = ChatCompletionToolChoice(toolChoiceInfo);
+
+    assert(request.toolChoice.get!ChatCompletionToolChoiceInfo().type == "function");
+    assert(request.toolChoice.get!ChatCompletionToolChoiceInfo().function_.name == "tool3");
+}
+
+unittest
+{
+    ChatCompletionRequest request;
+    request.model = "gpt-3.5-turbo";
+    request.maxTokens = 20;
+    request.messages = [
+        systemChatMessage("Welcome!"),
+        userChatMessage("How can I use the tools?", "User123"),
+    ];
+
+    ChatCompletionTool tool;
+    tool.function_.name = "sample_function";
+    tool.function_.description = "Sample tool function";
+    tool.function_.parameters = JsonSchema.string_("tool argument");
+
+    request.tools ~= tool;
+    request.toolChoice = "auto";
+
+    import mir.ser.json;
+
+    string jsonString = serializeJson(request);
+
+    string expectedJson = `{"model":"gpt-3.5-turbo","messages":[{"role":"system","content":"Welcome!"},{"role":"user","content":"How can I use the tools?","name":"User123"}],"max_tokens":20,"tools":[{"type":"function","function":{"name":"sample_function","description":"Sample tool function","parameters":{"type":"string","description":"tool argument"}}}],"tool_choice":"auto"}`;
+
+    assert(jsonString == expectedJson);
+}
+
+unittest{
+    const errorJson = `{
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_yRyhjp0JMZCquJKRoPOSziS1",
+            "type": "function",
+            "function": {
+              "name": "add",
+              "arguments": "{\n  \"a\": 3,\n  \"b\": 5\n}"
+            }
+          }
+        ]
+      },
+      "logprobs": null,
+      "finish_reason": "tool_calls"
+    }`;
+
+    import mir.deser.json;
+    auto choice = deserializeJson!ChatChoice(errorJson);
+}
+
+version (none) unittest
+{
+    const errorJson = `{
+  "id": "chatcmpl-8o4Ov7YkYueWBllPDLhCxcC68CojX",
+  "object": "chat.completion",
+  "created": 1706944009,
+  "model": "gpt-3.5-turbo-0613",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "tool_calls": [
+          {
+            "id": "call_yRyhjp0JMZCquJKRoPOSziS1",
+            "type": "function",
+            "function": {
+              "name": "add",
+              "arguments": "{\n  \"a\": 3,\n  \"b\": 5\n}"
+            }
+          }
+        ]
+      },
+      "logprobs": null,
+      "finish_reason": "tool_calls"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 124,
+    "completion_tokens": 21,
+    "total_tokens": 145
+  },
+  "system_fingerprint": null
+}`;
+    
+    import mir.deser.json;
+
+    auto response = deserializeJson!ChatCompletionResponse(errorJson);
+}
 ///
 ChatCompletionRequest chatCompletionRequest(return scope string model, return scope ChatMessage[] messages, uint maxTokens, double temperature)
 {
@@ -186,6 +572,7 @@ ChatCompletionRequest chatCompletionRequest(return scope string model, return sc
 }
 
 ///
+@serdeIgnoreUnexpectedKeys
 struct ChatChoice
 {
     ///
@@ -197,9 +584,13 @@ struct ChatChoice
     ///
     @serdeKeys("finish_reason")
     string finishReason;
+
+    ///
+    Nullable!float logprobs;
 }
 
 ///
+@serdeIgnoreUnexpectedKeys
 struct ChatCompletionResponse
 {
     ///
@@ -219,4 +610,8 @@ struct ChatCompletionResponse
 
     ///
     CompletionUsage usage;
+
+    ///
+    @serdeKeys("system_fingerprint")
+    string systemFingerprint;
 }

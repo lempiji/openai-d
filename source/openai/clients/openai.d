@@ -150,10 +150,26 @@ class OpenAIClient
         http.addRequestHeader("Content-Type", "application/json");
 
         auto requestJson = serializeJson(request);
+        debug scope (failure)
+        {
+            import std.stdio;
+
+            writeln("----------");
+            writeln("# completion requestJson");
+            writeln(requestJson);
+            writeln("----------");
+        }
         auto content = cast(char[]) post!ubyte("https://api.openai.com/v1/completions", requestJson, http);
 
-        // import std.stdio;
-        // writeln(content);
+        debug scope (failure)
+        {
+            import std.stdio;
+
+            writeln("-----------");
+            writeln("# completion responseContent");
+            writeln(content);
+            writeln("-----------");
+        }
 
         auto result = content.deserializeJson!CompletionResponse();
         return result;
@@ -170,8 +186,26 @@ class OpenAIClient
         http.addRequestHeader("Content-Type", "application/json");
 
         auto requestJson = serializeJson(request);
+        debug scope (failure)
+        {
+            import std.stdio;
+
+            writeln("----------");
+            writeln("# chatCompletion requestJson");
+            writeln(requestJson);
+            writeln("----------");
+        }
         auto content = cast(char[]) post!ubyte("https://api.openai.com/v1/chat/completions", requestJson, http);
 
+        debug scope (failure)
+        {
+            import std.stdio;
+
+            writeln("-----------");
+            writeln("# chatCompletion responseContent");
+            writeln(content);
+            writeln("-----------");
+        }
         auto result = content.deserializeJson!ChatCompletionResponse();
         return result;
     }

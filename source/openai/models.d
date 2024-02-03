@@ -146,63 +146,24 @@ enum ModerationTextStable = "text-moderation-stable";
 ///
 enum ModerationTextLatest = "text-moderation-latest";
 ///
-enum ModerationText001    = "text-moderation-001";
+enum ModerationText001 = "text-moderation-001";
 
-///
-@serdeIgnoreUnexpectedKeys
-struct ModelPermission
-{
-    ///
-    string id;
-    ///
-    string object;
-    ///
-    ulong created;
-    ///
-    @serdeKeys("allow_create_engine")
-    bool allowCreateEngine;
-    ///
-    @serdeKeys("allow_sampling")
-    bool allowSampling;
-    ///
-    @serdeKeys("allow_logprobs")
-    bool allowLogprobs;
-    ///
-    @serdeKeys("allow_search_indices")
-    bool allowSearchIndices;
-    ///
-    @serdeKeys("allow_view")
-    bool allowView;
-    ///
-    @serdeKeys("allow_fine_tuning")
-    bool allowFineTuning;
-    ///
-    string organization;
-    // FIXME Unknown type
-    //string group;
-    ///
-    @serdeKeys("is_blocking")
-    bool isBlocking;
-}
-
-///
+/// Describes an OpenAI model offering that can be used with the API.
 @serdeIgnoreUnexpectedKeys
 struct Model
 {
-    ///
+    /// The model identifier, which can be referenced in the API endpoints.
     string id;
-    ///
+
+    /// The Unix timestamp (in seconds) when the model was created.
+    ulong created;
+
+    /// The object type, which is always "model".
     string object;
-    ///
+
+    /// The organization that owns the model.
     @serdeKeys("owned_by")
-        ///
     string ownedBy;
-    ///
-    ModelPermission[] permission;
-    ///
-    string root;
-    // FIXME Unknown type
-    //string parent;
 }
 
 ///
