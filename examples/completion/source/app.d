@@ -6,9 +6,9 @@ import openai;
 void main()
 {
 	// If the argument Config is omitted, it is read from an environment variable 'OPENAI_API_KEY'
-	auto config = OpenAIClientConfig.fromFile("config.json");
-	auto client = new OpenAIClient(config);
-	// auto client = new OpenAIClient;
+	// auto config = OpenAIClientConfig.fromFile("config.json");
+	// auto client = new OpenAIClient(config);
+	auto client = new OpenAIClient;
 
 	// POST /completions
 	auto message = completionRequest(openai.GPT3Dot5TurboInstruct, "This is a", 16, 0);
