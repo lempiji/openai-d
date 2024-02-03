@@ -15,16 +15,18 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 
 #### OpenAI
 
-- [x] List models
-- [x] Completions
-- [x] Chat
-  - [x] function_call
-- [ ] Images
-- [x] Embeddings
 - [ ] Audio
+- [x] Chat
+  - [x] tools (function_call)
+- [x] Embeddings
+- [ ] Fine-tunings
 - [ ] Files
-- [ ] Fine-tunes
+- [ ] Images
+- [x] Models
 - [x] Moderations
+
+__legacy__
+- [x] Completions (Legacy)
 
 __deprecated__
 - Edits
