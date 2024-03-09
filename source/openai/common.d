@@ -270,6 +270,38 @@ struct JsonSchema
             "type": JsonValue("array"),
         ]);
     }
+
+    static JsonValue oneOf(JsonValue[] schemas...)
+    in (schemas.length > 0)
+    {
+        return JsonValue([
+            "oneOf": JsonValue(schemas)
+        ]);
+    }
+    
+    static JsonValue anyOf(JsonValue[] schemas...)
+    in (schemas.length > 0)
+    {
+        return JsonValue([
+            "anyOf": JsonValue(schemas)
+        ]);
+    }
+    
+    static JsonValue allOf(JsonValue[] schemas...)
+    in (schemas.length > 0)
+    {
+        return JsonValue([
+            "allOf": JsonValue(schemas)
+        ]);
+    }
+    
+    static JsonValue not(JsonValue[] schemas...)
+    in (schemas.length > 0)
+    {
+        return JsonValue([
+            "not": JsonValue(schemas)
+        ]);
+    }
 }
 
 @("simple weather schema")
@@ -353,4 +385,60 @@ unittest
         "format": JsonSchema.string_("The temperature unit to use. Infer this from the users location.", ["celcius", "farenheit"]),
         "num_days": JsonSchema.integer_("The number of days to forecast"),
     ], ["location", "format", "num_days"]);
+}
+
+unittest
+{
+    import mir.ser.json : serializeJson;
+
+    const schema = JsonSchema.oneOf(
+        JsonSchema.string_(),
+        JsonSchema.integer_(),
+    );
+
+    const json = serializeJson(schema);
+
+    assert(json == `{"oneOf":[{"type":"string"},{"type":"integer"}]}`);
+}
+
+unittest
+{
+    import mir.ser.json : serializeJson;
+
+    const schema = JsonSchema.anyOf(
+        JsonSchema.string_(),
+        JsonSchema.integer_(),
+    );
+
+    const json = serializeJson(schema);
+
+    assert(json == `{"anyOf":[{"type":"string"},{"type":"integer"}]}`);
+}
+
+unittest
+{
+    import mir.ser.json : serializeJson;
+
+    const schema = JsonSchema.allOf(
+        JsonSchema.string_("starts with 'a'", "^a.*"),
+        JsonSchema.string_("ends with 'z'", ".*z$"),
+    );
+
+    const json = serializeJson(schema);
+
+    assert(json == `{"allOf":[{"type":"string","description":"starts with 'a'","pattern":"^a.*"},{"type":"string","description":"ends with 'z'","pattern":".*z$"}]}`);
+}
+
+unittest
+{
+    import mir.ser.json : serializeJson;
+
+    const schema = JsonSchema.not(
+        JsonSchema.string_(),
+        JsonSchema.integer_(),
+    );
+
+    const json = serializeJson(schema);
+
+    assert(json == `{"not":[{"type":"string"},{"type":"integer"}]}`);
 }
