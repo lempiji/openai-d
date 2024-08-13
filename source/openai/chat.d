@@ -198,6 +198,17 @@ ChatMessage userChatMessage(string content, string name = null)
 }
 
 /// ditto
+ChatMessage userChatMessage(string[] contents, string name = null)
+{
+    auto items = new ChatUserMessageContentItem[](contents.length);
+    foreach (i, message; contents)
+    {
+        items[i] = ChatUserMessageContentItem(ChatUserMessageTextContent("text", message));
+    }
+    return ChatMessage("user", ChatMessageContent(items), name);
+}
+
+/// ditto
 unittest
 {
     auto message = userChatMessage("Hello, how can I help you?");
@@ -427,7 +438,7 @@ unittest
     tool2.function_.parameters = JsonValue("{}");
 
     ChatCompletionRequest request;
-    request.model = "gpt-3.5-turbo";
+    request.model = "gpt-4o-mini";
     request.messages = [
         userChatMessage("Hello, how can I help you?"),
         toolChatMessage("tool1", "This is a tool1 result", "tool1_call")
@@ -456,7 +467,7 @@ unittest
     toolChoiceInfo.function_.name = "tool3";
 
     ChatCompletionRequest request;
-    request.model = "gpt-3.5-turbo";
+    request.model = "gpt-4o-mini";
     request.messages = [
         userChatMessage("Hello, how can I help you?"),
         toolChatMessage("tool1", "This is a tool1 result", "tool1_call")
@@ -471,7 +482,7 @@ unittest
 unittest
 {
     ChatCompletionRequest request;
-    request.model = "gpt-3.5-turbo";
+    request.model = "gpt-4o-mini";
     request.maxTokens = 20;
     request.messages = [
         systemChatMessage("Welcome!"),
@@ -490,7 +501,7 @@ unittest
 
     string jsonString = serializeJson(request);
 
-    string expectedJson = `{"model":"gpt-3.5-turbo","messages":[{"role":"system","content":"Welcome!"},{"role":"user","content":"How can I use the tools?","name":"User123"}],"max_tokens":20,"tools":[{"type":"function","function":{"name":"sample_function","description":"Sample tool function","parameters":{"type":"string","description":"tool argument"}}}],"tool_choice":"auto"}`;
+    string expectedJson = `{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Welcome!"},{"role":"user","content":"How can I use the tools?","name":"User123"}],"max_tokens":20,"tools":[{"type":"function","function":{"name":"sample_function","description":"Sample tool function","parameters":{"type":"string","description":"tool argument"}}}],"tool_choice":"auto"}`;
 
     assert(jsonString == expectedJson);
 }
@@ -526,7 +537,7 @@ version (none) unittest
   "id": "chatcmpl-8o4Ov7YkYueWBllPDLhCxcC68CojX",
   "object": "chat.completion",
   "created": 1706944009,
-  "model": "gpt-3.5-turbo-0613",
+  "model": "gpt-4o-mini",
   "choices": [
     {
       "index": 0,
