@@ -16,72 +16,105 @@ import mir.serde;
 @safe:
 
 // Chat & Completion
-///
-enum GPT40125Preview = "gpt-4-0125-preview";
-///
+// GPT-4o Series
+/// gpt-4o
+enum GPT4O = "gpt-4o";
+/// gpt-4o-2024-05-13
+enum GPT4O20240513 = "gpt-4o-2024-05-13";
+/// gpt-4o-2024-08-06
+enum GPT4O20240806 = "gpt-4o-2024-08-06";
+
+// GPT-4o mini Series
+/// gpt-4o-mini
+enum GPT4OMini = "gpt-4o-mini";
+/// gpt-4o-mini-2024-07-18
+enum GPT4OMini20240718 = "gpt-4o-mini-2024-07-18";
+
+// GPT-4 Turbo Series
+/// gpt-4-turbo
+enum GPT4Turbo = "gpt-4-turbo";
+/// gpt-4-turbo-2024-04-09
+enum GPT4Turbo20240409 = "gpt-4-turbo-2024-04-09";
+/// gpt-4-turbo-preview
 enum GPT4TurboPreview = "gpt-4-turbo-preview";
-///
-enum GPT41106Preview = "gpt-4-1106-preview";
-///
+
+// GPT-4 Vision Series
+/// gpt-4-vision-preview
+deprecated("'gpt-4-vision-preview' is to be removed by 2024-12-06. Please use 'gpt-4o' instead")
 enum GPT4VisionPreview = "gpt-4-vision-preview";
-///
-enum GPT432K0613 = "gpt-4-32k-0613";
-///
-deprecated("'gpt-4-32k-0314' is to be removed by 2024-06-13. Please use 'gpt-4-32k-0613' instead")
-enum GPT432K0314 = "gpt-4-32k-0314";
-///
+
+// GPT-4-32k Series
+/// gpt-4-32k
+deprecated("'gpt-4-32k' is to be removed by 2025-06-06. Please use 'gpt-4o' instead")
 enum GPT432K = "gpt-4-32k";
-///
-enum GPT40613 = "gpt-4-0613";
-///
-deprecated("'gpt-4-0314' is to be removed by 2024-06-13. Please use 'gpt-4-0613' instead")
-enum GPT40314 = "gpt-4-0314";
-///
+/// gpt-4-32k-0314
+deprecated("'gpt-4-32k-0314' is to be removed by 2025-06-06. Please use 'gpt-4o' instead")
+enum GPT432K0314 = "gpt-4-32k-0314";
+/// gpt-4-32k-0613
+deprecated("'gpt-4-32k-0613' is to be removed by 2025-06-06. Please use 'gpt-4o' instead")
+enum GPT432K0613 = "gpt-4-32k-0613";
+
+// GPT-4 Series
+/// gpt-4
 enum GPT4 = "gpt-4";
-///
-enum GPT350Turbo0125 = "gpt-3.5-turbo-0125";
-///
-enum GPT350Turbo1106 = "gpt-3.5-turbo-1106";
-///
-enum GPT3Dot5TurboInstruct = "gpt-3.5-turbo-instruct";
-///
-deprecated("'gpt-3.5-turbo-16k-0613' is to be removed by 2024-06-13. Please use 'gpt-3.5-turbo-1106' instead")
-enum GPT3Dot5Turbo16K0613 = "gpt-3.5-turbo-16k-0613";
-/// 
-enum GPT3Dot5Turbo16K = "gpt-3.5-turbo-16k";
-///
-deprecated("'gpt-3.5-turbo-0613' is to be removed by 2024-06-13. Please use 'gpt-3.5-turbo-1106' instead")
-enum GPT3Dot5Turbo0613 = "gpt-3.5-turbo-0613";
-///
-deprecated("'gpt-3-turbo-0314' is to be removed by 2024-06-13. Please use 'gpt-3-turbo-0613' instead")
-enum GPT3Dot5Turbo0301 = "gpt-3.5-turbo-0301";
-///
+/// gpt-4-0314
+deprecated("'gpt-4-0314' is to be removed by 2024-06-13. Please use 'gpt-4o' instead")
+enum GPT40314 = "gpt-4-0314";
+/// gpt-4-0613
+enum GPT40613 = "gpt-4-0613";
+/// gpt-4-0125-preview
+enum GPT40125Preview = "gpt-4-0125-preview";
+/// gpt-4-1106-preview
+enum GPT41106Preview = "gpt-4-1106-preview";
+
+// GPT-3.5 Turbo Series
+/// gpt-3.5-turbo
 enum GPT3Dot5Turbo = "gpt-3.5-turbo";
-///
+/// gpt-3.5-turbo-instruct
+enum GPT3Dot5TurboInstruct = "gpt-3.5-turbo-instruct";
+/// gpt-3.5-turbo-0125
+enum GPT350Turbo0125 = "gpt-3.5-turbo-0125";
+/// gpt-3.5-turbo-1106
+enum GPT350Turbo1106 = "gpt-3.5-turbo-1106";
+/// gpt-3.5-turbo-0301
+deprecated("'gpt-3-turbo-0301' is to be removed by 2024-06-13. Please use 'gpt-3-turbo' instead")
+enum GPT3Dot5Turbo0301 = "gpt-3.5-turbo-0301";
+/// gpt-3.5-turbo-0613
+deprecated("'gpt-3.5-turbo-0613' is to be removed by 2024-09-13. Please use 'gpt-3.5-turbo' instead")
+enum GPT3Dot5Turbo0613 = "gpt-3.5-turbo-0613";
+
+// GPT-3.5 Turbo 16k Series
+/// gpt-3.5-turbo-16k
+enum GPT3Dot5Turbo16K = "gpt-3.5-turbo-16k";
+/// gpt-3.5-turbo-16k-0613
+deprecated("'gpt-3.5-turbo-16k-0613' is to be removed by 2024-09-13. Please use 'gpt-3.5-turbo' instead")
+enum GPT3Dot5Turbo16K0613 = "gpt-3.5-turbo-16k-0613";
+
+/// davinci-instruct-beta
 enum DavinciInstructBeta = "davinci-instruct-beta";
-///
+/// curie-instruct-beta
 enum CurieInstructBeta = "curie-instruct-beta";
 
 // Embedding
-///
+/// text-embedding-3-large
 enum TextEmbedding3Large = "text-embedding-3-large";
-///
+/// text-embedding-3-small
 enum TextEmbedding3Small = "text-embedding-3-small";
-///
+/// text-embedding-ada-002
 enum AdaEmbeddingV2 = "text-embedding-ada-002";
 
 // Moderation
-///
+/// text-moderation-stable
 enum ModerationTextStable = "text-moderation-stable";
-///
+/// text-moderation-latest
 enum ModerationTextLatest = "text-moderation-latest";
-///
+/// text-moderation-007
 enum ModerationText007 = "text-moderation-007";
 
 // GPT base
-///
+/// babbage-002
 enum Babbage002 = "babbage-002";
-///
+/// davinci-002
 enum Davinci002 = "davinci-002";
 
 /// Describes an OpenAI model offering that can be used with the API.
