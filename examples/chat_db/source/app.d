@@ -31,7 +31,7 @@ void main()
     }
 
     // make dummy data
-    auto request = chatCompletionRequest("gpt-3.5-turbo-0613", [
+    auto request = chatCompletionRequest("gpt-4o-mini", [
         systemChatMessage("You are a helpful SQL assistant."),
         userChatMessage("Create a sample database table using sqlite3 with dummy product data for a car dealership in Japan.")
     ], 400, 1);

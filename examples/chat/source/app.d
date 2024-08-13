@@ -9,7 +9,7 @@ void main()
 	// auto client = new OpenAIClient(config);
 	auto client = new OpenAIClient;
 
-	const request = chatCompletionRequest(openai.GPT3Dot5Turbo, [
+	const request = chatCompletionRequest(openai.GPT4OMini, [
 		systemChatMessage("You are a helpful assistant."),
 		userChatMessage("Hello!")
 	], 16, 0);

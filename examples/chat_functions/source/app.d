@@ -11,7 +11,7 @@ void main()
     // auto client = new OpenAIClient(config);
     auto client = new OpenAIClient;
 
-    auto request = chatCompletionRequest("gpt-3.5-turbo-0613", [
+    auto request = chatCompletionRequest("gpt-4o-mini", [
         systemChatMessage("You are a helpful assistant."),
         userChatMessage("calc 3 + 5 - 2.5")
     ], 200, 1);
