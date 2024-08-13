@@ -76,7 +76,7 @@ import openai;
 auto client = new OpenAIClient();
 
 // POST /chat/completions
-const request = chatCompletionRequest("gpt-3.5-turbo", [
+const request = chatCompletionRequest("gpt-4o-mini", [
     systemChatMessage("You are a helpful assistant."),
     userChatMessage("Hello!")
 ], 16, 0);
