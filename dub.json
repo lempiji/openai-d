@@ -3,7 +3,7 @@
 		"lempiji"
 	],
 	"dependencies": {
-		"mir-ion": "~>2.2.1"
+		"mir-ion": "~>2.3.3"
 	},
 	"description": "OpenAI Clinet APIs",
 	"license": "MIT",
