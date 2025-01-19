@@ -95,6 +95,41 @@ CompletionRequest completionRequest(string model, string prompt, uint maxTokens,
 }
 
 ///
+@serdeIgnoreUnexpectedKeys
+struct PromptTokensDetails
+{
+    ///
+    @serdeKeys("cached_tokens")
+    uint cachedTokens;
+
+    ///
+    @serdeKeys("audio_tokens")
+    uint audioTokens;
+}
+
+///
+@serdeIgnoreUnexpectedKeys
+struct CompletionTokensDetails
+{
+    ///
+    @serdeKeys("reasoning_tokens")
+    uint reasoningTokens;
+
+    ///
+    @serdeKeys("audio_tokens")
+    uint audioTokens;
+
+    ///
+    @serdeKeys("accepted_prediction_tokens")
+    uint acceptedPredictionTokens;
+
+    ///
+    @serdeKeys("rejected_prediction_tokens")
+    uint rejectedPredictionTokens;
+}
+
+///
+@serdeIgnoreUnexpectedKeys
 struct CompletionUsage
 {
     ///
@@ -109,6 +144,14 @@ struct CompletionUsage
     ///
     @serdeKeys("total_tokens")
     uint totalTokens;
+
+    ///
+    @serdeKeys("prompt_tokens_details")
+    PromptTokensDetails promptTokensDetails;
+
+    ///
+    @serdeKeys("completion_tokens_details")
+    CompletionTokensDetails completionTokensDetails;
 }
 
 ///
@@ -127,6 +170,7 @@ struct CompletionChoice
 }
 
 ///
+@serdeIgnoreUnexpectedKeys
 struct CompletionResponse
 {
     ///
@@ -146,4 +190,12 @@ struct CompletionResponse
 
     ///
     CompletionUsage usage;
+
+    ///
+    @serdeKeys("service_tier")
+    string serviceTier;
+
+    ///
+    @serdeKeys("system_fingerprint")
+    string systemFingerprint;
 }
