@@ -4,11 +4,12 @@ OpenAI API Client
 module openai.common;
 
 import mir.algebraic;
+import mir.algebraic_alias.json : JsonAlgebraic;
 
 @safe:
 
 ///
-alias JsonValue = Variant!(typeof(null), bool, string, long, double, string[], long[], double[], This[], This[string]);
+alias JsonValue = JsonAlgebraic;
 
 ///
 alias StopToken = Algebraic!(typeof(null), string, string[]);
@@ -22,21 +23,27 @@ struct JsonSchema
     ///
     static JsonValue object_(string description, JsonValue[string] properties, string[] required)
     {
+        import std.algorithm : map;
+        import std.array : array;
+
         return JsonValue([
             "type": JsonValue("object"),
             "description": JsonValue(description),
             "properties": JsonValue(properties),
-            "required": JsonValue(required),
+            "required": JsonValue(required.map!(x => JsonValue(x)).array),
         ]);
     }
 
     ///
     static JsonValue object_(JsonValue[string] properties, string[] required)
     {
+        import std.algorithm : map;
+        import std.array : array;
+
         return JsonValue([
             "type": JsonValue("object"),
             "properties": JsonValue(properties),
-            "required": JsonValue(required),
+            "required": JsonValue(required.map!(x => JsonValue(x)).array),
         ]);
     }
 
@@ -112,10 +119,13 @@ struct JsonSchema
     ///
     static JsonValue string_(string description, string[] enum_)
     {
+        import std.algorithm : map;
+        import std.array : array;
+
         return JsonValue([
             "type": JsonValue("string"),
             "description": JsonValue(description),
-            "enum": JsonValue(enum_),
+            "enum": JsonValue(enum_.map!(x => JsonValue(x)).array),
         ]);
     }
 
