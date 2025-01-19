@@ -868,19 +868,53 @@ unittest
         @("Custom field description 1")
         @serdeRequired
         string name;
-        @("Custom field description 2")
         int age;
+        @("Custom field description 2")
         bool isCool;
     }
 
-    enum requiredFields = ["name"];
-
     auto schema = JsonSchema.object_("Custom description", [
         "name": JsonSchema.string_("Custom field description 1"),
-        "age": JsonSchema.integer_("Custom field description 2"),
-        "isCool": JsonSchema.boolean_(),
-    ], requiredFields);
+        "age": JsonSchema.integer_(),
+        "isCool": JsonSchema.boolean_("Custom field description 2"),
+    ], ["name"]);
 
-    auto actual = parseJsonSchema!TestStruct("Custom description");
+    auto actual = parseJsonSchema!TestStruct();
     assert(actual == schema, actual.toString() ~ "\n---\n" ~ schema.toString());
+}
+
+@("parseJsonSchema structs from OpenAI API example")
+unittest
+{
+    import mir.algebraic_alias.json : JsonAlgebraic;
+    import mir.serde : serdeRequired, serdeIgnoreUnexpectedKeys;
+
+    struct Step
+    {
+        @serdeRequired
+        string explanation;
+        @serdeRequired
+        string output;
+    }
+
+    struct MathResponse
+    {
+        @serdeRequired
+        Step[] steps;
+        @serdeRequired
+        string final_answer;
+    }
+
+    auto stepSchema = JsonSchema.object_([
+        "explanation": JsonSchema.string_(),
+        "output": JsonSchema.string_(),
+    ], ["explanation", "output"], false);
+
+    auto mathResponseSchema = JsonSchema.object_([
+        "steps": JsonSchema.array_(stepSchema),
+        "final_answer": JsonSchema.string_(),
+    ], ["steps", "final_answer"], false);
+
+    auto actual = parseJsonSchema!MathResponse();
+    assert(actual == mathResponseSchema, actual.toString() ~ "\n---\n" ~ mathResponseSchema.toString());
 }
