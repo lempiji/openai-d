@@ -69,6 +69,13 @@ struct ChatCompletionFunction
      * The parameters the functions accepts, described as a JSON Schema object.
      */
     JsonValue parameters;
+
+    /** 
+     * The parameters the functions accepts, described as a JSON Schema object.
+     */
+    @serdeOptional
+    @serdeIgnoreDefault
+    bool strict;
 }
 
 ///
@@ -166,6 +173,12 @@ ChatMessage systemChatMessage(string content, string name = null)
 }
 
 /// ditto
+ChatMessage developerChatMessage(string content, string name = null)
+{
+    return ChatMessage("developer", ChatMessageContent(content), name);
+}
+
+/// ditto
 unittest
 {
     auto message = systemChatMessage("You are helpful AI assistant.");
@@ -189,6 +202,20 @@ unittest
 
     assert(serializeJson(
             message) == `{"role":"system","content":"You are helpful AI assistant.","name":"ChatGPT"}`);
+}
+
+/// ditto
+unittest
+{
+    auto message = developerChatMessage("You are helpful AI assistant.", "ChatGPT");
+    assert(message.role == "developer");
+    assert(message.content.get!string() == "You are helpful AI assistant.");
+    assert(message.name == "ChatGPT");
+
+    import mir.ser.json;
+
+    assert(serializeJson(
+            message) == `{"role":"developer","content":"You are helpful AI assistant.","name":"ChatGPT"}`);
 }
 
 ///
@@ -320,10 +347,26 @@ ChatMessage functionChatMessage(string functionName, string functionResponseJson
     return ChatMessage("function", ChatMessageContent(functionResponseJson), functionName);
 }
 
+/// 
+struct ResponseFormatJsonSchema
+{
+    ///
+    string name;
+    ///
+    JsonValue schema;
+}
+
+///
 struct ResponseFormat
 {
     /// 
     string type;
+
+    ///
+    @serdeKeys("json_schema")
+    @serdeOptional
+    @serdeIgnoreDefault
+    Nullable!ResponseFormatJsonSchema jsonSchema;
 }
 
 ///
@@ -503,7 +546,7 @@ unittest
 
     string expectedJson = `{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Welcome!"},{"role":"user","content":"How can I use the tools?","name":"User123"}],"max_tokens":20,"tools":[{"type":"function","function":{"name":"sample_function","description":"Sample tool function","parameters":{"type":"string","description":"tool argument"}}}],"tool_choice":"auto"}`;
 
-    assert(jsonString == expectedJson);
+    assert(jsonString == expectedJson, jsonString ~ "\n" ~ expectedJson);
 }
 
 unittest{
