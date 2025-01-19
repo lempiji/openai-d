@@ -12,7 +12,7 @@ void main()
     auto client = new OpenAIClient;
 
     auto request = chatCompletionRequest("gpt-4o-mini", [
-        systemChatMessage("You are a helpful assistant."),
+        developerChatMessage("You are a helpful assistant."),
         userChatMessage("calc 3 + 5 - 2.5")
     ], 200, 1);
 
@@ -41,7 +41,7 @@ void main()
         ),
     ];
     // dfmt on
-    request.toolChoice = "auto";
+    request.toolChoice = "required";
 
     // setup tools
     import mir.ser.json;
@@ -73,6 +73,8 @@ void main()
                 const toolFunctionName = toolCall.function_.name;
                 if (toolFunctionName in availableTools)
                 {
+                    writefln!"Tool call: %s(%s)"(toolFunctionName, toolCall.function_.arguments);
+
                     toolCallCount++;
                     auto toolFunction = availableTools[toolFunctionName];
                     auto resultContent = toolFunction(toolCall.function_.arguments);
@@ -87,6 +89,7 @@ void main()
             }
             if (toolCallCount > 0)
             {
+                request.toolChoice = "auto";
                 response = client.chatCompletion(request);
             }
         }
