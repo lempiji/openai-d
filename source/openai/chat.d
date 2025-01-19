@@ -343,6 +343,10 @@ struct ResponseFormatJsonSchema
 {
     ///
     string name;
+
+    ///
+    bool strict = true;
+
     ///
     JsonValue schema;
 }
@@ -358,6 +362,15 @@ struct ResponseFormat
     @serdeOptional
     @serdeIgnoreDefault
     Nullable!ResponseFormatJsonSchema jsonSchema;
+}
+
+///
+ResponseFormat jsonResponseFormat(string name, JsonValue jsonSchema)
+{
+    auto format = ResponseFormat();
+    format.type = "json_schema";
+    format.jsonSchema = ResponseFormatJsonSchema(name, true, jsonSchema);
+    return format;
 }
 
 ///

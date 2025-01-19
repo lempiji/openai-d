@@ -5,6 +5,7 @@ module openai.common;
 
 import mir.algebraic;
 import mir.algebraic_alias.json : JsonAlgebraic;
+import std.traits;
 
 @safe:
 
@@ -77,12 +78,33 @@ struct JsonSchema
     }
 
     ///
+    static JsonValue object_(string description, JsonValue[string] properties, bool additionalProperties)
+    {
+        return JsonValue([
+            "type": JsonValue("object"),
+            "description": JsonValue(description),
+            "properties": JsonValue(properties),
+            "additionalProperties": JsonValue(additionalProperties),
+        ]);
+    }
+
+    ///
     static JsonValue object_(string description, JsonValue[string] properties)
     {
         return JsonValue([
             "type": JsonValue("object"),
             "description": JsonValue(description),
             "properties": JsonValue(properties),
+        ]);
+    }
+
+    ///
+    static JsonValue object_(JsonValue[string] properties, bool additionalProperties)
+    {
+        return JsonValue([
+            "type": JsonValue("object"),
+            "properties": JsonValue(properties),
+            "additionalProperties": JsonValue(additionalProperties),
         ]);
     }
 
@@ -503,4 +525,362 @@ unittest
     const json = serializeJson(schema);
 
     assert(json == `{"not":[{"type":"string"},{"type":"integer"}]}`);
+}
+
+
+private string getFieldDescription(T, string field)()
+{
+	alias attrs = __traits(getAttributes, __traits(getMember, T, field));
+	foreach (uda; attrs)
+	{
+		static if (is(typeof(uda) == string))
+		{
+			return uda;
+		}
+	}
+	return null;
+}
+
+private enum isStaticString(alias x) = is(typeof(x) == string);
+
+///
+JsonValue parseJsonSchema(T)(string description = null)
+{
+    import std.meta : Filter;
+
+    alias TAttributes = __traits(getAttributes, T);
+    alias TAttributesStr = Filter!(isStaticString, TAttributes);
+    enum hasStrAttributes = TAttributesStr.length > 0;
+
+    JsonValue schema;
+
+    static if (T.stringof == "string")
+    {
+        schema = description ? JsonSchema.string_(description) : JsonSchema.string_();
+    }
+    else static if (isIntegral!T)
+    {
+        schema = description ? JsonSchema.integer_(description) : JsonSchema.integer_();
+    }
+    else static if (isFloatingPoint!T)
+    {
+        schema = description ? JsonSchema.number_(description) : JsonSchema.number_();
+    }
+    else static if (is(T == bool))
+    {
+        schema = description ? JsonSchema.boolean_(description) : JsonSchema.boolean_();
+    }
+    else static if (T.stringof == "char" || T.stringof == "wchar" || T.stringof == "dchar")
+    {
+        schema = description ? JsonSchema.string_(description) : JsonSchema.string_();
+    }
+    else static if (isArray!T)
+    {
+        import std.range : ElementType;
+        schema = description
+            ? JsonSchema.array_(description, parseJsonSchema!(ElementType!T))
+            : JsonSchema.array_(parseJsonSchema!(ElementType!T));
+    }
+    else
+    {
+        import std.meta : AliasSeq;
+        import std.traits : FieldNameTuple, hasUDA;
+        import mir.serde : serdeRequired, serdeIgnoreUnexpectedKeys;
+
+        JsonValue[string] properties;
+        string[] required;
+
+        static foreach (field; FieldNameTuple!T)
+        {{
+            enum fieldDescription = getFieldDescription!(T, field)();
+            properties[field] = parseJsonSchema!(typeof(__traits(getMember, T.init, field)))(fieldDescription);
+
+            static if (hasUDA!(__traits(getMember, T, field), serdeRequired))
+            {
+                required ~= field;
+            }
+        }}
+
+        enum allowAdditionalProperties = hasUDA!(T, serdeIgnoreUnexpectedKeys);
+
+        static if (allowAdditionalProperties)
+        {
+            if (description)
+            {
+                schema = required.length > 0
+                    ? JsonSchema.object_(description, properties, required)
+                    : JsonSchema.object_(description, properties);
+            }
+            else
+            {
+                static if (hasStrAttributes)
+                {
+                    schema = required.length > 0
+                        ? JsonSchema.object_(TAttributesStr[0], properties, required)
+                        : JsonSchema.object_(TAttributesStr[0], properties);
+                }
+                else
+                {
+                    schema = required.length > 0
+                        ? JsonSchema.object_(properties, required)
+                        : JsonSchema.object_(properties);
+                }
+            }
+        }
+        else
+        {
+            if (description)
+            {
+                schema = required.length > 0
+                    ? JsonSchema.object_(description, properties, required, false)
+                    : JsonSchema.object_(description, properties, false);
+            }
+            else
+            {
+                static if (hasStrAttributes)
+                {
+                    schema = required.length > 0
+                        ? JsonSchema.object_(TAttributesStr[0], properties, required, false)
+                        : JsonSchema.object_(TAttributesStr[0], properties, false);
+                }
+                else
+                {
+                    schema = required.length > 0
+                        ? JsonSchema.object_(properties, required, false)
+                        : JsonSchema.object_(properties, false);
+                }
+            }
+        }
+    }
+
+    return schema;
+}
+
+@("parseJsonSchema builtin primitives")
+unittest
+{
+    import mir.algebraic_alias.json : JsonAlgebraic;
+
+    assert(parseJsonSchema!string() == JsonSchema.string_());
+    assert(parseJsonSchema!int() == JsonSchema.integer_());
+    assert(parseJsonSchema!long() == JsonSchema.integer_());
+    assert(parseJsonSchema!short() == JsonSchema.integer_());
+    assert(parseJsonSchema!float() == JsonSchema.number_());
+    assert(parseJsonSchema!double() == JsonSchema.number_());
+    assert(parseJsonSchema!bool() == JsonSchema.boolean_());
+    assert(parseJsonSchema!char() == JsonSchema.string_());
+    assert(parseJsonSchema!wchar() == JsonSchema.string_());
+    assert(parseJsonSchema!dchar() == JsonSchema.string_());
+}
+
+@("parseJsonSchema arrays of builtin types")
+unittest
+{
+    import mir.algebraic_alias.json : JsonAlgebraic;
+
+    assert(parseJsonSchema!(int[])() == JsonSchema.array_(JsonSchema.integer_()));
+    assert(parseJsonSchema!(string[])() == JsonSchema.array_(JsonSchema.string_()));
+    assert(parseJsonSchema!(bool[])() == JsonSchema.array_(JsonSchema.boolean_()));
+    assert(parseJsonSchema!(double[])() == JsonSchema.array_(JsonSchema.number_()));
+}
+
+@("parseJsonSchema arrays of structs")
+unittest
+{
+    @("Custom description")
+    struct TestStruct
+    {
+        @("Custom field description 1")
+        string name;
+        int age;
+        @("Custom field description 2")
+        bool isCool;
+    }
+
+    auto itemSchema = JsonSchema.object_("Custom description", [
+        "name": JsonSchema.string_("Custom field description 1"),
+        "age": JsonSchema.integer_(),
+        "isCool": JsonSchema.boolean_("Custom field description 2"),
+    ], false);
+    auto schema = JsonSchema.array_(itemSchema);
+
+    auto actual = parseJsonSchema!(TestStruct[])();
+    assert(actual == schema, actual.toString() ~ "\n---\n" ~ schema.toString());
+}
+
+@("parseJsonSchema structs with builtin types")
+unittest
+{
+    import mir.algebraic_alias.json : JsonAlgebraic;
+
+    struct TestStruct
+    {
+        string name;
+        int age;
+        bool isCool;
+    }
+
+    auto schema = JsonSchema.object_([
+        "name": JsonSchema.string_(),
+        "age": JsonSchema.integer_(),
+        "isCool": JsonSchema.boolean_(),
+    ], false);
+
+    assert(parseJsonSchema!TestStruct() == schema);
+}
+
+@("parseJsonSchema structs with nested structs")
+unittest
+{
+    import mir.algebraic_alias.json : JsonAlgebraic;
+
+    @("Address schema")
+    struct Address
+    {
+        string street;
+        string city;
+        string state;
+        string zip;
+    }
+
+    struct Person
+    {
+        string name;
+        int age;
+        bool isCool;
+        Address address;
+    }
+
+    auto addressSchema = JsonSchema.object_("Address schema", [
+        "street": JsonSchema.string_(),
+        "city": JsonSchema.string_(),
+        "state": JsonSchema.string_(),
+        "zip": JsonSchema.string_(),
+    ], false);
+
+    assert(parseJsonSchema!Address() == addressSchema);
+
+    auto addressSchema2 = JsonSchema.object_("Custom description", [
+        "street": JsonSchema.string_(),
+        "city": JsonSchema.string_(),
+        "state": JsonSchema.string_(),
+        "zip": JsonSchema.string_(),
+    ], false);
+
+    assert(parseJsonSchema!Address("Custom description") == addressSchema2);
+
+    auto personSchema = JsonSchema.object_("Person schema", [
+        "name": JsonSchema.string_(),
+        "age": JsonSchema.integer_(),
+        "isCool": JsonSchema.boolean_(),
+        "address": addressSchema,
+    ], false);
+
+    assert(parseJsonSchema!Person("Person schema") == personSchema);
+}
+
+@("parseJsonSchema structs with description field")
+unittest
+{
+    import mir.algebraic_alias.json : JsonAlgebraic;
+
+    @("Custom description")
+    struct TestStruct
+    {
+        @("Custom field description 1")
+        string name;
+
+        int age;
+        @("Custom field description 2")
+        bool isCool;
+    }
+
+    auto schema = JsonSchema.object_("Custom description", [
+        "name": JsonSchema.string_("Custom field description 1"),
+        "age": JsonSchema.integer_(),
+        "isCool": JsonSchema.boolean_("Custom field description 2"),
+    ], false);
+
+    auto actual = parseJsonSchema!TestStruct();
+    assert(actual == schema, actual.toString());
+}
+
+@("parseJsonSchema structs with required fields")
+unittest
+{
+    import mir.algebraic_alias.json : JsonAlgebraic;
+    import mir.serde : serdeRequired;
+
+    struct TestStruct
+    {
+        @serdeRequired
+        string name;
+        @serdeRequired
+        int age;
+        bool isCool;
+    }
+
+    enum requiredFields = ["name", "age"];
+
+    auto schema = JsonSchema.object_([
+        "name": JsonSchema.string_(),
+        "age": JsonSchema.integer_(),
+        "isCool": JsonSchema.boolean_(),
+    ], requiredFields, false);
+
+    assert(parseJsonSchema!TestStruct() == schema);
+}
+
+@("parseJsonSchema structs with ignore unexpected keys")
+unittest
+{
+    import mir.algebraic_alias.json : JsonAlgebraic;
+    import mir.serde : serdeIgnoreUnexpectedKeys;
+
+    @serdeIgnoreUnexpectedKeys
+    struct TestStruct
+    {
+        string name;
+        int age;
+        bool isCool;
+    }
+
+    auto schema = JsonSchema.object_([
+        "name": JsonSchema.string_(),
+        "age": JsonSchema.integer_(),
+        "isCool": JsonSchema.boolean_(),
+    ]);
+
+    auto actual = parseJsonSchema!TestStruct();
+    assert(actual == schema, actual.toString() ~ "\n---\n" ~ schema.toString());
+}
+
+@("parseJsonSchema structs with full options")
+unittest
+{
+    import mir.algebraic_alias.json : JsonAlgebraic;
+    import mir.serde : serdeRequired, serdeIgnoreUnexpectedKeys;
+
+    @("Custom description")
+    @serdeIgnoreUnexpectedKeys
+    struct TestStruct
+    {
+        @("Custom field description 1")
+        @serdeRequired
+        string name;
+        @("Custom field description 2")
+        int age;
+        bool isCool;
+    }
+
+    enum requiredFields = ["name"];
+
+    auto schema = JsonSchema.object_("Custom description", [
+        "name": JsonSchema.string_("Custom field description 1"),
+        "age": JsonSchema.integer_("Custom field description 2"),
+        "isCool": JsonSchema.boolean_(),
+    ], requiredFields);
+
+    auto actual = parseJsonSchema!TestStruct("Custom description");
+    assert(actual == schema, actual.toString() ~ "\n---\n" ~ schema.toString());
 }

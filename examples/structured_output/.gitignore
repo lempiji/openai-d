@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/structured_output
+structured_output.so
+structured_output.dylib
+structured_output.dll
+structured_output.a
+structured_output.lib
+structured_output-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
