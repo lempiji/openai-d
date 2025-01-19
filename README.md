@@ -18,6 +18,8 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 - [ ] Audio
 - [x] Chat
   - [x] tools (function_call)
+  - [x] structured format
+  - [ ] stream
 - [x] Embeddings
 - [ ] Fine-tunings
 - [ ] Files
