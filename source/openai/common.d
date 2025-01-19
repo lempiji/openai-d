@@ -21,6 +21,21 @@ struct JsonSchema
     @disable this(this);
 
     ///
+    static JsonValue object_(string description, JsonValue[string] properties, string[] required, bool additionalProperties)
+    {
+        import std.algorithm : map;
+        import std.array : array;
+
+        return JsonValue([
+            "type": JsonValue("object"),
+            "description": JsonValue(description),
+            "properties": JsonValue(properties),
+            "required": JsonValue(required.map!(x => JsonValue(x)).array),
+            "additionalProperties": JsonValue(additionalProperties),
+        ]);
+    }
+
+    ///
     static JsonValue object_(string description, JsonValue[string] properties, string[] required)
     {
         import std.algorithm : map;
@@ -31,6 +46,20 @@ struct JsonSchema
             "description": JsonValue(description),
             "properties": JsonValue(properties),
             "required": JsonValue(required.map!(x => JsonValue(x)).array),
+        ]);
+    }
+
+    /// 
+    static JsonValue object_(JsonValue[string] properties, string[] required, bool additionalProperties)
+    {
+        import std.algorithm : map;
+        import std.array : array;
+
+        return JsonValue([
+            "type": JsonValue("object"),
+            "properties": JsonValue(properties),
+            "required": JsonValue(required.map!(x => JsonValue(x)).array),
+            "additionalProperties": JsonValue(additionalProperties),
         ]);
     }
 
@@ -334,6 +363,29 @@ unittest
         "location": JsonSchema.string_("The city and state, e.g. San Francisco, CA"),
         "unit": JsonSchema.string_("string", ["celsius", "fahrenheit"]),
     ], ["location"]);
+}
+
+@("simple weather schema with strict")
+unittest
+{
+    /*
+    {
+        "type": "object",
+        "properties": {
+            "location": {
+                "type": "string",
+                "description": "The city and state, e.g. San Francisco, CA",
+            },
+            "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+        },
+        "required": ["location"],
+        "additionalProperties": false,
+    },
+    */
+    auto weatherSchema = JsonSchema.object_([
+        "location": JsonSchema.string_("The city and state, e.g. San Francisco, CA"),
+        "unit": JsonSchema.string_("string", ["celsius", "fahrenheit"]),
+    ], ["location"], false);
 }
 
 @("nested weather schema")

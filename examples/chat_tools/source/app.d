@@ -25,7 +25,8 @@ void main()
                 JsonSchema.object_([
                     "a": JsonSchema.number_("lhs"),
                     "b": JsonSchema.number_("rhs"),
-                ])
+                ], ["a", "b"], false),
+                true
             )
         ),
         ChatCompletionTool("function",
@@ -34,7 +35,8 @@ void main()
                 JsonSchema.object_([
                     "a": JsonSchema.number_("lhs"),
                     "b": JsonSchema.number_("rhs"),
-                ])
+                ], ["a", "b"], false),
+                true
             )
         ),
     ];
