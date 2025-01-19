@@ -43,15 +43,6 @@ struct ChatMessageFunctionCall
     string arguments;
 }
 
-struct CreateChatCompletionRequestFunctionCallOneOf
-{
-    string name;
-}
-
-/// "none" or "auto" or `{ name: "my_function" }`
-alias CreateChatCompletionRequestFunctionCall = Algebraic!(typeof(null), CreateChatCompletionRequestFunctionCallOneOf, string);
-
-
 ///
 struct ChatCompletionFunction
 {
@@ -378,17 +369,6 @@ struct ChatCompletionRequest
 
     ///
     ChatMessage[] messages;
-
-    ///
-    deprecated("Deprecated in favor of tools.")
-    @serdeIgnoreDefault
-    ChatCompletionFunction[] functions = null;
-
-    ///
-    deprecated("Deprecated in favor of tool_choice.")
-    @serdeIgnoreDefault
-    @serdeKeys("function_call")
-    CreateChatCompletionRequestFunctionCall functionCall = null;
 
     ///
     @serdeIgnoreDefault
