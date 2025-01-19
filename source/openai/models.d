@@ -23,12 +23,30 @@ enum GPT4O = "gpt-4o";
 enum GPT4O20240513 = "gpt-4o-2024-05-13";
 /// gpt-4o-2024-08-06
 enum GPT4O20240806 = "gpt-4o-2024-08-06";
+/// gpt-4o-2024-11-20
+enum GPT4O20241120 = "gpt-4o-2024-11-20";
+/// chatgpt-4o-latest
+enum ChatGPT4OLatest = "chatgpt-4o-latest";
 
 // GPT-4o mini Series
 /// gpt-4o-mini
 enum GPT4OMini = "gpt-4o-mini";
 /// gpt-4o-mini-2024-07-18
 enum GPT4OMini20240718 = "gpt-4o-mini-2024-07-18";
+
+// o1 and o1-mini Series
+/// o1
+enum O1 = "o1";
+/// o1-2024-12-17
+enum O120241217 = "o1-2024-12-17";
+/// o1-mini
+enum O1Mini = "o1-mini";
+/// o1-mini-2024-09-12
+enum O1Mini20240912 = "o1-mini-2024-09-12";
+/// o1-preview
+enum O1Preview = "o1-preview";
+/// o1-preview-2024-09-12
+enum O1Preview20240912 = "o1-preview-2024-09-12";
 
 // GPT-4 Turbo Series
 /// gpt-4-turbo
