@@ -147,11 +147,13 @@ struct CompletionUsage
 
     ///
     @serdeKeys("prompt_tokens_details")
-    PromptTokensDetails promptTokensDetails;
+    @serdeOptional // for Legacy Completion API
+    Nullable!PromptTokensDetails promptTokensDetails;
 
     ///
     @serdeKeys("completion_tokens_details")
-    CompletionTokensDetails completionTokensDetails;
+    @serdeOptional // for Legacy Completion API
+    Nullable!CompletionTokensDetails completionTokensDetails;
 }
 
 ///
@@ -193,9 +195,11 @@ struct CompletionResponse
 
     ///
     @serdeKeys("service_tier")
+    @serdeOptional // for Legacy Completion API
     string serviceTier;
 
     ///
     @serdeKeys("system_fingerprint")
+    @serdeOptional // for Legacy Completion API
     string systemFingerprint;
 }
