@@ -886,7 +886,6 @@ unittest
 @("parseJsonSchema structs from OpenAI API example")
 unittest
 {
-    import mir.algebraic_alias.json : JsonAlgebraic;
     import mir.serde : serdeRequired, serdeIgnoreUnexpectedKeys;
 
     struct Step
