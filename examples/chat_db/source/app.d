@@ -24,7 +24,8 @@ void main()
         import std.format;
 
         import mir.algebraic;
-        auto name = tableNames[0].get!(JsonValue[string])()["name"];
+        import mir.string_map;
+        auto name = tableNames[0].get!(StringMap!JsonValue)()["name"];
         writeln("name: ", name);
         auto dataset = execute_query(db, format!"SELECT * FROM %s"(name));
         writeln(dataset);
@@ -36,17 +37,19 @@ void main()
         userChatMessage("Create a sample database table using sqlite3 with dummy product data for a car dealership in Japan.")
     ], 400, 1);
 
-    // define functions
-    request.functions = [
-        ChatCompletionFunction(
-            "execute_query",
-            "Executes a given SQL query using sqlite3. Supports various query types such as CREATE TABLE, SELECT, DELETE, etc. On successful execution of a SELECT query, it returns the fetched records.",
-            JsonSchema.object_([
-                "query": JsonSchema.string_("statement"),
-            ], ["query"])
-        ),
+    // define tools
+    request.tools = [
+        ChatCompletionTool(
+            "function",
+            ChatCompletionFunction(
+                "execute_query",
+                "Executes a given SQL query using sqlite3. Supports various query types such as CREATE TABLE, SELECT, DELETE, etc. On successful execution of a SELECT query, it returns the fetched records.",
+                JsonSchema.object_([
+                    "query": JsonSchema.string_("statement"),
+                ], ["query"])
+            )),
     ];
-    request.functionCall = "auto";
+    request.toolChoice = "auto";
 
     foreach (completionCount; 0 .. 5) // max completions
     {
@@ -61,33 +64,31 @@ void main()
 
         import mir.algebraic;
 
-        bool shouldContinue = responseMessage.functionCall.match!(
-            (in ChatMessageFunctionCall fc) {
-            import mir.deser.json;
-            import mir.ser.json;
+        if (responseMessage.toolCalls.length == 0)
+        {
+            writeln("Answer: ", responseMessage.content);
+            break;
+        }
 
-            switch (fc.name)
+        request.messages ~= responseMessage;
+
+        import mir.deser.json;
+        import mir.ser.json;
+        foreach (toolCall; responseMessage.toolCalls)
+        {
+            switch (toolCall.function_.name)
             {
             case "execute_query":
-                request.messages ~= responseMessage;
-                import mir.deser.json;
-
-                auto params = deserializeJson!ExecuteQueryParams(fc.arguments);
+                auto params = deserializeJson!ExecuteQueryParams(toolCall.function_.arguments);
                 writefln!"query: '%s'"(params.query);
                 auto queryResult = execute_query(db, params.query);
-                request.messages ~= functionChatMessage(fc.name, serializeJson(queryResult));
-                return true;
+                request.messages ~= toolChatMessage(toolCall.function_.name, serializeJson(queryResult), toolCall.id);
+                break;
             default:
-                writefln!"Error: function(%s) not found"(fc.name);
-                return false;
+                writefln!"Error: function(%s) not found"(toolCall.function_.name);
+                break;
             }
-        }, (typeof(null) _) {
-            writefln!"Answer: %s"(responseMessage.content);
-            return false;
-        });
-
-        if (!shouldContinue)
-            break;
+        }
     }
 }
 
