@@ -7,6 +7,7 @@ module openai.chat;
 
 import mir.algebraic;
 import mir.serde;
+import mir.string_map;
 import std.math;
 
 import openai.common;
@@ -374,6 +375,24 @@ ResponseFormat jsonResponseFormat(string name, JsonValue jsonSchema)
 }
 
 ///
+struct ChatCompletionPredictionContentParam
+{
+    string type = "content";
+
+    ChatMessageContent content;
+}
+
+///
+struct ChatCompletionAudioParam
+{
+    /// format: Required[Literal["wav", "mp3", "flac", "opus", "pcm16"]]
+    string format;
+
+    /// voice: Required[Literal["alloy", "ash", "ballad", "coral", "echo", "sage", "shimmer", "verse"]]
+    string voice;
+}
+
+///
 struct ChatCompletionRequest
 {
     ///
@@ -385,8 +404,27 @@ struct ChatCompletionRequest
 
     ///
     @serdeIgnoreDefault
+    string store;
+
+    ///
+    @serdeIgnoreDefault
+    @serdeKeys("reasoning_effort")
+    string reasoningEffort;
+
+    ///
+    @serdeIgnoreDefault
+    StringMap!string metadata;
+
+    //deprecated("This value is now deprecated in favor of max_completion_tokens, and is not compatible with o1 series models.")
+    ///
+    @serdeIgnoreDefault
     @serdeKeys("max_tokens")
-    uint maxTokens = 16;
+    uint maxTokens;
+
+    /// 
+    @serdeIgnoreDefault
+    @serdeKeys("max_completion_tokens")
+    uint maxCompletionTokens;
 
     ///
     @serdeIgnoreDefault
@@ -403,11 +441,28 @@ struct ChatCompletionRequest
 
     ///
     @serdeIgnoreDefault
+    string[] modalities;
+
+    ///
+    @serdeIgnoreDefault
+    Nullable!ChatCompletionPredictionContentParam prediction = null;
+
+    ///
+    @serdeIgnoreDefault
+    Nullable!ChatCompletionAudioParam audio = null;
+
+    ///
+    @serdeIgnoreDefault
     bool stream = false;
 
     ///
     @serdeIgnoreDefault
     bool echo = false;
+
+    ///
+    @serdeIgnoreDefault
+    @serdeKeys("service_tier")
+    string serviceTier = "auto";
 
     ///
     @serdeIgnoreDefault
@@ -446,6 +501,11 @@ struct ChatCompletionRequest
     @serdeIgnoreDefault
     @serdeKeys("tool_choice")
     ChatCompletionToolChoice toolChoice = null;
+
+    ///
+    @serdeIgnoreDefault
+    @serdeKeys("parallel_tool_calls")
+    bool parallelToolCalls = true;
 
     ///
     @serdeIgnoreDefault
@@ -519,7 +579,7 @@ unittest
 {
     ChatCompletionRequest request;
     request.model = "gpt-4o-mini";
-    request.maxTokens = 20;
+    request.maxCompletionTokens = 20;
     request.messages = [
         systemChatMessage("Welcome!"),
         userChatMessage("How can I use the tools?", "User123"),
@@ -537,7 +597,7 @@ unittest
 
     string jsonString = serializeJson(request);
 
-    string expectedJson = `{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Welcome!"},{"role":"user","content":"How can I use the tools?","name":"User123"}],"max_tokens":20,"tools":[{"type":"function","function":{"name":"sample_function","description":"Sample tool function","parameters":{"type":"string","description":"tool argument"}}}],"tool_choice":"auto"}`;
+    string expectedJson = `{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Welcome!"},{"role":"user","content":"How can I use the tools?","name":"User123"}],"max_completion_tokens":20,"tools":[{"type":"function","function":{"name":"sample_function","description":"Sample tool function","parameters":{"type":"string","description":"tool argument"}}}],"tool_choice":"auto"}`;
 
     assert(jsonString == expectedJson, jsonString ~ "\n" ~ expectedJson);
 }
@@ -613,7 +673,7 @@ ChatCompletionRequest chatCompletionRequest(return scope string model, return sc
     auto request = ChatCompletionRequest();
     request.model = model;
     request.messages = messages;
-    request.maxTokens = maxTokens;
+    request.maxCompletionTokens = maxTokens;
     request.temperature = temperature;
     return request;
 }
