@@ -156,6 +156,34 @@ struct ChatMessage
     @serdeOptional
     @serdeIgnoreDefault
     string toolCallId;
+
+    /// concat all text content in the message
+    string getAllTextContent() const
+    {
+        import std.array : Appender;
+
+        Appender!string appender;
+        
+        content.optionalMatch!(
+            (string text) {
+                appender.put(text);
+                appender.put("\n");
+            },
+            (ChatUserMessageContentItem[] items) {
+                foreach (item; items)
+                {
+                    item.optionalMatch!(
+                        (ChatUserMessageTextContent textContent) {
+                            appender.put(textContent.text);
+                            appender.put("\n");
+                        }
+                    );
+                }
+            }
+        );
+        
+        return appender.data;
+    }
 }
 
 ///
