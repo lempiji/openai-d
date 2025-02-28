@@ -181,6 +181,18 @@ struct JsonSchema
     }
 
     ///
+    static JsonValue string_(string[] enum_)
+    {
+        import std.algorithm : map;
+        import std.array : array;
+
+        return JsonValue([
+            "type": JsonValue("string"),
+            "enum": JsonValue(enum_.map!(x => JsonValue(x)).array),
+        ]);
+    }
+
+    ///
     static JsonValue string_(string description)
     {
         return JsonValue([
@@ -554,9 +566,29 @@ JsonValue parseJsonSchema(T)(string description = null)
 
     JsonValue schema;
 
-    static if (T.stringof == "string")
+    static if (is(T == string))
     {
         schema = description ? JsonSchema.string_(description) : JsonSchema.string_();
+    }
+    else static if (is(T == enum))
+    {
+        string[] members;
+        alias enumMembers = EnumMembers!T;
+        static if (is(OriginalType!T == string))
+        {
+            static foreach (i, _; enumMembers)
+            {
+                members ~= enumMembers[i];
+            }
+        }
+        else
+        {
+            static foreach (i, _; enumMembers)
+            {
+                members ~= __traits(identifier, enumMembers[i]);
+            }
+        }
+        schema = description ? JsonSchema.string_(description, members) : JsonSchema.string_(members);
     }
     else static if (isIntegral!T)
     {
@@ -570,7 +602,7 @@ JsonValue parseJsonSchema(T)(string description = null)
     {
         schema = description ? JsonSchema.boolean_(description) : JsonSchema.boolean_();
     }
-    else static if (T.stringof == "char" || T.stringof == "wchar" || T.stringof == "dchar")
+    else static if (is(T == char) || is(T == wchar) || is(T == dchar))
     {
         schema = description ? JsonSchema.string_(description) : JsonSchema.string_();
     }
@@ -916,4 +948,72 @@ unittest
 
     auto actual = parseJsonSchema!MathResponse();
     assert(actual == mathResponseSchema, actual.toString() ~ "\n---\n" ~ mathResponseSchema.toString());
+}
+
+@("parseJsonSchema with enum")
+unittest
+{
+    import mir.algebraic_alias.json : JsonAlgebraic;
+    import mir.serde : serdeRequired;
+
+    enum TaskState
+    {
+        ToDo,
+        InProgress,
+        Done,
+    }
+
+    struct Task
+    {
+        @serdeRequired
+        @("task id")
+        string id;
+
+        @serdeRequired
+        @("task state")
+        TaskState state;
+    }
+
+    auto schema = JsonSchema.object_([
+        "id": JsonSchema.string_("task id"),
+        "state": JsonSchema.string_("task state", ["ToDo", "InProgress", "Done"]),
+    ], ["id", "state"], false);
+
+    auto actual = parseJsonSchema!Task();
+
+    assert(actual == schema, actual.toString() ~ "\n---\n" ~ schema.toString());
+}
+
+@("parseJsonSchema with string enum members")
+unittest
+{
+    import mir.algebraic_alias.json : JsonAlgebraic;
+    import mir.serde : serdeRequired;
+
+    enum TaskState
+    {
+        ToDo = "todo",
+        InProgress = "in_progress",
+        Done = "done",
+    }
+
+    struct Task
+    {
+        @serdeRequired
+        @("task id")
+        string id;
+
+        @serdeRequired
+        @("task state")
+        TaskState state;
+    }
+
+    auto schema = JsonSchema.object_([
+        "id": JsonSchema.string_("task id"),
+        "state": JsonSchema.string_("task state", ["todo", "in_progress", "done"]),
+    ], ["id", "state"], false);
+
+    auto actual = parseJsonSchema!Task();
+
+    assert(actual == schema, actual.toString() ~ "\n---\n" ~ schema.toString());
 }
