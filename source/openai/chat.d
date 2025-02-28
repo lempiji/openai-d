@@ -344,7 +344,7 @@ unittest
 }
 
 ///
-ChatMessage assitantChatMessage(string content, string name = null)
+ChatMessage assistantChatMessage(string content, string name = null)
 {
     return ChatMessage("assistant", ChatMessageContent(content), name);
 }
