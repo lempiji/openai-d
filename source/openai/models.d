@@ -56,6 +56,22 @@ enum O1Preview = "o1-preview";
 /// o1-preview-2024-09-12
 enum O1Preview20240912 = "o1-preview-2024-09-12";
 
+// o4-mini Series
+/// o4-mini
+enum O4Mini = "o4-mini";
+/// o4-mini-2025-04-16
+enum O4Mini20250416 = "o4-mini-2025-04-16";
+
+// o3 and o3-mini Series
+/// o3
+enum O3 = "o3";
+/// o3-2025-04-16
+enum O320250416 = "o3-2025-04-16";
+/// o3-mini
+enum O3Mini = "o3-mini";
+/// o3-mini-2025-01-31
+enum O3Mini20250131 = "o3-mini-2025-01-31";
+
 // GPT-4 Turbo Series
 /// gpt-4-turbo
 enum GPT4Turbo = "gpt-4-turbo";
