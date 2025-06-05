@@ -81,15 +81,21 @@ import openai;
 auto client = new OpenAIClient();
 
 // POST /chat/completions
-const request = chatCompletionRequest("gpt-4o-mini", [
+// You can use the new model constants such as `O4Mini` or `O3`.
+auto request = chatCompletionRequest(openai.O4Mini, [
     systemChatMessage("You are a helpful assistant."),
     userChatMessage("Hello!")
-], 16, 0);
+], 16, 0); // sets `maxCompletionTokens`
+// Optional: control reasoning effort for o-series models
+request.reasoningEffort = "high";
 
 auto response = client.chatCompletion(request);
 
 writeln(response.choices[0].message.content);
 ```
+
+For o-series models such as `O4Mini` or `O3`, use `maxCompletionTokens` instead
+of the deprecated `max_tokens` field when creating your requests.
 
 __Embedding__
 
