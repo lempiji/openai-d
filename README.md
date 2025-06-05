@@ -27,7 +27,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 - [x] Models
 - [x] Moderations
 - [ ] Assistants (Beta)
-- [ ] Addministration
+- [ ] Administration
 - [ ] Realtime
 
 __legacy__
