@@ -420,6 +420,13 @@ struct ChatCompletionAudioParam
     string voice;
 }
 
+/// Valid values for `ChatCompletionRequest.reasoningEffort`
+enum ReasoningEffortLow = "low";
+/// ditto
+enum ReasoningEffortMedium = "medium";
+/// ditto
+enum ReasoningEffortHigh = "high";
+
 ///
 struct ChatCompletionRequest
 {
@@ -437,6 +444,7 @@ struct ChatCompletionRequest
     ///
     @serdeIgnoreDefault
     @serdeKeys("reasoning_effort")
+    /// Use `ReasoningEffortLow`, `ReasoningEffortMedium` or `ReasoningEffortHigh`.
     string reasoningEffort;
 
     ///
