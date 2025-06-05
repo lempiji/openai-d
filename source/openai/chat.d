@@ -498,7 +498,7 @@ struct ChatCompletionRequest
 
     ///
     @serdeIgnoreDefault
-    @serdeIgnoreOutIf!isNaN @serdeKeys("presence_panealty")
+    @serdeIgnoreOutIf!isNaN @serdeKeys("presence_penalty")
     double presencePenalty = 0;
 
     ///
