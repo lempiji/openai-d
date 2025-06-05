@@ -33,6 +33,14 @@ enum ChatGPT4OLatest = "chatgpt-4o-latest";
 enum GPT4OMini = "gpt-4o-mini";
 /// gpt-4o-mini-2024-07-18
 enum GPT4OMini20240718 = "gpt-4o-mini-2024-07-18";
+/// gpt-4o-mini-tts
+enum GPT4OMiniTTS = "gpt-4o-mini-tts";
+/// gpt-4o-realtime-preview
+enum GPT4ORealtimePreview = "gpt-4o-realtime-preview";
+/// gpt-4o-audio-preview
+enum GPT4OAudioPreview = "gpt-4o-audio-preview";
+/// gpt-4o-search-preview
+enum GPT4OSearchPreview = "gpt-4o-search-preview";
 
 // o1 and o1-mini Series
 /// o1
@@ -84,6 +92,14 @@ enum GPT40613 = "gpt-4-0613";
 enum GPT40125Preview = "gpt-4-0125-preview";
 /// gpt-4-1106-preview
 enum GPT41106Preview = "gpt-4-1106-preview";
+
+// GPT-4.1 Series
+/// gpt-4.1
+enum GPT4Dot1 = "gpt-4.1";
+/// gpt-4.1-mini
+enum GPT4Dot1Mini = "gpt-4.1-mini";
+/// gpt-4.1-nano
+enum GPT4Dot1Nano = "gpt-4.1-nano";
 
 // GPT-3.5 Turbo Series
 /// gpt-3.5-turbo
