@@ -22,13 +22,39 @@ enum ENV_OPENAI_API_KEY = "OPENAI_API_KEY";
 enum ENV_OPENAI_ORGANIZATION = "OPENAI_ORGANIZATION";
 
 ///
+enum ENV_OPENAI_API_BASE = "OPENAI_API_BASE";
+
+///
+enum ENV_OPENAI_DEPLOYMENT_ID = "OPENAI_DEPLOYMENT_ID";
+
+///
+enum ENV_OPENAI_API_VERSION = "OPENAI_API_VERSION";
+
+/// Default OpenAI API endpoint
+enum DEFAULT_OPENAI_API_BASE = "https://api.openai.com/v1";
+
+/// Default Azure OpenAI API version
+enum DEFAULT_OPENAI_API_VERSION = "2024-05-01";
+
+///
 class OpenAIClientConfig
 {
     string apiKey;
     string organization;
+    string apiBase = DEFAULT_OPENAI_API_BASE;
+    string deploymentId;
+    string apiVersion = DEFAULT_OPENAI_API_VERSION;
+
+    bool isAzure() const @safe
+    {
+        import std.algorithm.searching : canFind;
+        return apiBase.canFind("azure.com");
+    }
 
     private this()
     {
+        this.apiBase = DEFAULT_OPENAI_API_BASE;
+        this.apiVersion = DEFAULT_OPENAI_API_VERSION;
     }
 
     ///
@@ -45,10 +71,16 @@ class OpenAIClientConfig
     }
 
     ///
-    static OpenAIClientConfig fromEnvironment(string envApiKeyName = ENV_OPENAI_API_KEY, string envOrgName = ENV_OPENAI_ORGANIZATION)
+    static OpenAIClientConfig fromEnvironment(
+        string envApiKeyName = ENV_OPENAI_API_KEY,
+        string envOrgName = ENV_OPENAI_ORGANIZATION,
+        string envApiBaseName = ENV_OPENAI_API_BASE,
+        string envDeploymentName = ENV_OPENAI_DEPLOYMENT_ID,
+        string envApiVersionName = ENV_OPENAI_API_VERSION)
     {
         auto config = new OpenAIClientConfig;
-        config.loadFromEnvironmentVariables(envApiKeyName, envOrgName);
+        config.loadFromEnvironmentVariables(envApiKeyName, envOrgName,
+            envApiBaseName, envDeploymentName, envApiVersionName);
         return config;
     }
 
@@ -61,15 +93,27 @@ class OpenAIClientConfig
     }
 
     ///
-    void loadFromEnvironmentVariables(string envApiKeyName = ENV_OPENAI_API_KEY, string envOrgName = ENV_OPENAI_ORGANIZATION)
+    void loadFromEnvironmentVariables(
+        string envApiKeyName = ENV_OPENAI_API_KEY,
+        string envOrgName = ENV_OPENAI_ORGANIZATION,
+        string envApiBaseName = ENV_OPENAI_API_BASE,
+        string envDeploymentName = ENV_OPENAI_DEPLOYMENT_ID,
+        string envApiVersionName = ENV_OPENAI_API_VERSION)
     {
         import std.process : environment;
 
         auto envApiKey = environment.get(envApiKeyName, "");
         auto envOrganization = environment.get(envOrgName, "");
+        auto envApiBase = environment.get(envApiBaseName, DEFAULT_OPENAI_API_BASE);
+        auto envDeploymentId = environment.get(envDeploymentName, "");
+        auto envApiVersion = environment.get(envApiVersionName, "");
 
         this.apiKey = envApiKey;
         this.organization = envOrganization;
+        this.apiBase = envApiBase.length ? envApiBase : DEFAULT_OPENAI_API_BASE;
+        this.deploymentId = envDeploymentId;
+        if (envApiVersion.length)
+            this.apiVersion = envApiVersion;
     }
 
     ///
@@ -88,11 +132,29 @@ class OpenAIClientConfig
             @serdeOptional
             @serdeIgnoreDefault
             string organization;
+
+            @serdeOptional
+            @serdeIgnoreDefault
+            string apiBase;
+
+            @serdeOptional
+            @serdeIgnoreDefault
+            string deploymentId;
+
+            @serdeOptional
+            @serdeIgnoreDefault
+            string apiVersion;
         }
 
         auto config = deserializeJson!ConfigData(configText);
         this.apiKey = config.apiKey;
         this.organization = config.organization;
+        if (config.apiBase.length)
+            this.apiBase = config.apiBase;
+        if (config.deploymentId.length)
+            this.deploymentId = config.deploymentId;
+        if (config.apiVersion.length)
+            this.apiVersion = config.apiVersion;
     }
 
     ///
@@ -114,6 +176,7 @@ class OpenAIClient
     this()
     {
         this.config = OpenAIClientConfig.fromEnvironment();
+        validateConfig();
     }
 
     ///
@@ -122,6 +185,17 @@ class OpenAIClient
     do
     {
         this.config = config;
+        validateConfig();
+    }
+
+    private void validateConfig()
+    {
+        import std.exception : enforce;
+        if (config.isAzure)
+        {
+            enforce(config.deploymentId.length > 0,
+                "OPENAI_DEPLOYMENT_ID is required for Azure mode");
+        }
     }
 
     ///
@@ -133,7 +207,7 @@ class OpenAIClient
         setupHttpByConfig(http);
         http.addRequestHeader("Accept", "application/json; charset=utf-8");
 
-        auto content = cast(char[]) get!(HTTP, ubyte)("https://api.openai.com/v1/models", http);
+        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/models"), http);
         auto result = content.deserializeJson!ModelsResponse();
         return result;
     }
@@ -159,7 +233,7 @@ class OpenAIClient
             writeln(requestJson);
             writeln("----------");
         }
-        auto content = cast(char[]) post!ubyte("https://api.openai.com/v1/completions", requestJson, http);
+        auto content = cast(char[]) post!ubyte(buildUrl("/completions"), requestJson, http);
 
         debug scope (failure)
         {
@@ -195,7 +269,7 @@ class OpenAIClient
             writeln(requestJson);
             writeln("----------");
         }
-        auto content = cast(char[]) post!ubyte("https://api.openai.com/v1/chat/completions", requestJson, http);
+        auto content = cast(char[]) post!ubyte(buildUrl("/chat/completions"), requestJson, http);
 
         debug scope (failure)
         {
@@ -221,7 +295,7 @@ class OpenAIClient
         http.addRequestHeader("Content-Type", "application/json");
 
         auto requestJson = serializeJson(request);
-        auto content = cast(char[]) post!ubyte("https://api.openai.com/v1/embeddings", requestJson, http);
+        auto content = cast(char[]) post!ubyte(buildUrl("/embeddings"), requestJson, http);
 
         auto result = content.deserializeJson!EmbeddingResponse();
         return result;
@@ -238,7 +312,7 @@ class OpenAIClient
         http.addRequestHeader("Content-Type", "application/json");
 
         auto requestJson = serializeJson(request);
-        auto content = cast(char[]) post!ubyte("https://api.openai.com/v1/moderations", requestJson, http);
+        auto content = cast(char[]) post!ubyte(buildUrl("/moderations"), requestJson, http);
 
         // import std.stdio;
         // writeln(content);
@@ -249,10 +323,125 @@ class OpenAIClient
 
     private void setupHttpByConfig(scope ref HTTP http) @system
     {
-        http.addRequestHeader("Authorization", "Bearer " ~ config.apiKey);
-        if (config.organization.length > 0)
+        import std.algorithm.searching : canFind;
+        if (config.isAzure)
         {
-            http.addRequestHeader("OpenAI-Organization", config.organization);
+            http.addRequestHeader("api-key", config.apiKey);
+        }
+        else
+        {
+            http.addRequestHeader("Authorization", "Bearer " ~ config.apiKey);
+            if (config.organization.length > 0)
+            {
+                http.addRequestHeader("OpenAI-Organization", config.organization);
+            }
         }
     }
+
+    private string buildUrl(string path) const @safe
+    {
+        import std.format : format;
+        if (config.isAzure)
+        {
+            return format("%s/openai/deployments/%s%s?api-version=%s",
+                config.apiBase, config.deploymentId, path, config.apiVersion);
+        }
+        else
+        {
+            return config.apiBase ~ path;
+        }
+    }
+}
+
+@("config from environment - openai mode")
+unittest
+{
+    import std.process : environment;
+
+    environment[ENV_OPENAI_API_KEY] = "k";
+    scope(exit) environment.remove(ENV_OPENAI_API_KEY);
+    environment.remove(ENV_OPENAI_API_BASE);
+    scope(exit) environment.remove(ENV_OPENAI_API_BASE);
+    auto cfg = OpenAIClientConfig.fromEnvironment();
+
+    assert(!cfg.isAzure);
+    assert(cfg.apiBase == DEFAULT_OPENAI_API_BASE);
+}
+
+@("config from environment - azure mode")
+unittest
+{
+    import std.process : environment;
+
+    environment[ENV_OPENAI_API_KEY] = "k";
+    scope(exit) environment.remove(ENV_OPENAI_API_KEY);
+    environment[ENV_OPENAI_API_BASE] = "https://example.openai.azure.com";
+    scope(exit) environment.remove(ENV_OPENAI_API_BASE);
+    environment[ENV_OPENAI_DEPLOYMENT_ID] = "dep";
+    scope(exit) environment.remove(ENV_OPENAI_DEPLOYMENT_ID);
+    environment[ENV_OPENAI_API_VERSION] = "2024-05-01";
+    scope(exit) environment.remove(ENV_OPENAI_API_VERSION);
+
+    auto cfg = OpenAIClientConfig.fromEnvironment();
+
+    assert(cfg.isAzure);
+    assert(cfg.deploymentId == "dep");
+    assert(cfg.apiVersion == "2024-05-01");
+}
+
+@("azure mode requires deployment id")
+unittest
+{
+    import std.process : environment;
+    import std.exception : assertThrown;
+
+    environment[ENV_OPENAI_API_KEY] = "k";
+    scope(exit) environment.remove(ENV_OPENAI_API_KEY);
+    environment[ENV_OPENAI_API_BASE] = "https://example.openai.azure.com";
+    scope(exit) environment.remove(ENV_OPENAI_API_BASE);
+    environment.remove(ENV_OPENAI_DEPLOYMENT_ID);
+    scope(exit) environment.remove(ENV_OPENAI_DEPLOYMENT_ID);
+
+    assertThrown!Exception(new OpenAIClient());
+}
+@("save & load config file - openai mode")
+unittest
+{
+    import std.file;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    cfg.organization = "org";
+
+    auto tmp = "tmp_cfg.json";
+    scope(exit) if (exists(tmp)) remove(tmp);
+    cfg.saveToFile(tmp);
+
+    auto loaded = OpenAIClientConfig.fromFile(tmp);
+    assert(!loaded.isAzure);
+    assert(loaded.apiKey == "k");
+    assert(loaded.organization == "org");
+}
+
+@("save & load config file - azure mode")
+unittest
+{
+    import std.file;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    cfg.apiBase = "https://example.openai.azure.com";
+    cfg.deploymentId = "dep";
+    cfg.apiVersion = "2024-05-01";
+
+    auto tmp = "tmp_cfg.json";
+    scope(exit) if (exists(tmp)) remove(tmp);
+    cfg.saveToFile(tmp);
+
+    auto loaded = OpenAIClientConfig.fromFile(tmp);
+    assert(loaded.isAzure);
+    assert(loaded.apiKey == "k");
+    assert(loaded.apiBase == "https://example.openai.azure.com");
+    assert(loaded.deploymentId == "dep");
+    assert(loaded.apiVersion == "2024-05-01");
 }
