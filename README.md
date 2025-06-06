@@ -1,6 +1,10 @@
 # OpenAI API for D
 
 [![main CI](https://github.com/lempiji/openai-d/actions/workflows/main-ci.yaml/badge.svg)](https://github.com/lempiji/openai-d/actions/workflows/main-ci.yaml)
+[![Latest Release](https://img.shields.io/github/v/release/lempiji/openai-d.svg)](https://github.com/lempiji/openai-d/releases)
+[![DUB](https://img.shields.io/dub/v/openai-d.svg)](https://code.dlang.org/packages/openai-d)
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![GitHub stars](https://img.shields.io/github/stars/lempiji/openai-d.svg)
 
 This library provides unofficial D clients for [OpenAI API](https://platform.openai.com)
 
