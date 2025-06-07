@@ -4,8 +4,8 @@ import openai;
 void main()
 {
 	auto client = new OpenAIClient;
-	auto request = chatCompletionRequest(
-	    openai.O3, // or openai.O4Mini
+    auto request = chatCompletionRequest(
+        openai.O4Mini, // or openai.O3
 	    [
 	        systemChatMessage("You are a reasoning assistant."),
                 userChatMessage(
@@ -14,8 +14,8 @@ void main()
                     "On which day does it escape? Explain step by step."
                 )
 	    ],
-	    128, 0); // sets maxCompletionTokens
-	request.reasoningEffort = ReasoningEffortHigh;
+            1000, 1); // sets maxCompletionTokens and temperature
+    request.reasoningEffort = ReasoningEffortLow;
 
 	auto response = client.chatCompletion(request);
 	writeln(response.choices[0].message.content);
