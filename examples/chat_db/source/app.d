@@ -36,7 +36,7 @@ void main()
     auto request = chatCompletionRequest("gpt-4o-mini", [
         systemChatMessage("You are a helpful SQL assistant."),
         userChatMessage(
-                "Create a sample database table using sqlite3 with dummy product data for a car dealership in Japan.")
+            "Create a sample database table using sqlite3 with dummy product data for a car dealership in Japan.")
     ], 400, 1);
 
     // define tools
