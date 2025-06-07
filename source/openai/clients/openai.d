@@ -48,7 +48,7 @@ class OpenAIClientConfig
     bool isAzure() const @safe
     {
         import std.algorithm.searching : canFind;
-        return apiBase.canFind("azure.com");
+        return apiBase.canFind(".api.cognitive.microsoft.com");
     }
 
     private this()
@@ -351,6 +351,28 @@ class OpenAIClient
             return config.apiBase ~ path;
         }
     }
+
+@("buildUrl - openai mode")
+unittest
+{
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+    assert(client.buildUrl("/models") == "https://api.openai.com/v1/models");
+}
+
+@("buildUrl - azure mode")
+unittest
+{
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
+    cfg.deploymentId = "dep";
+    cfg.apiVersion = "2024-05-01";
+    auto client = new OpenAIClient(cfg);
+    assert(client.buildUrl("/chat/completions") ==
+        "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/chat/completions?api-version=2024-05-01");
+}
 }
 
 @("config from environment - openai mode")
@@ -375,7 +397,7 @@ unittest
 
     environment[ENV_OPENAI_API_KEY] = "k";
     scope(exit) environment.remove(ENV_OPENAI_API_KEY);
-    environment[ENV_OPENAI_API_BASE] = "https://example.openai.azure.com";
+    environment[ENV_OPENAI_API_BASE] = "https://example.api.cognitive.microsoft.com";
     scope(exit) environment.remove(ENV_OPENAI_API_BASE);
     environment[ENV_OPENAI_DEPLOYMENT_ID] = "dep";
     scope(exit) environment.remove(ENV_OPENAI_DEPLOYMENT_ID);
@@ -397,7 +419,7 @@ unittest
 
     environment[ENV_OPENAI_API_KEY] = "k";
     scope(exit) environment.remove(ENV_OPENAI_API_KEY);
-    environment[ENV_OPENAI_API_BASE] = "https://example.openai.azure.com";
+    environment[ENV_OPENAI_API_BASE] = "https://example.api.cognitive.microsoft.com";
     scope(exit) environment.remove(ENV_OPENAI_API_BASE);
     environment.remove(ENV_OPENAI_DEPLOYMENT_ID);
     scope(exit) environment.remove(ENV_OPENAI_DEPLOYMENT_ID);
@@ -430,7 +452,7 @@ unittest
 
     auto cfg = new OpenAIClientConfig;
     cfg.apiKey = "k";
-    cfg.apiBase = "https://example.openai.azure.com";
+    cfg.apiBase = "https://example.api.cognitive.microsoft.com";
     cfg.deploymentId = "dep";
     cfg.apiVersion = "2024-05-01";
 
@@ -441,7 +463,7 @@ unittest
     auto loaded = OpenAIClientConfig.fromFile(tmp);
     assert(loaded.isAzure);
     assert(loaded.apiKey == "k");
-    assert(loaded.apiBase == "https://example.openai.azure.com");
+    assert(loaded.apiBase == "https://example.api.cognitive.microsoft.com");
     assert(loaded.deploymentId == "dep");
     assert(loaded.apiVersion == "2024-05-01");
 }

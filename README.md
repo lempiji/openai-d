@@ -147,7 +147,7 @@ import openai;
 
 environment["OPENAI_API_KEY"] = "<Your API Key>";
 environment["OPENAI_ORGANIZATION"] = "<Your Organization>";
-environment["OPENAI_API_BASE"] = "https://example.openai.azure.com"; // optional
+environment["OPENAI_API_BASE"] = "https://example.api.cognitive.microsoft.com"; // optional
 environment["OPENAI_DEPLOYMENT_ID"] = "<Your deployment>"; // Azure only
 environment["OPENAI_API_VERSION"] = "2024-05-01"; // Azure only
 
@@ -155,7 +155,7 @@ auto config = OpenAIClientConfig.fromEnvironment();
 
 assert(config.apiKey == "<Your API Key>");
 assert(config.organization == "<Your Organization>");
-assert(config.apiBase == "https://example.openai.azure.com");
+assert(config.apiBase == "https://example.api.cognitive.microsoft.com");
 ```
 
 __Configuration file__
