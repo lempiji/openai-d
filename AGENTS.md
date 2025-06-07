@@ -36,6 +36,14 @@
 
 ## 5. Formatter
 
+* Before running `dub run dfmt`, ensure the formatter is installed. One-line
+  installation command:
+
+  ```bash
+  dub fetch dfmt && dub run dfmt -- --version
+  ```
+  Network access or a setup script is required for this step.
+
 * Library source:
 
   ```bash
