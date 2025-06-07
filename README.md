@@ -149,7 +149,7 @@ environment["OPENAI_API_KEY"] = "<Your API Key>";
 environment["OPENAI_ORGANIZATION"] = "<Your Organization>";
 environment["OPENAI_API_BASE"] = "https://example.api.cognitive.microsoft.com"; // optional
 environment["OPENAI_DEPLOYMENT_ID"] = "<Your deployment>"; // Azure only
-environment["OPENAI_API_VERSION"] = "2024-05-01"; // Azure only
+environment["OPENAI_API_VERSION"] = "2024-10-21"; // Azure only
 
 auto config = OpenAIClientConfig.fromEnvironment();
 

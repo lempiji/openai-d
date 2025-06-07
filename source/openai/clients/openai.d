@@ -30,18 +30,15 @@ enum ENV_OPENAI_DEPLOYMENT_ID = "OPENAI_DEPLOYMENT_ID";
 ///
 enum ENV_OPENAI_API_VERSION = "OPENAI_API_VERSION";
 
-/// Default OpenAI API endpoint
-enum DEFAULT_OPENAI_API_BASE = "https://api.openai.com/v1";
-
-/// Default Azure OpenAI API version
-enum DEFAULT_OPENAI_API_VERSION = "2024-05-01";
+/// Default Azure OpenAI API version (2025-04-01-preview is also available)
+enum DEFAULT_OPENAI_API_VERSION = "2024-10-21";
 
 ///
 class OpenAIClientConfig
 {
     string apiKey;
     string organization;
-    string apiBase = DEFAULT_OPENAI_API_BASE;
+    string apiBase = "https://api.openai.com/v1";
     string deploymentId;
     string apiVersion = DEFAULT_OPENAI_API_VERSION;
 
@@ -53,7 +50,7 @@ class OpenAIClientConfig
 
     private this()
     {
-        this.apiBase = DEFAULT_OPENAI_API_BASE;
+        this.apiBase = "https://api.openai.com/v1";
         this.apiVersion = DEFAULT_OPENAI_API_VERSION;
     }
 
@@ -104,13 +101,13 @@ class OpenAIClientConfig
 
         auto envApiKey = environment.get(envApiKeyName, "");
         auto envOrganization = environment.get(envOrgName, "");
-        auto envApiBase = environment.get(envApiBaseName, DEFAULT_OPENAI_API_BASE);
+        auto envApiBase = environment.get(envApiBaseName, "https://api.openai.com/v1");
         auto envDeploymentId = environment.get(envDeploymentName, "");
         auto envApiVersion = environment.get(envApiVersionName, "");
 
         this.apiKey = envApiKey;
         this.organization = envOrganization;
-        this.apiBase = envApiBase.length ? envApiBase : DEFAULT_OPENAI_API_BASE;
+        this.apiBase = envApiBase.length ? envApiBase : "https://api.openai.com/v1";
         this.deploymentId = envDeploymentId;
         if (envApiVersion.length)
             this.apiVersion = envApiVersion;
@@ -341,14 +338,18 @@ class OpenAIClient
     private string buildUrl(string path) const @safe
     {
         import std.format : format;
+        import std.string : endsWith;
+        string base = config.apiBase;
+        if (base.endsWith("/"))
+            base = base[0 .. $ - 1];
         if (config.isAzure)
         {
             return format("%s/openai/deployments/%s%s?api-version=%s",
-                config.apiBase, config.deploymentId, path, config.apiVersion);
+                base, config.deploymentId, path, config.apiVersion);
         }
         else
         {
-            return config.apiBase ~ path;
+            return base ~ path;
         }
     }
 
@@ -361,12 +362,35 @@ unittest
     assert(client.buildUrl("/models") == "https://api.openai.com/v1/models");
 }
 
+@("buildUrl - openai mode with trailing slash")
+unittest
+{
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    cfg.apiBase = "https://api.openai.com/v1/";
+    auto client = new OpenAIClient(cfg);
+    assert(client.buildUrl("/models") == "https://api.openai.com/v1/models");
+}
+
 @("buildUrl - azure mode")
 unittest
 {
     auto cfg = new OpenAIClientConfig;
     cfg.apiKey = "k";
     cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
+    cfg.deploymentId = "dep";
+    cfg.apiVersion = "2024-05-01";
+    auto client = new OpenAIClient(cfg);
+    assert(client.buildUrl("/chat/completions") ==
+        "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/chat/completions?api-version=2024-05-01");
+}
+
+@("buildUrl - azure mode with trailing slash")
+unittest
+{
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    cfg.apiBase = "https://westus.api.cognitive.microsoft.com/";
     cfg.deploymentId = "dep";
     cfg.apiVersion = "2024-05-01";
     auto client = new OpenAIClient(cfg);
@@ -387,7 +411,7 @@ unittest
     auto cfg = OpenAIClientConfig.fromEnvironment();
 
     assert(!cfg.isAzure);
-    assert(cfg.apiBase == DEFAULT_OPENAI_API_BASE);
+    assert(cfg.apiBase == "https://api.openai.com/v1");
 }
 
 @("config from environment - azure mode")
