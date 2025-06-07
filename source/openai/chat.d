@@ -443,10 +443,9 @@ struct ChatCompletionRequest
     @serdeIgnoreDefault
     string store;
 
-    ///
+    /// Use `ReasoningEffortLow`, `ReasoningEffortMedium` or `ReasoningEffortHigh`.
     @serdeIgnoreDefault
     @serdeKeys("reasoning_effort")
-    /// Use `ReasoningEffortLow`, `ReasoningEffortMedium` or `ReasoningEffortHigh`.
     string reasoningEffort;
 
     ///
@@ -640,7 +639,8 @@ unittest
     assert(jsonString == expectedJson, jsonString ~ "\n" ~ expectedJson);
 }
 
-unittest{
+unittest
+{
     const errorJson = `{
       "index": 0,
       "message": {
@@ -662,7 +662,8 @@ unittest{
     }`;
 
     import mir.deser.json;
-    auto choice = deserializeJson!ChatChoice(errorJson);
+
+    auto _ = deserializeJson!ChatChoice(errorJson);
 }
 
 version (none) unittest
@@ -703,7 +704,7 @@ version (none) unittest
 
     import mir.deser.json;
 
-    auto response = deserializeJson!ChatCompletionResponse(errorJson);
+    auto _ = deserializeJson!ChatCompletionResponse(errorJson);
 }
 ///
 ChatCompletionRequest chatCompletionRequest(return scope string model, return scope ChatMessage[] messages, uint maxTokens, double temperature)

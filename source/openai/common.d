@@ -393,7 +393,7 @@ unittest
         "required": ["location"],
     },
     */
-    auto weatherSchema = JsonSchema.object_(
+    auto _ = JsonSchema.object_(
         [
         "location": JsonSchema.string_("The city and state, e.g. San Francisco, CA"),
         "unit": JsonSchema.string_("string", ["celsius", "fahrenheit"]),
@@ -417,7 +417,7 @@ unittest
         "additionalProperties": false,
     },
     */
-    auto weatherSchema = JsonSchema.object_(
+    auto _ = JsonSchema.object_(
         [
         "location": JsonSchema.string_("The city and state, e.g. San Francisco, CA"),
         "unit": JsonSchema.string_("string", ["celsius", "fahrenheit"]),
@@ -448,14 +448,18 @@ unittest
         },
     },
     */
-    auto get_current_weather_params = JsonSchema.object_(
+    auto _ = JsonSchema.object_(
         [
         "location": JsonSchema.string_("The city and state, e.g. San Francisco, CA"),
         "format": JsonSchema.string_("The temperature unit to use. Infer this from the users location.", [
             "celcius", "farenheit"
         ])
     ], ["location", "format"]);
+}
 
+@("nested weather schema")
+unittest
+{
     /*
     {
         "name": "get_n_day_weather_forecast",
@@ -481,7 +485,7 @@ unittest
         },
     },
     */
-    auto get_n_day_weather_forecast_params = JsonSchema.object_(
+    auto _ = JsonSchema.object_(
         [
         "location": JsonSchema.string_("The city and state, e.g. San Francisco, CA"),
         "format": JsonSchema.string_("The temperature unit to use. Infer this from the users location.", [
@@ -876,7 +880,7 @@ unittest
         bool isCool;
     }
 
-    enum requiredFields = ["name", "age"];
+    const requiredFields = ["name", "age"];
 
     auto schema = JsonSchema.object_([
         "name": JsonSchema.string_(),
