@@ -15,4 +15,5 @@ taskchain-test-*
 *.obj
 *.lst
 dub.selections.json
+!examples/**/dub.selections.json
 openai-d-test-library

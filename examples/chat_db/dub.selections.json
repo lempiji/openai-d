@@ -1,6 +1,7 @@
 {
 	"fileVersion": 1,
 	"versions": {
+		"d2sqlite3": "1.0.0",
 		"mir-algorithm": "3.22.3",
 		"mir-core": "1.7.1",
 		"mir-cpuid": "1.2.11",
