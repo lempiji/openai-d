@@ -193,3 +193,17 @@ struct ModelsResponse
     ///
     string object;
 }
+
+unittest
+{
+    import mir.deser.json;
+
+    const json = `{"object":"list","data":[{"id":"gpt-3.5-turbo","created":0,"object":"model","owned_by":"openai"}]}`;
+    auto response = deserializeJson!ModelsResponse(json);
+
+    assert(response.object == "list");
+    assert(response.data.length == 1);
+    assert(response.data[0].id == "gpt-3.5-turbo");
+    assert(response.data[0].ownedBy == "openai");
+    assert(response.data[0].object == "model");
+}
