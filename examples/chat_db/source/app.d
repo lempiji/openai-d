@@ -25,6 +25,7 @@ void main()
 
         import mir.algebraic;
         import mir.string_map;
+
         auto name = tableNames[0].get!(StringMap!JsonValue)()["name"];
         writeln("name: ", name);
         auto dataset = execute_query(db, format!"SELECT * FROM %s"(name));
@@ -34,10 +35,12 @@ void main()
     // make dummy data
     auto request = chatCompletionRequest("gpt-4o-mini", [
         systemChatMessage("You are a helpful SQL assistant."),
-        userChatMessage("Create a sample database table using sqlite3 with dummy product data for a car dealership in Japan.")
+        userChatMessage(
+                "Create a sample database table using sqlite3 with dummy product data for a car dealership in Japan.")
     ], 400, 1);
 
     // define tools
+    // dfmt off
     request.tools = [
         ChatCompletionTool(
             "function",
@@ -47,8 +50,10 @@ void main()
                 JsonSchema.object_([
                     "query": JsonSchema.string_("statement"),
                 ], ["query"])
-            )),
+            )
+        ),
     ];
+    // dfmt on
     request.toolChoice = "auto";
 
     foreach (completionCount; 0 .. 5) // max completions
@@ -74,6 +79,7 @@ void main()
 
         import mir.deser.json;
         import mir.ser.json;
+
         foreach (toolCall; responseMessage.toolCalls)
         {
             switch (toolCall.function_.name)

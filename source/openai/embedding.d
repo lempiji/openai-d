@@ -130,7 +130,6 @@ unittest
         requestJson == `{"input":["Hello,","D","Programming","Language!"],"model":"text-embedding-3-small","dimensions":256}`);
 }
 
-
 ///
 struct EmbeddingUsage
 {

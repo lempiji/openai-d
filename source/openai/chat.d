@@ -62,7 +62,7 @@ struct ChatCompletionFunction
      */
     JsonValue parameters;
 
-    /** 
+    /**
      * The parameters the functions accepts, described as a JSON Schema object.
      */
     @serdeOptional
@@ -163,7 +163,8 @@ struct ChatMessage
         import std.array : Appender;
 
         Appender!string appender;
-        
+
+        // dfmt off
         content.optionalMatch!(
             (string text) {
                 appender.put(text);
@@ -181,7 +182,8 @@ struct ChatMessage
                 }
             }
         );
-        
+        // dfmt on
+
         return appender.data;
     }
 }
@@ -367,7 +369,7 @@ ChatMessage functionChatMessage(string functionName, string functionResponseJson
     return ChatMessage("function", ChatMessageContent(functionResponseJson), functionName);
 }
 
-/// 
+///
 struct ResponseFormatJsonSchema
 {
     ///
@@ -383,7 +385,7 @@ struct ResponseFormatJsonSchema
 ///
 struct ResponseFormat
 {
-    /// 
+    ///
     string type;
 
     ///
@@ -457,7 +459,7 @@ struct ChatCompletionRequest
     @serdeKeys("max_tokens")
     uint maxTokens;
 
-    /// 
+    ///
     @serdeIgnoreDefault
     @serdeKeys("max_completion_tokens")
     uint maxCompletionTokens;
@@ -698,7 +700,7 @@ version (none) unittest
   },
   "system_fingerprint": null
 }`;
-    
+
     import mir.deser.json;
 
     auto response = deserializeJson!ChatCompletionResponse(errorJson);
