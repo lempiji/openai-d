@@ -880,7 +880,7 @@ unittest
         bool isCool;
     }
 
-    const requiredFields = ["name", "age"];
+    string[] requiredFields = ["name", "age"];
 
     auto schema = JsonSchema.object_([
         "name": JsonSchema.string_(),
