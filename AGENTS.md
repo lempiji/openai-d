@@ -60,7 +60,8 @@
 1. Modify code.
 2. Run formatter and linter
 3. Run tests and coverage
-4. If all checks pass, commit changes and open a pull request.
+4. Build all examples. In each directory under `examples/` (e.g., `examples/chat`, `examples/chat_vision`), run `dub build` to verify that the example compiles successfully. The command should succeed without errors.
+5. If all checks pass, commit changes and open a pull request.
 
 ## 8. CI/CD & PR Guidelines
 
