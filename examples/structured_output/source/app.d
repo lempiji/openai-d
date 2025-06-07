@@ -7,30 +7,32 @@ import mir.algebraic;
 
 void main()
 {
-	// If the argument Config is omitted, it is read from an environment variable 'OPENAI_API_KEY'
-	// auto config = OpenAIClientConfig.fromFile("config.json");
-	// auto client = new OpenAIClient(config);
-	auto client = new OpenAIClient;
+    // If the argument Config is omitted, it is read from an environment variable 'OPENAI_API_KEY'
+    // auto config = OpenAIClientConfig.fromFile("config.json");
+    // auto client = new OpenAIClient(config);
+    auto client = new OpenAIClient;
 
-	auto request = chatCompletionRequest(openai.GPT4OMini, [
-		developerChatMessage("You are a helpful math tutor. Guide the user through the solution step by step."),
-		userChatMessage("how can I solve 8x + 7 = -23")
-	], 16, 0);
+    auto request = chatCompletionRequest(openai.GPT4OMini, [
+        developerChatMessage("You are a helpful math tutor. Guide the user through the solution step by step."),
+        userChatMessage("how can I solve 8x + 7 = -23")
+    ], 16, 0);
 
-	request.responseFormat = jsonResponseFormat("mathResponse", parseJsonSchema!MathResponse);
+    request.responseFormat = jsonResponseFormat("mathResponse", parseJsonSchema!MathResponse);
 
-	auto response = client.chatCompletion(request);
-	assert(response.choices.length > 0);
+    auto response = client.chatCompletion(request);
+    assert(response.choices.length > 0);
 
-	response.choices[0].message.content.match!(
-		(string content) {
-			writeln(content);
+    // dfmt off
+    response.choices[0].message.content.match!(
+        (string content) {
+            writeln(content);
 
-			auto mathResponse = deserializeJson!MathResponse(content);
-			writeln(mathResponse);
-		},
-		_ => writeln("Unexpected response type")
-	);
+            auto mathResponse = deserializeJson!MathResponse(content);
+            writeln(mathResponse);
+        },
+        _ => writeln("Unexpected response type")
+    );
+    // dfmt on
 }
 
 /+
@@ -45,16 +47,16 @@ class MathResponse(BaseModel):
 
 struct Step
 {
-	@serdeRequired
-	string explanation;
-	@serdeRequired
-	string output;
+    @serdeRequired
+    string explanation;
+    @serdeRequired
+    string output;
 }
 
 struct MathResponse
 {
-	@serdeRequired
-	Step[] steps;
-	@serdeRequired
-	string final_answer;
+    @serdeRequired
+    Step[] steps;
+    @serdeRequired
+    string final_answer;
 }

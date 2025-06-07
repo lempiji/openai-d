@@ -45,6 +45,7 @@ class OpenAIClientConfig
     bool isAzure() const @safe
     {
         import std.algorithm.searching : canFind;
+
         return apiBase.canFind(".api.cognitive.microsoft.com");
     }
 
@@ -188,6 +189,7 @@ class OpenAIClient
     private void validateConfig()
     {
         import std.exception : enforce;
+
         if (config.isAzure)
         {
             enforce(config.deploymentId.length > 0,
@@ -321,6 +323,7 @@ class OpenAIClient
     private void setupHttpByConfig(scope ref HTTP http) @system
     {
         import std.algorithm.searching : canFind;
+
         if (config.isAzure)
         {
             http.addRequestHeader("api-key", config.apiKey);
@@ -339,6 +342,7 @@ class OpenAIClient
     {
         import std.format : format;
         import std.string : endsWith;
+
         string base = config.apiBase;
         if (base.endsWith("/"))
             base = base[0 .. $ - 1];
@@ -353,50 +357,50 @@ class OpenAIClient
         }
     }
 
-@("buildUrl - openai mode")
-unittest
-{
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIClient(cfg);
-    assert(client.buildUrl("/models") == "https://api.openai.com/v1/models");
-}
+    @("buildUrl - openai mode")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/models") == "https://api.openai.com/v1/models");
+    }
 
-@("buildUrl - openai mode with trailing slash")
-unittest
-{
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    cfg.apiBase = "https://api.openai.com/v1/";
-    auto client = new OpenAIClient(cfg);
-    assert(client.buildUrl("/models") == "https://api.openai.com/v1/models");
-}
+    @("buildUrl - openai mode with trailing slash")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        cfg.apiBase = "https://api.openai.com/v1/";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/models") == "https://api.openai.com/v1/models");
+    }
 
-@("buildUrl - azure mode")
-unittest
-{
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
-    cfg.deploymentId = "dep";
-    cfg.apiVersion = "2024-05-01";
-    auto client = new OpenAIClient(cfg);
-    assert(client.buildUrl("/chat/completions") ==
-        "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/chat/completions?api-version=2024-05-01");
-}
+    @("buildUrl - azure mode")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
+        cfg.deploymentId = "dep";
+        cfg.apiVersion = "2024-05-01";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/chat/completions") ==
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/chat/completions?api-version=2024-05-01");
+    }
 
-@("buildUrl - azure mode with trailing slash")
-unittest
-{
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    cfg.apiBase = "https://westus.api.cognitive.microsoft.com/";
-    cfg.deploymentId = "dep";
-    cfg.apiVersion = "2024-05-01";
-    auto client = new OpenAIClient(cfg);
-    assert(client.buildUrl("/chat/completions") ==
-        "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/chat/completions?api-version=2024-05-01");
-}
+    @("buildUrl - azure mode with trailing slash")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        cfg.apiBase = "https://westus.api.cognitive.microsoft.com/";
+        cfg.deploymentId = "dep";
+        cfg.apiVersion = "2024-05-01";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/chat/completions") ==
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/chat/completions?api-version=2024-05-01");
+    }
 }
 
 @("config from environment - openai mode")
@@ -405,9 +409,11 @@ unittest
     import std.process : environment;
 
     environment[ENV_OPENAI_API_KEY] = "k";
-    scope(exit) environment.remove(ENV_OPENAI_API_KEY);
+    scope (exit)
+        environment.remove(ENV_OPENAI_API_KEY);
     environment.remove(ENV_OPENAI_API_BASE);
-    scope(exit) environment.remove(ENV_OPENAI_API_BASE);
+    scope (exit)
+        environment.remove(ENV_OPENAI_API_BASE);
     auto cfg = OpenAIClientConfig.fromEnvironment();
 
     assert(!cfg.isAzure);
@@ -420,13 +426,17 @@ unittest
     import std.process : environment;
 
     environment[ENV_OPENAI_API_KEY] = "k";
-    scope(exit) environment.remove(ENV_OPENAI_API_KEY);
+    scope (exit)
+        environment.remove(ENV_OPENAI_API_KEY);
     environment[ENV_OPENAI_API_BASE] = "https://example.api.cognitive.microsoft.com";
-    scope(exit) environment.remove(ENV_OPENAI_API_BASE);
+    scope (exit)
+        environment.remove(ENV_OPENAI_API_BASE);
     environment[ENV_OPENAI_DEPLOYMENT_ID] = "dep";
-    scope(exit) environment.remove(ENV_OPENAI_DEPLOYMENT_ID);
+    scope (exit)
+        environment.remove(ENV_OPENAI_DEPLOYMENT_ID);
     environment[ENV_OPENAI_API_VERSION] = "2024-05-01";
-    scope(exit) environment.remove(ENV_OPENAI_API_VERSION);
+    scope (exit)
+        environment.remove(ENV_OPENAI_API_VERSION);
 
     auto cfg = OpenAIClientConfig.fromEnvironment();
 
@@ -442,14 +452,18 @@ unittest
     import std.exception : assertThrown;
 
     environment[ENV_OPENAI_API_KEY] = "k";
-    scope(exit) environment.remove(ENV_OPENAI_API_KEY);
+    scope (exit)
+        environment.remove(ENV_OPENAI_API_KEY);
     environment[ENV_OPENAI_API_BASE] = "https://example.api.cognitive.microsoft.com";
-    scope(exit) environment.remove(ENV_OPENAI_API_BASE);
+    scope (exit)
+        environment.remove(ENV_OPENAI_API_BASE);
     environment.remove(ENV_OPENAI_DEPLOYMENT_ID);
-    scope(exit) environment.remove(ENV_OPENAI_DEPLOYMENT_ID);
+    scope (exit)
+        environment.remove(ENV_OPENAI_DEPLOYMENT_ID);
 
     assertThrown!Exception(new OpenAIClient());
 }
+
 @("save & load config file - openai mode")
 unittest
 {
@@ -460,7 +474,9 @@ unittest
     cfg.organization = "org";
 
     auto tmp = "tmp_cfg.json";
-    scope(exit) if (exists(tmp)) remove(tmp);
+    scope (exit)
+        if (exists(tmp))
+            remove(tmp);
     cfg.saveToFile(tmp);
 
     auto loaded = OpenAIClientConfig.fromFile(tmp);
@@ -481,7 +497,9 @@ unittest
     cfg.apiVersion = "2024-05-01";
 
     auto tmp = "tmp_cfg.json";
-    scope(exit) if (exists(tmp)) remove(tmp);
+    scope (exit)
+        if (exists(tmp))
+            remove(tmp);
     cfg.saveToFile(tmp);
 
     auto loaded = OpenAIClientConfig.fromFile(tmp);

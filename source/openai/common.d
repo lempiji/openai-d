@@ -50,7 +50,7 @@ struct JsonSchema
         ]);
     }
 
-    /// 
+    ///
     static JsonValue object_(JsonValue[string] properties, string[] required, bool additionalProperties)
     {
         import std.algorithm : map;
@@ -351,7 +351,7 @@ struct JsonSchema
             "oneOf": JsonValue(schemas)
         ]);
     }
-    
+
     static JsonValue anyOf(JsonValue[] schemas...)
     in (schemas.length > 0)
     {
@@ -359,7 +359,7 @@ struct JsonSchema
             "anyOf": JsonValue(schemas)
         ]);
     }
-    
+
     static JsonValue allOf(JsonValue[] schemas...)
     in (schemas.length > 0)
     {
@@ -367,7 +367,7 @@ struct JsonSchema
             "allOf": JsonValue(schemas)
         ]);
     }
-    
+
     static JsonValue not(JsonValue[] schemas...)
     in (schemas.length > 0)
     {
@@ -393,7 +393,8 @@ unittest
         "required": ["location"],
     },
     */
-    auto weatherSchema = JsonSchema.object_([
+    auto weatherSchema = JsonSchema.object_(
+        [
         "location": JsonSchema.string_("The city and state, e.g. San Francisco, CA"),
         "unit": JsonSchema.string_("string", ["celsius", "fahrenheit"]),
     ], ["location"]);
@@ -416,7 +417,8 @@ unittest
         "additionalProperties": false,
     },
     */
-    auto weatherSchema = JsonSchema.object_([
+    auto weatherSchema = JsonSchema.object_(
+        [
         "location": JsonSchema.string_("The city and state, e.g. San Francisco, CA"),
         "unit": JsonSchema.string_("string", ["celsius", "fahrenheit"]),
     ], ["location"], false);
@@ -446,9 +448,12 @@ unittest
         },
     },
     */
-    auto get_current_weather_params = JsonSchema.object_([
+    auto get_current_weather_params = JsonSchema.object_(
+        [
         "location": JsonSchema.string_("The city and state, e.g. San Francisco, CA"),
-        "format": JsonSchema.string_("The temperature unit to use. Infer this from the users location.", ["celcius", "farenheit"])
+        "format": JsonSchema.string_("The temperature unit to use. Infer this from the users location.", [
+            "celcius", "farenheit"
+        ])
     ], ["location", "format"]);
 
     /*
@@ -476,9 +481,12 @@ unittest
         },
     },
     */
-    auto get_n_day_weather_forecast_params = JsonSchema.object_([
+    auto get_n_day_weather_forecast_params = JsonSchema.object_(
+        [
         "location": JsonSchema.string_("The city and state, e.g. San Francisco, CA"),
-        "format": JsonSchema.string_("The temperature unit to use. Infer this from the users location.", ["celcius", "farenheit"]),
+        "format": JsonSchema.string_("The temperature unit to use. Infer this from the users location.", [
+            "celcius", "farenheit"
+        ]),
         "num_days": JsonSchema.integer_("The number of days to forecast"),
     ], ["location", "format", "num_days"]);
 }
@@ -539,18 +547,17 @@ unittest
     assert(json == `{"not":[{"type":"string"},{"type":"integer"}]}`);
 }
 
-
 private string getFieldDescription(T, string field)()
 {
-	alias attrs = __traits(getAttributes, __traits(getMember, T, field));
-	foreach (uda; attrs)
-	{
-		static if (is(typeof(uda) == string))
-		{
-			return uda;
-		}
-	}
-	return null;
+    alias attrs = __traits(getAttributes, __traits(getMember, T, field));
+    foreach (uda; attrs)
+    {
+        static if (is(typeof(uda) == string))
+        {
+            return uda;
+        }
+    }
+    return null;
 }
 
 private enum isStaticString(alias x) = is(typeof(x) == string);
@@ -609,9 +616,12 @@ JsonValue parseJsonSchema(T)(string description = null)
     else static if (isArray!T)
     {
         import std.range : ElementType;
+
+        // dfmt off
         schema = description
             ? JsonSchema.array_(description, parseJsonSchema!(ElementType!T))
             : JsonSchema.array_(parseJsonSchema!(ElementType!T));
+        // dfmt on
     }
     else
     {
@@ -623,15 +633,17 @@ JsonValue parseJsonSchema(T)(string description = null)
         string[] required;
 
         static foreach (field; FieldNameTuple!T)
-        {{
-            enum fieldDescription = getFieldDescription!(T, field)();
-            properties[field] = parseJsonSchema!(typeof(__traits(getMember, T.init, field)))(fieldDescription);
-
-            static if (hasUDA!(__traits(getMember, T, field), serdeRequired))
+        {
             {
-                required ~= field;
+                enum fieldDescription = getFieldDescription!(T, field)();
+                properties[field] = parseJsonSchema!(typeof(__traits(getMember, T.init, field)))(fieldDescription);
+
+                static if (hasUDA!(__traits(getMember, T, field), serdeRequired))
+                {
+                    required ~= field;
+                }
             }
-        }}
+        }
 
         enum allowAdditionalProperties = hasUDA!(T, serdeIgnoreUnexpectedKeys);
 
@@ -639,23 +651,29 @@ JsonValue parseJsonSchema(T)(string description = null)
         {
             if (description)
             {
+                // dfmt off
                 schema = required.length > 0
                     ? JsonSchema.object_(description, properties, required)
                     : JsonSchema.object_(description, properties);
+                // dfmt on
             }
             else
             {
                 static if (hasStrAttributes)
                 {
+                    // dfmt off
                     schema = required.length > 0
                         ? JsonSchema.object_(TAttributesStr[0], properties, required)
                         : JsonSchema.object_(TAttributesStr[0], properties);
+                    // dfmt on
                 }
                 else
                 {
+                    // dfmt off
                     schema = required.length > 0
                         ? JsonSchema.object_(properties, required)
                         : JsonSchema.object_(properties);
+                    // dfmt on
                 }
             }
         }
@@ -663,23 +681,29 @@ JsonValue parseJsonSchema(T)(string description = null)
         {
             if (description)
             {
+                // dfmt off
                 schema = required.length > 0
                     ? JsonSchema.object_(description, properties, required, false)
                     : JsonSchema.object_(description, properties, false);
+                // dfmt on
             }
             else
             {
                 static if (hasStrAttributes)
                 {
+                    // dfmt off
                     schema = required.length > 0
                         ? JsonSchema.object_(TAttributesStr[0], properties, required, false)
                         : JsonSchema.object_(TAttributesStr[0], properties, false);
+                    // dfmt on
                 }
                 else
                 {
+                    // dfmt off
                     schema = required.length > 0
                         ? JsonSchema.object_(properties, required, false)
                         : JsonSchema.object_(properties, false);
+                    // dfmt on
                 }
             }
         }
