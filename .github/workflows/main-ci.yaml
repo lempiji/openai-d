@@ -20,6 +20,10 @@ jobs:
           compiler: ${{ matrix.dlang }}
       - name: Build
         run: dub build --compiler=$DC
+      - name: Lint
+        run: dub lint --dscanner-config dscanner.ini
+      - name: Test
+        run: dub test --compiler=$DC
 
   build-windows:
     runs-on: windows-latest
@@ -36,3 +40,7 @@ jobs:
           compiler: ${{ matrix.dlang }}
       - name: Build
         run: dub build --compiler=$Env:DC
+      - name: Lint
+        run: dub lint --dscanner-config dscanner.ini
+      - name: Test
+        run: dub test --compiler=$Env:DC
