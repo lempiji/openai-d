@@ -729,6 +729,7 @@ struct ChatChoice
     string finishReason;
 
     ///
+    @serdeOptional
     Nullable!float logprobs;
 }
 
