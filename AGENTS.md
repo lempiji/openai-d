@@ -11,7 +11,7 @@
 
 ## 2. Development Setup
 
-* Ensure `dmd` and `dub` are available using the stable installer script (`~/dlang/install.sh`).
+* Ensure `dmd` and `dub` are available using the stable installer script (`/workspace/dlang/install.sh`).
 
 ## 3. Testing
 
