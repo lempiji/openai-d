@@ -1,0 +1,6 @@
+name "audio"
+description "A minimal D application."
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."
