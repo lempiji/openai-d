@@ -24,6 +24,11 @@ jobs:
         run: dub lint --dscanner-config dscanner.ini
       - name: Test
         run: dub test --compiler=$DC
+      - name: Build examples
+        run: |
+          for dir in examples/*; do
+            (cd "$dir" && dub build --compiler=$DC)
+          done
 
   build-windows:
     runs-on: windows-latest
@@ -44,3 +49,11 @@ jobs:
         run: dub lint --dscanner-config dscanner.ini
       - name: Test
         run: dub test --compiler=$Env:DC
+      - name: Build examples
+        shell: pwsh
+        run: |
+          Get-ChildItem examples -Directory | ForEach-Object {
+            Push-Location $_.FullName
+            dub build --compiler=$Env:DC
+            Pop-Location
+          }
