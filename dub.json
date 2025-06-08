@@ -5,7 +5,7 @@
 	"dependencies": {
 		"mir-ion": "~>2.3.3"
 	},
-	"description": "OpenAI Clinet APIs",
+	"description": "OpenAI Client APIs",
 	"license": "MIT",
 	"name": "openai-d"
 }
