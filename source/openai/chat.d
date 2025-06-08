@@ -333,8 +333,8 @@ unittest
 
     assert(content.length == 3); // テキストメッセージと2つの画像URL
     assert(content[0].get!ChatUserMessageTextContent().text == text);
-    assert(content[1].get!ChatUserMessageImageContent().imageUrl == imageUrls[0]);
-    assert(content[2].get!ChatUserMessageImageContent().imageUrl == imageUrls[1]);
+    assert(content[1].get!ChatUserMessageImageContent().imageUrl.url == imageUrls[0]);
+    assert(content[2].get!ChatUserMessageImageContent().imageUrl.url == imageUrls[1]);
 }
 
 /// ditto
@@ -352,7 +352,7 @@ unittest
 
     string jsonString = serializeJson(message);
 
-    string expectedJson = `{"role":"user","content":[{"type":"text","text":"Check out these images:"},{"type":"image_url","image_url":"https://example.com/image1.jpg"},{"type":"image_url","image_url":"https://example.com/image2.jpg"}],"name":"User12345"}`;
+    string expectedJson = `{"role":"user","content":[{"type":"text","text":"Check out these images:"},{"type":"image_url","image_url":{"url":"https://example.com/image1.jpg"}},{"type":"image_url","image_url":{"url":"https://example.com/image2.jpg"}}],"name":"User12345"}`;
 
     assert(jsonString == expectedJson);
 }
