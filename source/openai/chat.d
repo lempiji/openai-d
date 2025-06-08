@@ -110,11 +110,23 @@ struct ChatUserMessageTextContent
 
 ///
 @serdeIgnoreUnexpectedKeys
+struct ChatUserMessageImageUrl
+{
+    string url;
+
+    @serdeOptional
+    @serdeIgnoreDefault
+    string detail;
+}
+
+///
+@serdeIgnoreUnexpectedKeys
 struct ChatUserMessageImageContent
 {
     string type = "image_url";
+
     @serdeKeys("image_url")
-    string imageUrl;
+    ChatUserMessageImageUrl imageUrl;
 }
 
 ///
@@ -296,7 +308,7 @@ ChatMessage userChatMessageWithImages(string text, string[] imageUrls, string na
     foreach (imageUrl; imageUrls)
     {
         ChatUserMessageImageContent imageContent;
-        imageContent.imageUrl = imageUrl;
+        imageContent.imageUrl = ChatUserMessageImageUrl(imageUrl);
         contentItems ~= ChatUserMessageContentItem(imageContent);
     }
 
