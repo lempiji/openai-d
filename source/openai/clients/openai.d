@@ -598,6 +598,29 @@ class OpenAIClient
         assert(client.buildUrl("/audio/translations") ==
                 "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/audio/translations?api-version=2024-05-01");
     }
+
+    @("buildUrl speech - openai")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/audio/speech") ==
+                "https://api.openai.com/v1/audio/speech");
+    }
+
+    @("buildUrl speech - azure")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
+        cfg.deploymentId = "dep";
+        cfg.apiVersion = "2024-05-01";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/audio/speech") ==
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/audio/speech?api-version=2024-05-01");
+    }
 }
 
 @("config from environment - openai mode")
