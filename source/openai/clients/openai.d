@@ -338,6 +338,81 @@ class OpenAIClient
         return cast(ubyte[]) content;
     }
 
+    ///
+    auto transcription(in TranscriptionRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (request.file.length > 0)
+    in (request.model.length > 0)
+    {
+        import std.array : appender;
+        import std.conv : to;
+        import std.file : read;
+        import std.path : baseName;
+        import std.random : uniform;
+
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        // create multipart body
+        auto boundary = "--------------------------" ~ to!string(uniform(0, int.max));
+        http.addRequestHeader("Content-Type",
+            "multipart/form-data; boundary=" ~ boundary);
+
+        auto body = appender!(ubyte[])();
+
+        void addText(string name, string value)
+        {
+            body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
+            body.put(cast(ubyte[])("Content-Disposition: form-data; name=\"" ~ name ~ "\"\r\n\r\n"));
+            body.put(cast(ubyte[]) value);
+            body.put(cast(ubyte[]) "\r\n");
+        }
+
+        void addFile(string name, string filename, const(ubyte)[] data)
+        {
+            body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
+            body.put(cast(ubyte[])(
+                    "Content-Disposition: form-data; name=\"" ~ name ~ "\"; filename=\"" ~ filename ~ "\"\r\n"));
+            body.put(cast(ubyte[])("Content-Type: application/octet-stream\r\n\r\n"));
+            body.put(data);
+            body.put(cast(ubyte[]) "\r\n");
+        }
+
+        auto fileData = cast(ubyte[]) read(request.file);
+        addFile("file", baseName(request.file), fileData);
+        addText("model", request.model);
+        if (request.language.length)
+            addText("language", request.language);
+        if (request.prompt.length)
+            addText("prompt", request.prompt);
+        if (request.responseFormat.length)
+            addText("response_format", request.responseFormat);
+        if (request.temperature != 0)
+            addText("temperature", to!string(request.temperature));
+        foreach (inc; request.include)
+            addText("include", inc);
+        foreach (t; request.timestampGranularities)
+            addText("timestamp_granularities", t);
+        if (request.stream)
+            addText("stream", "true");
+
+        body.put(cast(ubyte[])("--" ~ boundary ~ "--\r\n"));
+
+        auto content = post!ubyte(buildUrl("/audio/transcriptions"), body.data, http);
+
+        auto text = cast(char[]) content;
+        if (request.responseFormat == AudioResponseFormatVerboseJson)
+        {
+            auto verbose = text.deserializeJson!TranscriptionVerboseResponse();
+            AudioTextResponse simple;
+            simple.text = verbose.text;
+            simple.logprobs = null;
+            return simple;
+        }
+        return text.deserializeJson!AudioTextResponse();
+    }
+
     private void setupHttpByConfig(scope ref HTTP http) @system
     {
         import std.algorithm.searching : canFind;
@@ -418,6 +493,28 @@ class OpenAIClient
         auto client = new OpenAIClient(cfg);
         assert(client.buildUrl("/chat/completions") ==
                 "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/chat/completions?api-version=2024-05-01");
+    }
+
+    @("buildUrl transcription - openai")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/audio/transcriptions") == "https://api.openai.com/v1/audio/transcriptions");
+    }
+
+    @("buildUrl transcription - azure")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
+        cfg.deploymentId = "dep";
+        cfg.apiVersion = "2024-05-01";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/audio/transcriptions") ==
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/audio/transcriptions?api-version=2024-05-01");
     }
 }
 
