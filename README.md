@@ -20,6 +20,9 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 #### OpenAI
 
 - [ ] Audio
+  - [x] speech
+  - [ ] transcription
+  - [ ] translations 
 - [x] Chat
   - [x] tools (function_call)
   - [x] structured output
