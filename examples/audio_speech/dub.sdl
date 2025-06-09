@@ -1,4 +1,4 @@
-name "audio"
+name "audio_speech"
 description "A minimal D application."
 authors "lempiji"
 license "MIT"
