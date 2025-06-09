@@ -126,12 +126,12 @@ struct TranscriptionRequest
 
     /// Extra items to include in the response.
     @serdeIgnoreDefault
-    @serdeKeys("include[]")
+    @serdeKeys("include")
     string[] include;
 
     /// Timestamp granularities to return.
     @serdeIgnoreDefault
-    @serdeKeys("timestamp_granularities[]")
+    @serdeKeys("timestamp_granularities")
     string[] timestampGranularities = [TranscriptionTimestampGranularitySegment];
 
     /// Stream the response using SSE.
@@ -243,6 +243,20 @@ unittest
 
     assert(serializeJson(req) ==
             `{"file":"audio.mp3","model":"whisper-1"}`);
+}
+
+unittest
+{
+    auto req = TranscriptionRequest("audio.mp3", "whisper-1");
+    req.include = [TranscriptionIncludeLogprobs];
+    req.timestampGranularities = [
+        TranscriptionTimestampGranularityWord,
+        TranscriptionTimestampGranularitySegment
+    ];
+    import mir.ser.json : serializeJson;
+
+    assert(serializeJson(req) ==
+            `{"file":"audio.mp3","model":"whisper-1","include":["logprobs"],"timestamp_granularities":["word","segment"]}`);
 }
 
 unittest
