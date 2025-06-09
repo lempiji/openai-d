@@ -19,23 +19,31 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 
 #### OpenAI
 
-- [ ] Audio
-  - [x] speech
-  - [ ] transcription
-  - [ ] translations 
-- [x] Chat
+- [ ] [Responses API](https://platform.openai.com/docs/api-reference/responses) (TODO)
+- [x] [Chat](https://platform.openai.com/docs/api-reference/chat)
   - [x] tools (function_call)
   - [x] structured output
+  - [x] input vision
   - [ ] stream
-- [x] Embeddings
-- [ ] Fine-tunings
-- [ ] Files
-- [ ] Images
-- [x] Models
-- [x] Moderations
-- [ ] Assistants (Beta)
-- [ ] Administration
-- [ ] Realtime
+- [ ] [Realtime (Beta)](https://platform.openai.com/docs/api-reference/realtime) (TODO)
+- [x] [Audio](https://platform.openai.com/docs/api-reference/audio)
+  - [x] speech
+  - [ ] transcription (TODO)
+  - [ ] translations (TODO)
+- [ ] [Images](https://platform.openai.com/docs/api-reference/images) (TODO)
+- [x] [Embeddings](https://platform.openai.com/docs/api-reference/embeddings)
+- [ ] [Evals](https://platform.openai.com/docs/api-reference/evals) (TODO)
+- [ ] [Fine-tunings](https://platform.openai.com/docs/api-reference/fine-tuning) (TODO)
+- [ ] [Graders](https://platform.openai.com/docs/api-reference/graders) (TODO)
+- [ ] [Batch](https://platform.openai.com/docs/api-reference/batch) (TODO)
+- [ ] [Files](https://platform.openai.com/docs/api-reference/files) (TODO)
+- [ ] [Uploads](https://platform.openai.com/docs/api-reference/uploads) (TODO)
+- [x] [Models](https://platform.openai.com/docs/api-reference/models)
+- [x] [Moderations](https://platform.openai.com/docs/api-reference/moderations)
+- [ ] [Vector stores](https://platform.openai.com/docs/api-reference/vector-stores) (TODO)
+- [ ] [Containers](https://platform.openai.com/docs/api-reference/containers) (TODO)
+- [ ] [Assistants (Beta)](https://platform.openai.com/docs/api-reference/assistants) (TODO)
+- [ ] [Administration](https://platform.openai.com/docs/api-reference/administration) (TODO)
 
 __legacy__
 - [x] Completions (Legacy)
@@ -46,7 +54,7 @@ __deprecated__
 
 ### Optimization
 
-- [ ] Switch HTTP client to 'requests'
+- [ ] Switch HTTP client to [`requests`](https://code.dlang.org/packages/requests) (TODO)
     - Not adopted because it is less convenient due to Windows' handling of system certificates. Version flag is required for support.
     - Adopting 'requests' is expected to lead to more efficient use of Fiber in vibe.d.
 
