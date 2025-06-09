@@ -60,6 +60,14 @@ enum VoiceShimmer = "shimmer";
 /// Voice `verse`.
 enum VoiceVerse = "verse";
 
+/// Additional transcription details.
+enum TranscriptionIncludeLogprobs = "logprobs";
+
+/// Timestamp granularity `word`.
+enum TranscriptionTimestampGranularityWord = "word";
+/// Timestamp granularity `segment`.
+enum TranscriptionTimestampGranularitySegment = "segment";
+
 // -----------------------------------------------------------------------------
 // Requests
 // -----------------------------------------------------------------------------
@@ -115,6 +123,20 @@ struct TranscriptionRequest
     /// Sampling temperature.
     @serdeIgnoreDefault
     double temperature = 0;
+
+    /// Extra items to include in the response.
+    @serdeIgnoreDefault
+    @serdeKeys("include[]")
+    string[] include;
+
+    /// Timestamp granularities to return.
+    @serdeIgnoreDefault
+    @serdeKeys("timestamp_granularities[]")
+    string[] timestampGranularities = [TranscriptionTimestampGranularitySegment];
+
+    /// Stream the response using SSE.
+    @serdeIgnoreDefault
+    bool stream = false;
 }
 
 /// Request for audio translation.
@@ -149,6 +171,56 @@ struct AudioTextResponse
 {
     /// The generated text.
     string text;
+    /// Optional token log probabilities.
+    @serdeOptional
+    TranscriptionLogProb[] logprobs;
+}
+
+/// Details about token log probabilities.
+struct TranscriptionLogProb
+{
+    /// Transcribed token.
+    string token;
+    /// Log probability of the token.
+    double logprob;
+    /// UTF-8 bytes of the token.
+    uint[] bytes;
+}
+
+/// Detailed word timestamps.
+struct TranscriptionWord
+{
+    string word;
+    double start;
+    double end;
+}
+
+/// Detailed segment information.
+struct TranscriptionSegment
+{
+    int id;
+    int seek;
+    double start;
+    double end;
+    string text;
+    int[] tokens;
+    double temperature;
+    @serdeKeys("avg_logprob")
+    double avgLogprob;
+    @serdeKeys("compression_ratio")
+    double compressionRatio;
+    @serdeKeys("no_speech_prob")
+    double noSpeechProb;
+}
+
+/// Verbose transcription response.
+struct TranscriptionVerboseResponse
+{
+    string language;
+    double duration;
+    string text;
+    TranscriptionWord[] words;
+    TranscriptionSegment[] segments;
 }
 
 // -----------------------------------------------------------------------------
@@ -180,4 +252,15 @@ unittest
     const json = `{"text":"hello"}`;
     auto res = deserializeJson!AudioTextResponse(json);
     assert(res.text == "hello");
+}
+
+unittest
+{
+    import mir.deser.json : deserializeJson;
+
+    const json = `{"language":"english","duration":1.2,"text":"hello","words":[{"word":"hello","start":0.0,"end":0.5}],"segments":[{"id":0,"seek":0,"start":0.0,"end":0.5,"text":"hello","tokens":[1],"temperature":0.0,"avg_logprob":-0.1,"compression_ratio":1.0,"no_speech_prob":0.0}]}`;
+    auto res = deserializeJson!TranscriptionVerboseResponse(json);
+    assert(res.text == "hello");
+    assert(res.words.length == 1);
+    assert(res.segments.length == 1);
 }
