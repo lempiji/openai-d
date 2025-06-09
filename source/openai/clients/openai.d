@@ -12,6 +12,7 @@ import openai.completion;
 import openai.embedding;
 import openai.models;
 import openai.moderation;
+import openai.audio;
 
 @safe:
 
@@ -318,6 +319,23 @@ class OpenAIClient
 
         auto result = content.deserializeJson!ModerationResponse();
         return result;
+    }
+
+    ///
+    ubyte[] speech(in SpeechRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (request.model.length > 0)
+    in (request.input.length > 0)
+    in (request.voice.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/octet-stream");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto requestJson = serializeJson(request);
+        auto content = post!ubyte(buildUrl("/audio/speech"), requestJson, http);
+        return cast(ubyte[]) content;
     }
 
     private void setupHttpByConfig(scope ref HTTP http) @system

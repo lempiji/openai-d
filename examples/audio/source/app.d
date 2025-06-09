@@ -1,13 +1,14 @@
 import std.stdio;
 
-import openai.audio;
+import openai;
 
 void main()
 {
-    auto speech = SpeechRequest("gpt-4o-mini-tts", "Hello world", VoiceAlloy);
-    import mir.ser.json : serializeJson;
+    auto client = new OpenAIClient;
 
-    writeln("speech json: ", serializeJson(speech));
+    auto speech = SpeechRequest(openai.GPT4OMiniTTS, "Hello world", VoiceAlloy);
+    auto data = client.speech(speech);
+    writeln("speech bytes: ", data.length);
 
     const json = `{"text":"Hello from audio"}`;
     import mir.deser.json : deserializeJson;

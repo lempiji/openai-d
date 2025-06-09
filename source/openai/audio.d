@@ -24,6 +24,19 @@ enum AudioResponseFormatVerboseJson = "verbose_json";
 /// Response format `vtt`.
 enum AudioResponseFormatVtt = "vtt";
 
+/// Speech format `mp3`.
+enum SpeechFormatMp3 = "mp3";
+/// Speech format `opus`.
+enum SpeechFormatOpus = "opus";
+/// Speech format `aac`.
+enum SpeechFormatAac = "aac";
+/// Speech format `flac`.
+enum SpeechFormatFlac = "flac";
+/// Speech format `wav`.
+enum SpeechFormatWav = "wav";
+/// Speech format `pcm`.
+enum SpeechFormatPcm = "pcm";
+
 /// Voice `alloy`.
 enum VoiceAlloy = "alloy";
 /// Voice `ash`.
@@ -70,7 +83,7 @@ struct SpeechRequest
     /// Response format.
     @serdeIgnoreDefault
     @serdeKeys("response_format")
-    string responseFormat = AudioResponseFormatJson;
+    string responseFormat = SpeechFormatMp3;
 
     /// Playback speed.
     @serdeIgnoreDefault
