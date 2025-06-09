@@ -98,6 +98,16 @@ struct SpeechRequest
     double speed = 1;
 }
 
+/// Convenience constructor for `SpeechRequest`.
+SpeechRequest speechRequest(string model, string input, string voice)
+{
+    auto request = SpeechRequest();
+    request.model = model;
+    request.input = input;
+    request.voice = voice;
+    return request;
+}
+
 /// Request for audio transcription.
 struct TranscriptionRequest
 {
@@ -139,6 +149,15 @@ struct TranscriptionRequest
     bool stream = false;
 }
 
+/// Convenience constructor for `TranscriptionRequest`.
+TranscriptionRequest transcriptionRequest(string file, string model)
+{
+    auto request = TranscriptionRequest();
+    request.file = file;
+    request.model = model;
+    return request;
+}
+
 /// Request for audio translation.
 struct TranslationRequest
 {
@@ -160,6 +179,15 @@ struct TranslationRequest
     /// Sampling temperature.
     @serdeIgnoreDefault
     double temperature = 0;
+}
+
+/// Convenience constructor for `TranslationRequest`.
+TranslationRequest translationRequest(string file, string model)
+{
+    auto request = TranslationRequest();
+    request.file = file;
+    request.model = model;
+    return request;
 }
 
 // -----------------------------------------------------------------------------
@@ -229,7 +257,7 @@ struct TranscriptionVerboseResponse
 
 unittest
 {
-    auto req = SpeechRequest("gpt-4o-mini-tts", "Hello", VoiceAlloy);
+    auto req = speechRequest("gpt-4o-mini-tts", "Hello", VoiceAlloy);
     import mir.ser.json : serializeJson;
 
     assert(serializeJson(req) ==
@@ -238,7 +266,16 @@ unittest
 
 unittest
 {
-    auto req = TranscriptionRequest("audio.mp3", "whisper-1");
+    auto req = transcriptionRequest("audio.mp3", "whisper-1");
+    import mir.ser.json : serializeJson;
+
+    assert(serializeJson(req) ==
+            `{"file":"audio.mp3","model":"whisper-1"}`);
+}
+
+unittest
+{
+    auto req = translationRequest("audio.mp3", "whisper-1");
     import mir.ser.json : serializeJson;
 
     assert(serializeJson(req) ==
