@@ -8,9 +8,6 @@ import openai;
 
 void main()
 {
-    // If the argument Config is omitted, it is read from an environment variable 'OPENAI_API_KEY'
-    // auto config = OpenAIClientConfig.fromFile("config.json");
-    // auto client = new OpenAIClient(config);
     auto client = new OpenAIClient;
 
     auto models = client.listModels();

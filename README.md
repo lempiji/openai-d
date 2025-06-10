@@ -219,3 +219,12 @@ auto config = OpenAIClientConfig.fromFile("config.json");
 assert(config.apiKey == "<Your API Key>");
 assert(config.organization is null);
 ```
+
+__Constructor__
+
+```d name=config_direct
+import openai;
+
+auto config = new OpenAIClientConfig("<Your OpenAI API Key>");
+auto client = new OpenAIClient(config);
+```
