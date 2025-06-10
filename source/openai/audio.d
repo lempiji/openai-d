@@ -13,15 +13,15 @@ import mir.serde;
 // Enumerations
 // -----------------------------------------------------------------------------
 
-/// Response format `json`.
+/// Response format `json` used by transcription and translation endpoints.
 enum AudioResponseFormatJson = "json";
 /// Response format `text`.
 enum AudioResponseFormatText = "text";
-/// Response format `srt`.
+/// Response format `srt` for subtitle output.
 enum AudioResponseFormatSrt = "srt";
-/// Response format `verbose_json`.
+/// Response format `verbose_json` with word-level timestamps.
 enum AudioResponseFormatVerboseJson = "verbose_json";
-/// Response format `vtt`.
+/// Response format `vtt` for WebVTT subtitles.
 enum AudioResponseFormatVtt = "vtt";
 
 /// Speech format `mp3`.
@@ -37,7 +37,7 @@ enum SpeechFormatWav = "wav";
 /// Speech format `pcm`.
 enum SpeechFormatPcm = "pcm";
 
-/// Voice `alloy`.
+/// Text-to-speech voice `alloy`.
 enum VoiceAlloy = "alloy";
 /// Voice `ash`.
 enum VoiceAsh = "ash";
@@ -60,7 +60,7 @@ enum VoiceShimmer = "shimmer";
 /// Voice `verse`.
 enum VoiceVerse = "verse";
 
-/// Additional transcription details.
+/// Include token log probabilities in the response.
 enum TranscriptionIncludeLogprobs = "logprobs";
 
 /// Timestamp granularity `word`.
