@@ -200,13 +200,25 @@ struct ChatMessage
     }
 }
 
-///
+/**
+ * Convenience helper to construct a system role message.
+ *
+ * Params:
+ *     content - Text of the system prompt.
+ *     name    - Optional name associated with the message.
+ */
 ChatMessage systemChatMessage(string content, string name = null)
 {
     return ChatMessage("system", ChatMessageContent(content), name);
 }
 
-/// ditto
+/**
+ * Helper for building a `developer` role message.
+ *
+ * Params:
+ *     content - Developer instructions for the model.
+ *     name    - Optional name attached to the message.
+ */
 ChatMessage developerChatMessage(string content, string name = null)
 {
     return ChatMessage("developer", ChatMessageContent(content), name);
@@ -252,7 +264,13 @@ unittest
             message) == `{"role":"developer","content":"You are helpful AI assistant.","name":"ChatGPT"}`);
 }
 
-///
+/**
+ * Creates a user role chat message from a single string.
+ *
+ * Params:
+ *     content - The user's input text.
+ *     name    - Optional user name.
+ */
 ChatMessage userChatMessage(string content, string name = null)
 {
     return ChatMessage("user", ChatMessageContent(content), name);
@@ -715,7 +733,15 @@ version (none) unittest
 
     auto _ = deserializeJson!ChatCompletionResponse(errorJson);
 }
-///
+/**
+ * Convenience constructor for a `ChatCompletionRequest`.
+ *
+ * Params:
+ *     model       - Identifier of the model to use.
+ *     messages    - Ordered list of conversation messages to send.
+ *     maxTokens   - Limit for the completion part of the response.
+ *     temperature - Sampling temperature controlling randomness.
+ */
 ChatCompletionRequest chatCompletionRequest(return scope string model, return scope ChatMessage[] messages, uint maxTokens, double temperature)
 {
     auto request = ChatCompletionRequest();
