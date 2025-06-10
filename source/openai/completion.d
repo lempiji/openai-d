@@ -92,6 +92,20 @@ CompletionRequest completionRequest(string model, string prompt, uint maxTokens,
     return request;
 }
 
+unittest
+{
+    CompletionRequest request;
+    request.model = "gpt-3.5-turbo-instruct";
+    request.prompt = "hello";
+    request.logitBias["42"] = -1.0;
+
+    import mir.ser.json;
+
+    assert(
+        serializeJson(request) ==
+            `{"model":"gpt-3.5-turbo-instruct","prompt":"hello","logitBias":{"42":-1.0}}`);
+}
+
 ///
 @serdeIgnoreUnexpectedKeys
 struct PromptTokensDetails

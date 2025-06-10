@@ -650,6 +650,21 @@ unittest
 
 unittest
 {
+    ChatCompletionRequest request;
+    request.model = "gpt-4o-mini";
+    request.messages = [userChatMessage("Hi")];
+    request.logitBias["123"] = 1.0;
+
+    import mir.ser.json;
+
+    assert(
+        serializeJson(
+            request) ==
+            `{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Hi"}],"logit_bias":{"123":1.0}}`);
+}
+
+unittest
+{
     const errorJson = `{
       "index": 0,
       "message": {
