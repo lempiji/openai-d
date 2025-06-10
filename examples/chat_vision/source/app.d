@@ -7,7 +7,6 @@ import openai;
 
 void main()
 {
-    // If the argument Config is omitted, it is read from an environment variable 'OPENAI_API_KEY'
     auto client = new OpenAIClient;
 
     // Load local image and convert to data URL

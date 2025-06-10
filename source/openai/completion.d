@@ -104,7 +104,7 @@ unittest
 
     assert(
         serializeJson(request) ==
-            `{"model":"gpt-3.5-turbo-instruct","prompt":"hello","logitBias":{"42":-1.0}}`);
+            `{"model":"gpt-3.5-turbo-instruct","prompt":"hello","logit_bias":{"42":-1.0}}`);
 }
 
 ///
