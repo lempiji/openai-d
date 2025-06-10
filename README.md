@@ -29,7 +29,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 - [x] [Audio](https://platform.openai.com/docs/api-reference/audio)
   - [x] speech
   - [x] transcription
-  - [ ] translations (TODO)
+  - [x] translations
 - [ ] [Images](https://platform.openai.com/docs/api-reference/images) (TODO)
 - [x] [Embeddings](https://platform.openai.com/docs/api-reference/embeddings)
 - [ ] [Evals](https://platform.openai.com/docs/api-reference/evals) (TODO)
@@ -165,6 +165,24 @@ writeln(response.text);
 ```
 
 See `examples/audio_transcription` for a complete example.
+
+__Translation__
+
+```d name=translation
+import std;
+import openai;
+
+// Load API key from environment variable
+auto client = new OpenAIClient();
+
+// POST /audio/translations
+auto request = translationRequest("audio.mp3", "whisper-1");
+auto response = client.translation(request);
+
+writeln(response.text);
+```
+
+See `examples/audio_translation` for a complete example.
 
 ## OpenAIClientConfig
 
