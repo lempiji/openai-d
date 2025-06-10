@@ -68,7 +68,11 @@
 1. Modify code.
 2. Run formatter and linter
 3. Run tests and coverage
-4. Build all examples. In each directory under `examples/` (e.g., `examples/chat`, `examples/chat_vision`), run `dub build` to verify that the example compiles successfully. The command should succeed without errors.
+4. Build examples individually. Run `dub build` inside only the example folders you need. Build examples that:
+   * Have been modified in the commit,
+   * Depend on library modules that changed,
+   * Are needed for verifying new features.
+   All examples should compile before major releases or when unsure.
 5. If all checks pass, commit changes and open a pull request.
 
 ## 8. CI/CD & PR Guidelines
@@ -88,3 +92,7 @@
 ├─ dub.json     # Dub package definitions
 └─ AGENTS.md    # This document
 ```
+
+## 10. Reflection & Improvement
+
+After completing your tasks, if you faced long waits or redundant steps, propose a single improvement for AGENTS.md to streamline future work. A short note is sufficient.
