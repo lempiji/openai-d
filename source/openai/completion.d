@@ -83,7 +83,20 @@ struct CompletionRequest
     string user = null;
 }
 
-///
+/**
+ * Convenience helper that constructs a `CompletionRequest` for the
+ * `/completions` endpoint.
+ *
+ * Params:
+ *     model        = ID of the model or deployment.
+ *     prompt       = Text prompt sent to the model.
+ *     maxTokens    = Maximum tokens to generate (defaults to 16 in
+ *                    `CompletionRequest`).
+ *     temperature  = Sampling temperature (defaults to `1.0`).
+ *
+ * Returns: a populated request that can be passed to
+ *          `OpenAIClient.completion`.
+ */
 CompletionRequest completionRequest(string model, string prompt, uint maxTokens, double temperature)
 {
     auto request = CompletionRequest();
