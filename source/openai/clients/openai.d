@@ -339,7 +339,7 @@ class OpenAIClient
     }
 
     ///
-    auto transcription(in TranscriptionRequest request) @system
+    AudioTextResponse transcription(in TranscriptionRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.file.length > 0)
     in (request.model.length > 0)
@@ -414,7 +414,7 @@ class OpenAIClient
     }
 
     ///
-    auto translation(in TranslationRequest request) @system
+    AudioTextResponse translation(in TranslationRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.file.length > 0)
     in (request.model.length > 0)
