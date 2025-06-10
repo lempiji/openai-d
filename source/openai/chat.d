@@ -534,13 +534,10 @@ struct ChatCompletionRequest
     @serdeIgnoreDefault
     Nullable!int seed = null;
 
-    version (none)
-    {
-        ///
-        @serdeIgnoreDefault
-        @serdeKeys("logit_bias")
-        double[string] logitBias; // TODO test
-    }
+    ///
+    @serdeIgnoreDefault
+    @serdeKeys("logit_bias")
+    StringMap!double logitBias;
 
     ///
     @serdeIgnoreDefault

@@ -7,6 +7,7 @@ module openai.completion;
 
 import mir.algebraic;
 import mir.serde;
+import mir.string_map;
 import std.math;
 
 import openai.common;
@@ -71,12 +72,9 @@ struct CompletionRequest
     ///
     @serdeIgnoreDefault
     uint bestOf = 1;
-    version (none)
-    {
-        ///
-        @serdeIgnoreDefault
-        double[string] logitBias; // TODO test
-    }
+    ///
+    @serdeIgnoreDefault
+    StringMap!double logitBias;
 
     ///
     @serdeIgnoreDefault
