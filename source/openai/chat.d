@@ -534,10 +534,10 @@ struct ChatCompletionRequest
     @serdeIgnoreDefault
     Nullable!int seed = null;
 
-    ///
-    @serdeIgnoreDefault
-    @serdeKeys("logit_bias")
-    StringMap!double logitBias;
+    // Reason: mir-algorithm's JsonAlgebraic does not support associative arrays with int or uint keys.
+    // @serdeIgnoreDefault
+    // @serdeKeys("logit_bias")
+    // float[int] logitBias;
 
     ///
     @serdeIgnoreDefault
@@ -646,21 +646,6 @@ unittest
     string expectedJson = `{"model":"gpt-4o-mini","messages":[{"role":"system","content":"Welcome!"},{"role":"user","content":"How can I use the tools?","name":"User123"}],"max_completion_tokens":20,"tools":[{"type":"function","function":{"name":"sample_function","description":"Sample tool function","parameters":{"type":"string","description":"tool argument"}}}],"tool_choice":"auto"}`;
 
     assert(jsonString == expectedJson, jsonString ~ "\n" ~ expectedJson);
-}
-
-unittest
-{
-    ChatCompletionRequest request;
-    request.model = "gpt-4o-mini";
-    request.messages = [userChatMessage("Hi")];
-    request.logitBias["123"] = 1.0;
-
-    import mir.ser.json;
-
-    assert(
-        serializeJson(
-            request) ==
-            `{"model":"gpt-4o-mini","messages":[{"role":"user","content":"Hi"}],"logit_bias":{"123":1.0}}`);
 }
 
 unittest
