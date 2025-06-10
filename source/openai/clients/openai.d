@@ -56,20 +56,28 @@ class OpenAIClientConfig
         this.apiVersion = DEFAULT_OPENAI_API_VERSION;
     }
 
-    ///
+    /// Initialize the configuration with the given API key.
     this(string apiKey)
     {
         this.apiKey = apiKey;
     }
 
-    ///
+    /// Initialize the configuration with an API key and the
+    /// organization identifier used for OpenAI's multi-tenant API.
     this(string apiKey, string organization)
     {
         this.apiKey = apiKey;
         this.organization = organization;
     }
 
-    ///
+    /**
+     * Construct a configuration from environment variables.
+     *
+     * The following variables are read by default:
+     * `OPENAI_API_KEY`, `OPENAI_ORGANIZATION`, `OPENAI_API_BASE`,
+     * `OPENAI_DEPLOYMENT_ID` and `OPENAI_API_VERSION`.
+     * Alternative variable names can be supplied via the parameters.
+     */
     static OpenAIClientConfig fromEnvironment(
         string envApiKeyName = ENV_OPENAI_API_KEY,
         string envOrgName = ENV_OPENAI_ORGANIZATION,
@@ -83,7 +91,12 @@ class OpenAIClientConfig
         return config;
     }
 
-    ///
+    /**
+     * Construct a configuration from a JSON file.
+     *
+     * The file should contain keys such as `apiKey`, `organization`,
+     * `apiBase`, `deploymentId` and `apiVersion`.
+     */
     static OpenAIClientConfig fromFile(string filePath)
     {
         auto config = new OpenAIClientConfig;
@@ -91,7 +104,12 @@ class OpenAIClientConfig
         return config;
     }
 
-    ///
+    /**
+     * Populate this configuration from environment variables.
+     *
+     * See `fromEnvironment` for the default variable names. Missing
+     * values fall back to the OpenAI defaults.
+     */
     void loadFromEnvironmentVariables(
         string envApiKeyName = ENV_OPENAI_API_KEY,
         string envOrgName = ENV_OPENAI_ORGANIZATION,
@@ -115,7 +133,10 @@ class OpenAIClientConfig
             this.apiVersion = envApiVersion;
     }
 
-    ///
+    /**
+     * Load configuration fields from a JSON file. The format mirrors
+     * the one used by `saveToFile` and `fromFile`.
+     */
     void loadFromFile(string filePath)
     {
         import std.file;
@@ -156,7 +177,10 @@ class OpenAIClientConfig
             this.apiVersion = config.apiVersion;
     }
 
-    ///
+    /**
+     * Write the current configuration to a JSON file. The output
+     * can later be reloaded with `loadFromFile`.
+     */
     void saveToFile(string filePath)
     {
         import std.file;
@@ -198,7 +222,8 @@ class OpenAIClient
         }
     }
 
-    ///
+    /// Retrieve the list of models available to the API key by
+    /// issuing a GET request to `/models`.
     ModelsResponse listModels() @system
     in (config.apiKey != null && config.apiKey.length > 0)
     do
@@ -212,7 +237,8 @@ class OpenAIClient
         return result;
     }
 
-    ///
+    /// Call the `/completions` endpoint.
+    /// `request.model` must be set and an API key must be present.
     CompletionResponse completion(in CompletionRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.model.length > 0)
@@ -249,7 +275,8 @@ class OpenAIClient
         return result;
     }
 
-    ///
+    /// Call the `/chat/completions` endpoint.
+    /// Requires a model name and valid API key.
     ChatCompletionResponse chatCompletion(in ChatCompletionRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.model.length > 0)
@@ -284,7 +311,8 @@ class OpenAIClient
         return result;
     }
 
-    ///
+    /// Request vector embeddings via the `/embeddings` endpoint.
+    /// The request must specify a model.
     EmbeddingResponse embedding(in EmbeddingRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.model.length > 0)
@@ -301,7 +329,8 @@ class OpenAIClient
         return result;
     }
 
-    ///
+    /// Perform content classification using `/moderations`.
+    /// `request.input` must not be empty.
     ModerationResponse moderation(in ModerationRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.input.length > 0)
@@ -321,7 +350,8 @@ class OpenAIClient
         return result;
     }
 
-    ///
+    /// Convert text to speech using `/audio/speech`.
+    /// The request requires `model`, `input` and `voice` fields.
     ubyte[] speech(in SpeechRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.model.length > 0)
@@ -338,7 +368,8 @@ class OpenAIClient
         return cast(ubyte[]) content;
     }
 
-    ///
+    /// Transcribe an audio file via `/audio/transcriptions`.
+    /// Requires a valid file path and model.
     AudioTextResponse transcription(in TranscriptionRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.file.length > 0)
@@ -413,7 +444,8 @@ class OpenAIClient
         return text.deserializeJson!AudioTextResponse();
     }
 
-    ///
+    /// Translate speech audio using `/audio/translations`.
+    /// A file path and model are required.
     AudioTextResponse translation(in TranslationRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.file.length > 0)
