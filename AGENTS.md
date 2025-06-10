@@ -95,4 +95,6 @@
 
 ## 10. Reflection & Improvement
 
-After completing your tasks, if you faced long waits or redundant steps, propose a single improvement for AGENTS.md to streamline future work. A short note is sufficient.
+After completing your tasks, the agent **must append** one entry to `.agents/REFLECTION_HISTORY.md` using the exact `<!-- reflection-template:start --> … <!-- reflection-template:end -->` block that already exists in that file.
+
+> **One Bold Change rule**: every reflection must propose **exactly one** high-leverage improvement that could eliminate the biggest pain point next time.
