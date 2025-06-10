@@ -74,6 +74,7 @@ struct CompletionRequest
     uint bestOf = 1;
     ///
     @serdeIgnoreDefault
+    @serdeKeys("logit_bias")
     StringMap!double logitBias;
 
     ///
