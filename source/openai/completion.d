@@ -7,6 +7,7 @@ module openai.completion;
 
 import mir.algebraic;
 import mir.serde;
+import mir.string_map;
 import std.math;
 
 import openai.common;
@@ -71,12 +72,10 @@ struct CompletionRequest
     ///
     @serdeIgnoreDefault
     uint bestOf = 1;
-    version (none)
-    {
-        ///
-        @serdeIgnoreDefault
-        double[string] logitBias; // TODO test
-    }
+    ///
+    @serdeIgnoreDefault
+    @serdeKeys("logit_bias")
+    StringMap!double logitBias;
 
     ///
     @serdeIgnoreDefault
@@ -92,6 +91,20 @@ CompletionRequest completionRequest(string model, string prompt, uint maxTokens,
     request.maxTokens = maxTokens;
     request.temperature = temperature;
     return request;
+}
+
+unittest
+{
+    CompletionRequest request;
+    request.model = "gpt-3.5-turbo-instruct";
+    request.prompt = "hello";
+    request.logitBias["42"] = -1.0;
+
+    import mir.ser.json;
+
+    assert(
+        serializeJson(request) ==
+            `{"model":"gpt-3.5-turbo-instruct","prompt":"hello","logitBias":{"42":-1.0}}`);
 }
 
 ///
