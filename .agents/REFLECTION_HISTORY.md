@@ -70,7 +70,8 @@
 
 ### :bulb: Proposed Improvement
 - Add a script to build all examples in parallel.
-### :book: Reflection for 2025-06-12
+
+### :book: Reflection for 2025-06-11
 - **Task**: Document reflection log guidelines
 - **Objective**: Prevent duplicate dates and maintain chronological order
 - **Outcome**: Updated AGENTS.md with instructions to deduplicate and append history properly
@@ -84,7 +85,7 @@
 ### :bulb: Proposed Improvement
 - Cache linter dependencies to speed up future runs
 
-### :book: Reflection for 2025-06-13
+### :book: Reflection for 2025-06-11
 - **Task**: Add example build script
 - **Objective**: Speed up building numerous example projects
 - **Outcome**: Created `scripts/build_examples.sh` with fast and all modes and documented its usage in AGENTS.md. Verified formatting, linting, tests, coverage and builds.
@@ -97,3 +98,17 @@
 
 ### :bulb: Proposed Improvement
 - Investigate caching compiled dependencies or using `dub`'s built-in package cache to allow safe parallel builds.
+
+### :book: Reflection for 2025-06-11
+- **Task**: Cache Dub packages in CI
+- **Objective**: Speed up continuous integration by avoiding repeated downloads
+- **Outcome**: Added actions/cache steps to store `~/.dub/packages` on Linux and Windows
+
+### :sparkles: What went well
+- Workflow configuration was straightforward to extend
+
+### :warning: Pain points
+- Cross-platform paths for Dub packages required extra attention
+
+### :bulb: Proposed Improvement
+- Document recommended cache paths for different operating systems
