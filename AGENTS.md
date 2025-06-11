@@ -102,5 +102,6 @@ After completing your tasks, the agent **must append** one entry to `.agents/REF
 
 > **One Bold Change rule**: every reflection must propose **exactly one** high-leverage improvement that could eliminate the biggest pain point next time.
 
-* Before appending, check `.agents/REFLECTION_HISTORY.md` for existing entries on the same date or with the same content and consolidate them to avoid duplication.
+* Records are keyed by timestamp (to the minute) to avoid collisions. Specify the current date and time as `YYYY-MM-DD HH:MM` when filling in the template.
+* Before appending, check `.agents/REFLECTION_HISTORY.md` for existing entries with the same timestamp or identical content and consolidate them to avoid duplication.
 * If earlier records are out of order or redundant, reorganize them so the newest reflection always appears at the bottom of the file.

@@ -1,17 +1,17 @@
 <!-- reflection-template:start -->
-### :book: Reflection for [Date]
-- **Task**: [Task Name or Description]
-- **Objective**: [What was the goal of the task?]
-- **Outcome**: [What was the result of the task?]
+### :book: Reflection for [YYYY-MM-DD HH:MM]
+  - **Task**: [Task Name or Description]
+  - **Objective**: [What was the goal of the task?]
+  - **Outcome**: [What was the result of the task?]
 
 ### :sparkles: What went well
-- …
+  - …
 
 ### :warning: Pain points
-- …
+  - …
 
 ### :bulb: Proposed Improvement
-- …
+  - …
 <!-- reflection-template:end -->
 
 ## :memo: Reflection History
@@ -112,3 +112,30 @@
 
 ### :bulb: Proposed Improvement
 - Document recommended cache paths for different operating systems
+
+### :book: Reflection for 2025-06-11 13:46
+  - **Task**: Add timestamp to reflection history template
+  - **Objective**: Avoid merge conflicts when multiple reflections occur on the same day
+  - **Outcome**: Updated AGENTS instructions and template to include date and time
+
+### :sparkles: What went well
+  - Documentation change required minimal updates
+
+### :warning: Pain points
+  - Running all checks still takes time even for small docs
+
+### :bulb: Proposed Improvement
+  - Provide a lightweight documentation-only workflow to skip heavy builds
+### :book: Reflection for 2025-06-11 14:52
+  - **Task**: Adjust reflection formatting
+  - **Objective**: Address reviewer comments to indent bullet lists and remove unnecessary tags
+  - **Outcome**: Updated template and latest entry with proper list levels and cleaned tags
+
+### :sparkles: What went well
+  - Small edits quickly satisfied the formatting guidelines
+
+### :warning: Pain points
+  - Running full builds for doc-only changes is still slow
+
+### :bulb: Proposed Improvement
+  - Introduce a docs-only workflow to speed up checks
