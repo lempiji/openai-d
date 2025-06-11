@@ -98,3 +98,6 @@
 After completing your tasks, the agent **must append** one entry to `.agents/REFLECTION_HISTORY.md` using the exact `<!-- reflection-template:start --> … <!-- reflection-template:end -->` block that already exists in that file.
 
 > **One Bold Change rule**: every reflection must propose **exactly one** high-leverage improvement that could eliminate the biggest pain point next time.
+
+* Before appending, check `.agents/REFLECTION_HISTORY.md` for existing entries on the same date or with the same content and consolidate them to avoid duplication.
+* If earlier records are out of order or redundant, reorganize them so the newest reflection always appears at the bottom of the file.
