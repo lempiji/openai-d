@@ -38,7 +38,16 @@ struct EmbeddingRequest
     string user;
 }
 
-///
+/**
+ * Constructs an `EmbeddingRequest` for the `/embeddings` endpoint using a
+ * single input string.
+ *
+ * Params:
+ *     model = Embedding model identifier.
+ *     input = Text to embed.
+ *
+ * Returns: Request object for `OpenAIClient.embedding`.
+ */
 EmbeddingRequest embeddingRequest(string model, string input)
 {
     auto request = EmbeddingRequest();
@@ -60,7 +69,17 @@ unittest
         requestJson == `{"input":"Hello, D Programming Language!","model":"text-embedding-ada-002"}`);
 }
 
-///
+/**
+ * Constructs an `EmbeddingRequest` with a specified embedding dimension for the
+ * `/embeddings` endpoint.
+ *
+ * Params:
+ *     model      = Embedding model identifier.
+ *     input      = Text to embed.
+ *     dimensions = Size of the output vector.
+ *
+ * Returns: Request object for `OpenAIClient.embedding`.
+ */
 EmbeddingRequest embeddingRequest(string model, string input, uint dimensions)
 {
     auto request = EmbeddingRequest();
@@ -83,7 +102,16 @@ unittest
         requestJson == `{"input":"Hello, D Programming Language!","model":"text-embedding-3-small","dimensions":512}`);
 }
 
-///
+/**
+ * Creates an `EmbeddingRequest` for multiple input strings for the
+ * `/embeddings` endpoint.
+ *
+ * Params:
+ *     model  = Embedding model identifier.
+ *     inputs = Array of texts to embed.
+ *
+ * Returns: Request object for `OpenAIClient.embedding`.
+ */
 EmbeddingRequest embeddingRequest(string model, string[] inputs)
 {
     auto request = EmbeddingRequest();
@@ -106,7 +134,17 @@ unittest
         requestJson3 == `{"input":["Hello,","D","Programming","Language!"],"model":"text-embedding-ada-003"}`);
 }
 
-///
+/**
+ * Variant of `embeddingRequest` that allows specifying multiple inputs and the
+ * output vector size for the `/embeddings` endpoint.
+ *
+ * Params:
+ *     model      = Embedding model identifier.
+ *     inputs     = Array of texts to embed.
+ *     dimensions = Size of the output vector.
+ *
+ * Returns: Request object for `OpenAIClient.embedding`.
+ */
 EmbeddingRequest embeddingRequest(string model, string[] inputs, uint dimensions)
 {
     auto request = EmbeddingRequest();
