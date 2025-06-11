@@ -5,7 +5,7 @@ import openai;
 
 void main()
 {
-    auto client = new OpenAIClient;
+    auto client = new OpenAIClient();
 
     // POST /completions
     auto message = completionRequest(openai.GPT3Dot5TurboInstruct, "This is a", 16, 0);

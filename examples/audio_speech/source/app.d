@@ -6,7 +6,7 @@ import openai;
 void main()
 {
     string text = "Hello! こんにちは。お元気ですか？";
-    auto client = new OpenAIClient;
+    auto client = new OpenAIClient();
 
     auto request = speechRequest(openai.GPT4OMiniTTS, text, VoiceAlloy);
     auto data = client.speech(request);

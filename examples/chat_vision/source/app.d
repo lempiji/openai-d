@@ -7,7 +7,7 @@ import openai;
 
 void main()
 {
-    auto client = new OpenAIClient;
+    auto client = new OpenAIClient();
 
     // Load local image and convert to data URL
     auto bytes = cast(ubyte[]) read("assets/cat.png");

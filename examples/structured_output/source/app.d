@@ -7,7 +7,7 @@ import mir.algebraic;
 
 void main()
 {
-    auto client = new OpenAIClient;
+    auto client = new OpenAIClient();
 
     auto request = chatCompletionRequest(openai.GPT4OMini, [
         developerChatMessage("You are a helpful math tutor. Guide the user through the solution step by step."),

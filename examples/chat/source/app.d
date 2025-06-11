@@ -4,7 +4,7 @@ import openai;
 
 void main()
 {
-    auto client = new OpenAIClient;
+    auto client = new OpenAIClient();
 
     const request = chatCompletionRequest(openai.GPT4OMini, [
         systemChatMessage("You are a helpful assistant."),

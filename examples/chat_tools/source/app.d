@@ -6,7 +6,7 @@ import openai;
 
 void main()
 {
-    auto client = new OpenAIClient;
+    auto client = new OpenAIClient();
 
     auto request = chatCompletionRequest("gpt-4o-mini", [
         developerChatMessage("You are a helpful assistant."),

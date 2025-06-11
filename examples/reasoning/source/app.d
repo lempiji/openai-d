@@ -3,7 +3,7 @@ import openai;
 
 void main()
 {
-    auto client = new OpenAIClient;
+    auto client = new OpenAIClient();
     auto request = chatCompletionRequest(
         openai.O4Mini, // or openai.O3
         [
