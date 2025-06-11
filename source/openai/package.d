@@ -13,3 +13,4 @@ public import openai.embedding;
 public import openai.models;
 public import openai.moderation;
 public import openai.audio;
+public import openai.responses;

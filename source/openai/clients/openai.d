@@ -6,6 +6,8 @@ module openai.clients.openai;
 import mir.deser.json;
 import mir.ser.json;
 import std.net.curl;
+import std.algorithm.iteration : joiner;
+import std.array : array;
 
 import openai.chat;
 import openai.completion;
@@ -13,6 +15,7 @@ import openai.embedding;
 import openai.models;
 import openai.moderation;
 import openai.audio;
+import openai.responses;
 
 @safe:
 
@@ -470,6 +473,85 @@ class OpenAIClient
 
         auto text = cast(char[]) content;
         return text.deserializeJson!AudioTextResponse();
+    }
+
+    ///
+    ResponsesResponse createResponse(in CreateResponseRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (request.model.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto requestJson = serializeJson(request);
+        auto content = cast(char[]) post!ubyte(buildUrl("/responses"), requestJson, http);
+
+        auto result = content.deserializeJson!ResponsesResponse();
+        return result;
+    }
+
+    ///
+    ResponsesResponse getResponse(string responseId, string[] include = null) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (responseId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildUrl("/responses/" ~ responseId);
+        if (include !is null && include.length)
+            url ~= "?include=" ~ cast(string) include.joiner(",").array;
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        auto result = content.deserializeJson!ResponsesResponse();
+        return result;
+    }
+
+    ///
+    void deleteResponse(string responseId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (responseId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        del(buildUrl("/responses/" ~ responseId), http);
+    }
+
+    ///
+    ResponseItemList listInputItems(in ListInputItemsRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (request.responseId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        import std.string : format;
+        import std.algorithm : map;
+        import std.conv : to;
+
+        string url = buildUrl("/responses/" ~ request.responseId ~ "/input_items");
+        string sep = "?";
+        url ~= format("%slimit=%s", sep, request.limit);
+        sep = "&";
+        if (request.order.length)
+            url ~= format("%sorder=%s", sep, request.order), sep = "&";
+        if (request.after !is null)
+            url ~= format("%safter=%s", sep, request.after), sep = "&";
+        if (request.before !is null)
+            url ~= format("%sbefore=%s", sep, request.before), sep = "&";
+        if (request.include !is null && request.include.length)
+            url ~= format("%sinclude=%s", sep,
+                cast(string) request.include.map!(x => to!string(x)).joiner(",").array);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        auto result = content.deserializeJson!ResponseItemList();
+        return result;
     }
 
     private void setupHttpByConfig(scope ref HTTP http) @system
