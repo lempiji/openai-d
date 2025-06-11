@@ -68,10 +68,13 @@
 1. Modify code.
 2. Run formatter and linter
 3. Run tests and coverage
-4. Build examples individually. Run `dub build` inside only the example folders you need. Build examples that:
-   * Have been modified in the commit,
-   * Depend on library modules that changed,
-   * Are needed for verifying new features.
+4. Build examples individually or use the helper script:
+   * Run `scripts/build_examples.sh fast` to compile only a small set of key examples.
+   * Run `scripts/build_examples.sh` (or `scripts/build_examples.sh all`) to build them all.
+   Building individually with `dub build` remains valid when touching only a few examples.
+   * Build examples that have been modified,
+     depend on changed library modules, or
+     are required for verifying new features.
    All examples should compile before major releases or when unsure.
 5. If all checks pass, commit changes and open a pull request.
 
