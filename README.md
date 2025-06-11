@@ -19,7 +19,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 
 #### OpenAI
 
-- [ ] [Responses API](https://platform.openai.com/docs/api-reference/responses) (TODO)
+- [x] [Responses API](https://platform.openai.com/docs/api-reference/responses)
 - [x] [Chat](https://platform.openai.com/docs/api-reference/chat)
   - [x] tools (function_call)
   - [x] structured output
@@ -111,6 +111,25 @@ writeln(response.choices[0].message.content);
 
 For o-series models such as `O4Mini` or `O3`, use `maxCompletionTokens` instead
 of the deprecated `max_tokens` field when creating your requests.
+
+__Responses__
+
+```d name=responses
+import std;
+import openai;
+
+auto client = new OpenAIClient();
+auto req = createResponseRequest(openai.GPT4O, CreateResponseInput("Hello!"));
+auto res = client.createResponse(req);
+auto got = client.getResponse(res.id);
+auto items = client.listInputItems(listInputItemsRequest(res.id));
+client.deleteResponse(res.id);
+
+writeln(got.output[0].content);
+writeln(items.data.length);
+```
+
+See `examples/responses` for a complete example.
 
 __Embedding__
 
