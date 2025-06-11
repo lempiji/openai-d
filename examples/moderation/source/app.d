@@ -6,7 +6,7 @@ import openai;
 
 void main()
 {
-    auto client = new OpenAIClient;
+    auto client = new OpenAIClient();
 
     // POST /moderations
     // Example input: https://platform.openai.com/docs/api-reference/moderations/create

@@ -8,7 +8,7 @@ import openai;
 
 void main()
 {
-    auto client = new OpenAIClient;
+    auto client = new OpenAIClient();
 
     auto models = client.listModels();
     auto modelIds = models.data

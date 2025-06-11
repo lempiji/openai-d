@@ -9,7 +9,7 @@ import d2sqlite3;
 
 void main()
 {
-    auto client = new OpenAIClient;
+    auto client = new OpenAIClient();
 
     auto db = Database(":memory:");
 

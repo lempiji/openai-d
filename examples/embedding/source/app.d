@@ -4,7 +4,7 @@ import openai;
 
 void main()
 {
-    auto client = new OpenAIClient;
+    auto client = new OpenAIClient();
 
     auto request = embeddingRequest(openai.AdaEmbeddingV2, "Hello, world!");
     auto response = client.embedding(request);
