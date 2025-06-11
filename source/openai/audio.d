@@ -98,7 +98,17 @@ struct SpeechRequest
     double speed = 1;
 }
 
-/// Convenience constructor for `SpeechRequest`.
+/**
+ * Convenience constructor for creating a `SpeechRequest` used with the
+ * `/audio/speech` endpoint.
+ *
+ * Params:
+ *     model = ID of the text-to-speech model.
+ *     input = Text to synthesize.
+ *     voice = Voice identifier. The request defaults to MP3 format at speed 1.0.
+ *
+ * Returns: Request object suitable for `OpenAIClient.speech`.
+ */
 SpeechRequest speechRequest(string model, string input, string voice)
 {
     auto request = SpeechRequest();
@@ -149,7 +159,19 @@ struct TranscriptionRequest
     bool stream = false;
 }
 
-/// Convenience constructor for `TranscriptionRequest`.
+/**
+ * Convenience constructor for `TranscriptionRequest` objects sent to the
+ * `/audio/transcriptions` endpoint.
+ *
+ * Params:
+ *     file  = Path to the audio file to transcribe.
+ *     model = Whisper model identifier.
+ *
+ * Default values such as JSON response format and temperature are taken from
+ * `TranscriptionRequest`.
+ *
+ * Returns: Request object usable with `OpenAIClient.transcription`.
+ */
 TranscriptionRequest transcriptionRequest(string file, string model)
 {
     auto request = TranscriptionRequest();
@@ -181,7 +203,16 @@ struct TranslationRequest
     double temperature = 0;
 }
 
-/// Convenience constructor for `TranslationRequest`.
+/**
+ * Convenience constructor for `TranslationRequest` objects used with the
+ * `/audio/translations` endpoint.
+ *
+ * Params:
+ *     file  = Path to the audio file to translate.
+ *     model = Whisper model identifier.
+ *
+ * Returns: Request object suitable for `OpenAIClient.translation`.
+ */
 TranslationRequest translationRequest(string file, string model)
 {
     auto request = TranslationRequest();

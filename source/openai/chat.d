@@ -715,7 +715,19 @@ version (none) unittest
 
     auto _ = deserializeJson!ChatCompletionResponse(errorJson);
 }
-///
+/**
+ * Helper to create a `ChatCompletionRequest` for the `/chat/completions`
+ * endpoint.
+ *
+ * Params:
+ *     model       = Chat model ID or deployment.
+ *     messages    = Sequence of chat messages to send.
+ *     maxTokens   = Maximum completion tokens (defaults to 16 in the
+ *                   request struct).
+ *     temperature = Sampling temperature (defaults to `1.0`).
+ *
+ * Returns: Request object consumable by `OpenAIClient.chatCompletion`.
+ */
 ChatCompletionRequest chatCompletionRequest(return scope string model, return scope ChatMessage[] messages, uint maxTokens, double temperature)
 {
     auto request = ChatCompletionRequest();

@@ -20,7 +20,15 @@ struct ModerationRequest
     string model;
 }
 
-///
+/**
+ * Convenience helper that populates a `ModerationRequest` for the
+ * `/moderations` endpoint.
+ *
+ * Params:
+ *     input = Text to be checked for policy violations.
+ *
+ * Returns: Request object for `OpenAIClient.moderation`.
+ */
 ModerationRequest moderationRequest(string input)
 {
     auto request = ModerationRequest();
