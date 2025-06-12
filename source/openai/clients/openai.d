@@ -124,7 +124,7 @@ class OpenAIClientConfig
 
         auto envApiKey = environment.get(envApiKeyName, "");
         auto envOrganization = environment.get(envOrgName, "");
-        auto envApiBase = environment.get(envApiBaseName, "https://api.openai.com/v1");
+        auto envApiBase = environment.get(envApiBaseName, "");
         auto envDeploymentId = environment.get(envDeploymentName, "");
         auto envApiVersion = environment.get(envApiVersionName, "");
 
