@@ -111,7 +111,21 @@
   - Cross-platform paths for Dub packages required extra attention
 
 #### :bulb: Proposed Improvement
-  - Document recommended cache paths for different operating systems
+- Document recommended cache paths for different operating systems
+
+### :book: Reflection for 2025-06-12
+- **Task**: Update environment variable handling
+- **Objective**: Ensure OPENAI_API_BASE uses default URL when unset or empty
+- **Outcome**: Changed configuration to use `environment.get(envApiBaseName, "")` and kept default fallback. Verified formatting, linting, tests, coverage and example builds.
+
+#### :sparkles: What went well
+- Tooling caught no issues after modification, making validation quick.
+
+#### :warning: Pain points
+- Coverage files clutter the project root and are easy to forget to clean.
+
+#### :bulb: Proposed Improvement
+- Automate cleanup of coverage artifacts after tests
 
 ### :book: Reflection for 2025-06-11 13:46
   - **Task**: Add timestamp to reflection history template
