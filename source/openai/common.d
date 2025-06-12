@@ -452,7 +452,7 @@ unittest
         [
         "location": JsonSchema.string_("The city and state, e.g. San Francisco, CA"),
         "format": JsonSchema.string_("The temperature unit to use. Infer this from the users location.", [
-            "celcius", "farenheit"
+            "celsius", "fahrenheit"
         ])
     ], ["location", "format"]);
 }
@@ -489,7 +489,7 @@ unittest
         [
         "location": JsonSchema.string_("The city and state, e.g. San Francisco, CA"),
         "format": JsonSchema.string_("The temperature unit to use. Infer this from the users location.", [
-            "celcius", "farenheit"
+            "celsius", "fahrenheit"
         ]),
         "num_days": JsonSchema.integer_("The number of days to forecast"),
     ], ["location", "format", "num_days"]);
