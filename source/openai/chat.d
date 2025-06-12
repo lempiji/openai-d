@@ -469,9 +469,8 @@ struct ChatCompletionRequest
     ///
     ChatMessage[] messages;
 
-    ///
-    @serdeIgnoreDefault
-    string store;
+    //@serdeIgnoreDefault
+    //string store; /// disabled, see https://platform.openai.com/docs/guides/your-data
 
     /// Use `ReasoningEffortLow`, `ReasoningEffortMedium` or `ReasoningEffortHigh`.
     @serdeIgnoreDefault
