@@ -588,7 +588,6 @@ class OpenAIClient
 
     private void setupHttpByConfig(scope ref HTTP http) @system
     {
-        import std.algorithm.searching : canFind;
 
         if (config.isAzure)
         {
