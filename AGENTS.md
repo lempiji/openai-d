@@ -104,3 +104,4 @@ After completing your tasks, the agent **must create** a new file in `.agents/re
 
 * Records are keyed by timestamp (to the minute). Use the current date and time as `YYYY-MM-DD HH:MM` in the template and file name.
 * Replace `{task-summary}` with a short hyphenated summary of the task.
+* When documenting pain points, include your environment (CI, local machine, OS, etc.) and specify which step or command was slow.

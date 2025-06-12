@@ -8,6 +8,8 @@
   - …
 
 #### :warning: Pain points
+  - Specify whether the issue was observed in CI or locally and mention the step or command that was slow.
+  - Example: "CI, Ubuntu: `dub test` step took ~3 minutes to resolve dependencies."
   - …
 
 #### :bulb: Proposed Improvement
