@@ -565,7 +565,6 @@ class OpenAIClient
 
         import std.string : format;
         import std.algorithm : map;
-        import std.conv : to;
 
         string url = buildUrl("/responses/" ~ request.responseId ~ "/input_items");
         string sep = "?";
@@ -578,8 +577,9 @@ class OpenAIClient
         if (request.before !is null)
             url ~= format("%sbefore=%s", sep, request.before), sep = "&";
         if (request.include !is null && request.include.length)
+            // Cast enum values to strings to ensure proper serialization into query parameters.
             url ~= format("%sinclude=%s", sep,
-                cast(string) request.include.map!(x => to!string(x)).joiner(",").array);
+                request.include.map!(x => cast(string) x).joiner(",").array);
 
         auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
         auto result = content.deserializeJson!ResponseItemList();
