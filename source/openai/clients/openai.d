@@ -7,7 +7,7 @@ import mir.deser.json;
 import mir.ser.json;
 import std.net.curl;
 import std.algorithm.iteration : joiner;
-import std.array : array;
+import std.array : array, Appender;
 
 import openai.chat;
 import openai.completion;
@@ -380,9 +380,9 @@ class OpenAIClient
     {
         import std.array : appender;
         import std.conv : to;
-        import std.file : read;
         import std.path : baseName;
         import std.random : uniform;
+        import std.stdio : File;
 
         auto http = HTTP();
         setupHttpByConfig(http);
@@ -403,18 +403,12 @@ class OpenAIClient
             body.put(cast(ubyte[]) "\r\n");
         }
 
-        void addFile(string name, string filename, const(ubyte)[] data)
+        void addFile(string name, string filePath)
         {
-            body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
-            body.put(cast(ubyte[])(
-                    "Content-Disposition: form-data; name=\"" ~ name ~ "\"; filename=\"" ~ filename ~ "\"\r\n"));
-            body.put(cast(ubyte[])("Content-Type: application/octet-stream\r\n\r\n"));
-            body.put(data);
-            body.put(cast(ubyte[]) "\r\n");
+            appendFileChunked(body, boundary, name, filePath);
         }
 
-        auto fileData = cast(ubyte[]) read(request.file);
-        addFile("file", baseName(request.file), fileData);
+        addFile("file", request.file);
         addText("model", request.model);
         if (request.language.length)
             addText("language", request.language);
@@ -456,9 +450,9 @@ class OpenAIClient
     {
         import std.array : appender;
         import std.conv : to;
-        import std.file : read;
         import std.path : baseName;
         import std.random : uniform;
+        import std.stdio : File;
 
         auto http = HTTP();
         setupHttpByConfig(http);
@@ -479,18 +473,12 @@ class OpenAIClient
             body.put(cast(ubyte[]) "\r\n");
         }
 
-        void addFile(string name, string filename, const(ubyte)[] data)
+        void addFile(string name, string filePath)
         {
-            body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
-            body.put(cast(ubyte[])(
-                    "Content-Disposition: form-data; name=\"" ~ name ~ "\"; filename=\"" ~ filename ~ "\"\r\n"));
-            body.put(cast(ubyte[])("Content-Type: application/octet-stream\r\n\r\n"));
-            body.put(data);
-            body.put(cast(ubyte[]) "\r\n");
+            appendFileChunked(body, boundary, name, filePath);
         }
 
-        auto fileData = cast(ubyte[]) read(request.file);
-        addFile("file", baseName(request.file), fileData);
+        addFile("file", request.file);
         addText("model", request.model);
         if (request.prompt.length)
             addText("prompt", request.prompt);
@@ -621,6 +609,30 @@ class OpenAIClient
         {
             return base ~ path;
         }
+    }
+
+    private void appendFileChunked(scope ref Appender!(ubyte[])
+
+        
+
+        body,
+        string boundary,
+        string name,
+        string filePath) @system
+    {
+        import std.path : baseName;
+        import std.stdio : File;
+
+        body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
+        body.put(cast(ubyte[])(
+                "Content-Disposition: form-data; name=\"" ~ name ~ "\"; filename=\"" ~ baseName(filePath) ~ "\"\r\n"));
+        body.put(cast(ubyte[])("Content-Type: application/octet-stream\r\n\r\n"));
+        auto file = File(filePath, "rb");
+        scope (exit)
+            file.close();
+        foreach (chunk; file.byChunk(8192))
+            body.put(chunk);
+        body.put(cast(ubyte[]) "\r\n");
     }
 
     @("buildUrl - openai mode")
@@ -842,4 +854,32 @@ unittest
     assert(loaded.apiBase == "https://example.api.cognitive.microsoft.com");
     assert(loaded.deploymentId == "dep");
     assert(loaded.apiVersion == "2024-05-01");
+}
+
+@("appendFileChunked") @system unittest
+{
+    import std.file : write, remove, exists;
+    import std.array : appender;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto tmp = "tmp_audio.txt";
+    write(tmp, "hello");
+    scope (exit)
+        if (exists(tmp))
+            remove(tmp);
+
+    auto body = appender!(ubyte[])();
+    client.appendFileChunked(body, "bnd", "file", tmp);
+
+    // Multipart body should contain file data with the exact filename
+    auto expected = cast(ubyte[])(
+        "--bnd\r\n" ~
+            "Content-Disposition: form-data; name=\"file\"; filename=\"tmp_audio.txt\"\r\n" ~
+            "Content-Type: application/octet-stream\r\n\r\n" ~
+            "hello\r\n");
+
+    assert(body.data == expected);
 }
