@@ -240,7 +240,7 @@ struct ResponsesResponse
     string truncation;
     ResponseUsage usage;
     string user;
-    StringMap!string metadata;
+    @serdeOptional @serdeIgnoreDefault StringMap!string metadata;
 }
 
 // -----------------------------------------------------------------------------
