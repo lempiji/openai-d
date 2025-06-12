@@ -98,10 +98,9 @@
 
 ## 10. Reflection & Improvement
 
-After completing your tasks, the agent **must append** one entry to `.agents/REFLECTION_HISTORY.md` using the exact `<!-- reflection-template:start --> … <!-- reflection-template:end -->` block that already exists in that file.
+After completing your tasks, the agent **must create** a new file in `.agents/reflections/` named `YYYY-MM-DD-hhmm-{task-summary}.md`. Start the file with the exact block found in `.agents/reflection-template.md`.
 
 > **One Bold Change rule**: every reflection must propose **exactly one** high-leverage improvement that could eliminate the biggest pain point next time.
 
-* Records are keyed by timestamp (to the minute) to avoid collisions. Specify the current date and time as `YYYY-MM-DD HH:MM` when filling in the template.
-* Before appending, check `.agents/REFLECTION_HISTORY.md` for existing entries with the same timestamp or identical content and consolidate them to avoid duplication.
-* If earlier records are out of order or redundant, reorganize them so the newest reflection always appears at the bottom of the file.
+* Records are keyed by timestamp (to the minute). Use the current date and time as `YYYY-MM-DD HH:MM` in the template and file name.
+* Replace `{task-summary}` with a short hyphenated summary of the task.
