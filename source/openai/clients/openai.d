@@ -8,6 +8,7 @@ import mir.ser.json;
 import std.net.curl;
 import std.algorithm.iteration : joiner;
 import std.array : array, Appender;
+import std.stdio : File;
 
 import openai.chat;
 import openai.completion;
@@ -382,7 +383,6 @@ class OpenAIClient
         import std.conv : to;
         import std.path : baseName;
         import std.random : uniform;
-        import std.stdio : File;
 
         auto http = HTTP();
         setupHttpByConfig(http);
@@ -452,7 +452,6 @@ class OpenAIClient
         import std.conv : to;
         import std.path : baseName;
         import std.random : uniform;
-        import std.stdio : File;
 
         auto http = HTTP();
         setupHttpByConfig(http);
@@ -621,7 +620,6 @@ class OpenAIClient
         string filePath) @system
     {
         import std.path : baseName;
-        import std.stdio : File;
 
         body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
         body.put(cast(ubyte[])(
