@@ -577,6 +577,7 @@ class OpenAIClient
         if (request.before !is null)
             url ~= format("%sbefore=%s", sep, request.before), sep = "&";
         if (request.include !is null && request.include.length)
+            // Cast enum values to strings to ensure proper serialization into query parameters.
             url ~= format("%sinclude=%s", sep,
                 request.include.map!(x => cast(string) x).joiner(",").array);
 
