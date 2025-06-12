@@ -550,7 +550,16 @@ class OpenAIClient
         setupHttpByConfig(http);
         http.addRequestHeader("Accept", "application/json; charset=utf-8");
 
-        import std.string : format;
+        string url = buildListInputItemsUrl(request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        auto result = content.deserializeJson!ResponseItemList();
+        return result;
+    }
+
+    private string buildListInputItemsUrl(in ListInputItemsRequest request) const @safe
+    {
+        import std.format : format;
         import std.algorithm : map;
 
         string url = buildUrl("/responses/" ~ request.responseId ~ "/input_items");
@@ -559,18 +568,14 @@ class OpenAIClient
         sep = "&";
         if (request.order.length)
             url ~= format("%sorder=%s", sep, request.order), sep = "&";
-        if (request.after !is null)
+        if (request.after.length)
             url ~= format("%safter=%s", sep, request.after), sep = "&";
-        if (request.before !is null)
+        if (request.before.length)
             url ~= format("%sbefore=%s", sep, request.before), sep = "&";
-        if (request.include !is null && request.include.length)
-            // Cast enum values to strings to ensure proper serialization into query parameters.
+        if (request.include !is null && request.include.length) // Cast enum values to strings to ensure proper serialization into query parameters.
             url ~= format("%sinclude=%s", sep,
                 request.include.map!(x => cast(string) x).joiner(",").array);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        auto result = content.deserializeJson!ResponseItemList();
-        return result;
+        return url;
     }
 
     private void setupHttpByConfig(scope ref HTTP http) @system
@@ -749,6 +754,7 @@ class OpenAIClient
 @("config from environment - openai mode")
 unittest
 {
+    import std.algorithm.searching : canFind;
     import std.process : environment;
 
     environment[ENV_OPENAI_API_KEY] = "k";
@@ -879,4 +885,30 @@ unittest
             "hello\r\n");
 
     assert(body.data == expected);
+}
+
+@("buildListInputItemsUrl")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto req = listInputItemsRequest("resp");
+    auto url = client.buildListInputItemsUrl(req);
+
+    assert(!url.canFind("after="));
+    assert(!url.canFind("before="));
+
+    req.after = "a";
+    url = client.buildListInputItemsUrl(req);
+    assert(url.canFind("after=a"));
+
+    req.after = "";
+    req.before = "b";
+    url = client.buildListInputItemsUrl(req);
+    assert(url.canFind("before=b"));
+    assert(!url.canFind("after="));
 }
