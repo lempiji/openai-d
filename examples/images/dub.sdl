@@ -1,0 +1,6 @@
+name "images"
+description "Generate images using OpenAI"
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."
