@@ -196,7 +196,9 @@ struct ChatMessage
         );
         // dfmt on
 
-        return appender.data;
+        import std.string : stripRight;
+
+        return appender.data.stripRight("\n");
     }
 }
 
@@ -311,6 +313,18 @@ unittest
 
     assert(serializeJson(
             message) == `{"role":"user","content":"How does this work?","name":"User123"}`);
+}
+
+unittest
+{
+    auto message = userChatMessage("Hello");
+
+    auto text = message.getAllTextContent();
+
+    import std.algorithm.searching : endsWith;
+
+    assert(text == "Hello");
+    assert(!text.endsWith("\n"));
 }
 
 ///
