@@ -29,7 +29,11 @@ jobs:
       - name: Lint
         run: dub lint --dscanner-config dscanner.ini
       - name: Test
-        run: dub test --compiler=$DC
+        run: dub test --compiler=$DC --coverage --coverage-ctfe
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Build examples
         run: |
           for dir in examples/*; do
@@ -60,7 +64,11 @@ jobs:
       - name: Lint
         run: dub lint --dscanner-config dscanner.ini
       - name: Test
-        run: dub test --compiler=$Env:DC
+        run: dub test --compiler=$Env:DC --coverage --coverage-ctfe
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Build examples
         shell: pwsh
         run: |
