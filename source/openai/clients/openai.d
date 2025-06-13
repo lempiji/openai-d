@@ -685,20 +685,24 @@ class OpenAIClient
     {
         import std.format : format;
         import std.algorithm : map;
+        import std.uri : encodeComponent;
 
         string url = buildUrl("/responses/" ~ request.responseId ~ "/input_items");
         string sep = "?";
         url ~= format("%slimit=%s", sep, request.limit);
         sep = "&";
         if (request.order.length)
-            url ~= format("%sorder=%s", sep, request.order), sep = "&";
+            url ~= format("%sorder=%s", sep, encodeComponent(request.order)), sep = "&";
         if (request.after.length)
-            url ~= format("%safter=%s", sep, request.after), sep = "&";
+            url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
         if (request.before.length)
-            url ~= format("%sbefore=%s", sep, request.before), sep = "&";
+            url ~= format("%sbefore=%s", sep, encodeComponent(request.before)), sep = "&";
         if (request.include !is null && request.include.length) // Cast enum values to strings to ensure proper serialization into query parameters.
             url ~= format("%sinclude=%s", sep,
-                request.include.map!(x => cast(string) x).joiner(",").array);
+                request.include
+                    .map!(x => encodeComponent(cast(string) x))
+                    .joiner(",")
+                    .array);
         return url;
     }
 
@@ -1104,4 +1108,24 @@ unittest
     url = client.buildListInputItemsUrl(req);
     assert(url.canFind("before=b"));
     assert(!url.canFind("after="));
+}
+
+@("buildListInputItemsUrl encodes query values")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto req = listInputItemsRequest("resp");
+    req.order = "custom @order";
+    req.after = "foo bar";
+    req.before = "bar+baz";
+    auto url = client.buildListInputItemsUrl(req);
+
+    assert(url.canFind("order=custom%20%40order"));
+    assert(url.canFind("after=foo%20bar"));
+    assert(url.canFind("before=bar%2Bbaz"));
 }
