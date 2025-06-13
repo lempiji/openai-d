@@ -31,7 +31,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
   - [x] speech
   - [x] transcription
   - [x] translations
-- [ ] [Images](https://platform.openai.com/docs/api-reference/images) (TODO)
+  - [x] [Images](https://platform.openai.com/docs/api-reference/images)
 - [x] [Embeddings](https://platform.openai.com/docs/api-reference/embeddings)
 - [ ] [Evals](https://platform.openai.com/docs/api-reference/evals) (TODO)
 - [ ] [Fine-tunings](https://platform.openai.com/docs/api-reference/fine-tuning) (TODO)
@@ -203,6 +203,24 @@ writeln(response.text);
 ```
 
 See `examples/audio_translation` for a complete example.
+
+__Images__
+
+```d name=images
+import std;
+import openai;
+
+// Load API key from environment variable
+auto client = new OpenAIClient();
+
+// POST /images/generations
+auto request = imageGenerationRequest("A cute baby sea otter");
+request.responseFormat = ImageResponseFormatB64Json;
+auto response = client.imageGeneration(request);
+write("image.png", Base64.decode(response.data[0].b64Json));
+```
+
+See `examples/images` for a complete example.
 
 ## OpenAIClientConfig
 

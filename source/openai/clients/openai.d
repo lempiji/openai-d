@@ -16,6 +16,7 @@ import openai.embedding;
 import openai.models;
 import openai.moderation;
 import openai.audio;
+import openai.images;
 import openai.responses;
 
 @safe:
@@ -494,6 +495,129 @@ class OpenAIClient
         return text.deserializeJson!AudioTextResponse();
     }
 
+    /// Generate an image via `/images/generations`.
+    ImageResponse imageGeneration(in ImageGenerationRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (request.prompt.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto requestJson = serializeJson(request);
+        auto content = cast(char[]) post!ubyte(buildUrl("/images/generations"), requestJson, http);
+
+        auto result = content.deserializeJson!ImageResponse();
+        return result;
+    }
+
+    /// Edit an image via `/images/edits`.
+    ImageResponse imageEdit(in ImageEditRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (request.image.length > 0)
+    in (request.prompt.length > 0)
+    {
+        import std.array : appender;
+        import std.conv : to;
+        import std.random : uniform;
+
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        auto boundary = "--------------------------" ~ to!string(uniform(0, int.max));
+        http.addRequestHeader("Content-Type", "multipart/form-data; boundary=" ~ boundary);
+
+        auto body = appender!(ubyte[])();
+
+        void addText(string name, string value)
+        {
+            body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
+            body.put(cast(ubyte[])("Content-Disposition: form-data; name=\"" ~ name ~ "\"\r\n\r\n"));
+            body.put(cast(ubyte[]) value);
+            body.put(cast(ubyte[]) "\r\n");
+        }
+
+        void addFile(string name, string filePath)
+        {
+            appendFileChunked(body, boundary, name, filePath);
+        }
+
+        addFile("image", request.image);
+        if (request.mask.length)
+            addFile("mask", request.mask);
+        addText("prompt", request.prompt);
+        if (request.model.length)
+            addText("model", request.model);
+        if (request.n != 0)
+            addText("n", to!string(request.n));
+        if (request.size.length)
+            addText("size", request.size);
+        if (request.responseFormat.length)
+            addText("response_format", request.responseFormat);
+        if (request.user.length)
+            addText("user", request.user);
+
+        body.put(cast(ubyte[])("--" ~ boundary ~ "--\r\n"));
+
+        auto content = cast(char[]) post!ubyte(buildUrl("/images/edits"), body.data, http);
+
+        auto result = content.deserializeJson!ImageResponse();
+        return result;
+    }
+
+    /// Create image variations via `/images/variations`.
+    ImageResponse imageVariation(in ImageVariationRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (request.image.length > 0)
+    {
+        import std.array : appender;
+        import std.conv : to;
+        import std.random : uniform;
+
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        auto boundary = "--------------------------" ~ to!string(uniform(0, int.max));
+        http.addRequestHeader("Content-Type", "multipart/form-data; boundary=" ~ boundary);
+
+        auto body = appender!(ubyte[])();
+
+        void addText(string name, string value)
+        {
+            body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
+            body.put(cast(ubyte[])("Content-Disposition: form-data; name=\"" ~ name ~ "\"\r\n\r\n"));
+            body.put(cast(ubyte[]) value);
+            body.put(cast(ubyte[]) "\r\n");
+        }
+
+        void addFile(string name, string filePath)
+        {
+            appendFileChunked(body, boundary, name, filePath);
+        }
+
+        addFile("image", request.image);
+        if (request.model.length)
+            addText("model", request.model);
+        if (request.n != 0)
+            addText("n", to!string(request.n));
+        if (request.size.length)
+            addText("size", request.size);
+        if (request.responseFormat.length)
+            addText("response_format", request.responseFormat);
+        if (request.user.length)
+            addText("user", request.user);
+
+        body.put(cast(ubyte[])("--" ~ boundary ~ "--\r\n"));
+
+        auto content = cast(char[]) post!ubyte(buildUrl("/images/variations"), body.data, http);
+
+        auto result = content.deserializeJson!ImageResponse();
+        return result;
+    }
+
     ///
     ResponsesResponse createResponse(in CreateResponseRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
@@ -748,6 +872,75 @@ class OpenAIClient
         auto client = new OpenAIClient(cfg);
         assert(client.buildUrl("/audio/speech") ==
                 "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/audio/speech?api-version=2024-05-01");
+    }
+
+    @("buildUrl image generation - openai")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/images/generations") ==
+                "https://api.openai.com/v1/images/generations");
+    }
+
+    @("buildUrl image generation - azure")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
+        cfg.deploymentId = "dep";
+        cfg.apiVersion = "2024-05-01";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/images/generations") ==
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/images/generations?api-version=2024-05-01");
+    }
+
+    @("buildUrl image edit - openai")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/images/edits") ==
+                "https://api.openai.com/v1/images/edits");
+    }
+
+    @("buildUrl image edit - azure")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
+        cfg.deploymentId = "dep";
+        cfg.apiVersion = "2024-05-01";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/images/edits") ==
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/images/edits?api-version=2024-05-01");
+    }
+
+    @("buildUrl image variation - openai")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/images/variations") ==
+                "https://api.openai.com/v1/images/variations");
+    }
+
+    @("buildUrl image variation - azure")
+    unittest
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
+        cfg.deploymentId = "dep";
+        cfg.apiVersion = "2024-05-01";
+        auto client = new OpenAIClient(cfg);
+        assert(client.buildUrl("/images/variations") ==
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/images/variations?api-version=2024-05-01");
     }
 }
 
