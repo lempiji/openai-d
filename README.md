@@ -229,7 +229,7 @@ import std;
 import openai;
 
 auto client = new OpenAIClient();
-auto list = client.listProjects(ListProjectsRequest());
+auto list = client.listProjects(listProjectsRequest(20));
 writeln(list.data.length);
 ```
 

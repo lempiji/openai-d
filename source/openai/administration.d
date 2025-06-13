@@ -41,13 +41,29 @@ struct AdminApiKeyListResponse
 
 struct ListAdminApiKeysRequest
 {
-    @serdeOptional string after;
-    @serdeOptional uint limit;
+    @serdeOptional @serdeIgnoreDefault string after;
+    @serdeOptional @serdeIgnoreDefault uint limit;
+}
+
+/// Convenience constructor for `ListAdminApiKeysRequest`.
+ListAdminApiKeysRequest listAdminApiKeysRequest(uint limit)
+{
+    auto req = ListAdminApiKeysRequest();
+    req.limit = limit;
+    return req;
 }
 
 struct CreateAdminApiKeyRequest
 {
     string name;
+}
+
+/// Convenience constructor for `CreateAdminApiKeyRequest`.
+CreateAdminApiKeyRequest createAdminApiKeyRequest(string name)
+{
+    auto req = CreateAdminApiKeyRequest();
+    req.name = name;
+    return req;
 }
 
 @serdeIgnoreUnexpectedKeys
@@ -81,9 +97,19 @@ struct ProjectListResponse
 
 struct ListProjectsRequest
 {
-    @serdeOptional uint limit;
-    @serdeOptional string after;
-    @serdeOptional @serdeKeys("include_archived") bool includeArchived;
+    @serdeOptional @serdeIgnoreDefault uint limit;
+    @serdeOptional @serdeIgnoreDefault string after;
+    @serdeOptional @serdeIgnoreDefault @serdeKeys("include_archived") bool includeArchived;
+}
+
+/// Convenience constructor for `ListProjectsRequest`.
+ListProjectsRequest listProjectsRequest(uint limit, bool includeArchived = false)
+{
+    auto req = ListProjectsRequest();
+    req.limit = limit;
+    if (includeArchived)
+        req.includeArchived = true;
+    return req;
 }
 
 struct ProjectCreateRequest
@@ -91,9 +117,25 @@ struct ProjectCreateRequest
     string name;
 }
 
+/// Convenience constructor for `ProjectCreateRequest`.
+ProjectCreateRequest projectCreateRequest(string name)
+{
+    auto req = ProjectCreateRequest();
+    req.name = name;
+    return req;
+}
+
 struct ProjectUpdateRequest
 {
     string name;
+}
+
+/// Convenience constructor for `ProjectUpdateRequest`.
+ProjectUpdateRequest projectUpdateRequest(string name)
+{
+    auto req = ProjectUpdateRequest();
+    req.name = name;
+    return req;
 }
 
 @serdeIgnoreUnexpectedKeys
@@ -130,9 +172,25 @@ struct ToggleCertificatesRequest
     string[] data;
 }
 
+/// Convenience constructor for `ToggleCertificatesRequest`.
+ToggleCertificatesRequest toggleCertificatesRequest(string[] ids)
+{
+    auto req = ToggleCertificatesRequest();
+    req.data = ids;
+    return req;
+}
+
 struct ModifyCertificateRequest
 {
     string name;
+}
+
+/// Convenience constructor for `ModifyCertificateRequest`.
+ModifyCertificateRequest modifyCertificateRequest(string name)
+{
+    auto req = ModifyCertificateRequest();
+    req.name = name;
+    return req;
 }
 
 @serdeIgnoreUnexpectedKeys
@@ -162,12 +220,20 @@ struct ListAuditLogsResponse
 
 struct ListAuditLogsRequest
 {
-    @serdeOptional string[] projectIds;
-    @serdeOptional string[] eventTypes;
-    @serdeOptional string[] actorIds;
-    @serdeOptional uint limit;
-    @serdeOptional string after;
-    @serdeOptional string before;
+    @serdeOptional @serdeIgnoreDefault string[] projectIds;
+    @serdeOptional @serdeIgnoreDefault string[] eventTypes;
+    @serdeOptional @serdeIgnoreDefault string[] actorIds;
+    @serdeOptional @serdeIgnoreDefault uint limit;
+    @serdeOptional @serdeIgnoreDefault string after;
+    @serdeOptional @serdeIgnoreDefault string before;
+}
+
+/// Convenience constructor for `ListAuditLogsRequest`.
+ListAuditLogsRequest listAuditLogsRequest(uint limit)
+{
+    auto req = ListAuditLogsRequest();
+    req.limit = limit;
+    return req;
 }
 
 unittest
@@ -191,4 +257,20 @@ unittest
     assert(js == `{"name":"proj"}`);
     auto back = deserializeJson!ProjectCreateRequest(js);
     assert(back.name == "proj");
+}
+
+unittest
+{
+    import mir.ser.json : serializeJson;
+
+    auto req = createAdminApiKeyRequest("main-key");
+    assert(serializeJson(req) == `{"name":"main-key"}`);
+}
+
+unittest
+{
+    import mir.ser.json : serializeJson;
+
+    auto req = listProjectsRequest(10, true);
+    assert(serializeJson(req) == `{"limit":10,"include_archived":true}`);
 }
