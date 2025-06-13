@@ -1,0 +1,62 @@
+name: docs-only
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.md'
+      - '**/AGENTS.md'
+  pull_request:
+    paths:
+      - '**/*.md'
+      - '**/AGENTS.md'
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Detect docs-only changes
+        id: doccheck
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.event.pull_request.base.sha }}"
+            head="${{ github.event.pull_request.head.sha }}"
+          else
+            base="${{ github.event.before }}"
+            head="${{ github.sha }}"
+          fi
+          changed=$(git diff --name-only "$base" "$head")
+          echo "$changed"
+          other=$(echo "$changed" | grep -vE '\.md$|AGENTS.md$' || true)
+          if [ -z "$other" ]; then
+            echo "only_docs=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "only_docs=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Setup Dlang
+        if: steps.doccheck.outputs.only_docs == 'true'
+        uses: dlang-community/setup-dlang@v1
+        with:
+          compiler: dmd-latest
+      - name: Cache Dub packages
+        if: steps.doccheck.outputs.only_docs == 'true'
+        uses: actions/cache@v3
+        with:
+          path: ~/.dub/packages
+          key: dub-${{ runner.os }}-docs-${{ hashFiles('dub.json') }}
+          restore-keys: dub-${{ runner.os }}-docs-
+      - name: Install formatter
+        if: steps.doccheck.outputs.only_docs == 'true'
+        run: dub fetch dfmt && dub run dfmt -- --version
+      - name: Format source and examples
+        if: steps.doccheck.outputs.only_docs == 'true'
+        run: |
+          dub run dfmt -- source
+          dub run dfmt -- examples
+      - name: Lint
+        if: steps.doccheck.outputs.only_docs == 'true'
+        run: dub lint --dscanner-config dscanner.ini
+      - name: Skip workflow
+        if: steps.doccheck.outputs.only_docs != 'true'
+        run: echo "Changes include non-doc files, skipping docs-only checks."
