@@ -35,29 +35,23 @@ jobs:
             echo "only_docs=true" >> "$GITHUB_OUTPUT"
           else
             echo "only_docs=false" >> "$GITHUB_OUTPUT"
-          fi
       - name: Setup Dlang
-        if: steps.doccheck.outputs.only_docs == 'true'
         uses: dlang-community/setup-dlang@v1
         with:
           compiler: dmd-latest
       - name: Cache Dub packages
-        if: steps.doccheck.outputs.only_docs == 'true'
         uses: actions/cache@v3
         with:
           path: ~/.dub/packages
           key: dub-${{ runner.os }}-docs-${{ hashFiles('dub.json') }}
           restore-keys: dub-${{ runner.os }}-docs-
       - name: Install formatter
-        if: steps.doccheck.outputs.only_docs == 'true'
         run: dub fetch dfmt && dub run dfmt -- --version
       - name: Format source and examples
-        if: steps.doccheck.outputs.only_docs == 'true'
         run: |
           dub run dfmt -- source
           dub run dfmt -- examples
       - name: Lint
-        if: steps.doccheck.outputs.only_docs == 'true'
         run: dub lint --dscanner-config dscanner.ini
       - name: Skip workflow
         if: steps.doccheck.outputs.only_docs != 'true'
