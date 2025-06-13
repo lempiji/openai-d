@@ -84,7 +84,7 @@
 * PR title format: `[<module>] <short description>`
 * Commit messages: Follow Conventional Commits.
 * Pre-merge checks: Formatter → Linter → Tests → Coverage report.
-* A lightweight `docs-only` workflow runs when a commit only modifies Markdown files or `AGENTS.md`. It executes formatter and linter checks without compiling library code or examples.
+* A lightweight `docs-only` workflow runs when a commit only modifies Markdown files or `AGENTS.md`. It executes formatter and linter checks without compiling library code or examples. The main CI workflow ignores these docs-only changes and runs on all other updates.
 
 ## 9. Directory Structure
 

@@ -3,6 +3,13 @@ name: 'main CI'
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - '**/AGENTS.md'
+  pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - '**/AGENTS.md'
 
 jobs:
   build-ubuntu:
