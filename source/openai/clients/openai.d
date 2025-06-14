@@ -18,6 +18,7 @@ import openai.moderation;
 import openai.audio;
 import openai.images;
 import openai.responses;
+import openai.administration;
 
 @safe:
 
@@ -679,6 +680,239 @@ class OpenAIClient
         auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
         auto result = content.deserializeJson!ResponseItemList();
         return result;
+    }
+
+    /// List organization and project admin API keys.
+    AdminApiKeyListResponse listAdminApiKeys(in ListAdminApiKeysRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        import std.format : format;
+        import std.uri : encodeComponent;
+
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildUrl("/organization/admin_api_keys");
+        string sep = "?";
+        if (request.limit)
+            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
+        if (request.after.length)
+            url ~= format("%safter=%s", sep, encodeComponent(request.after));
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        auto result = content.deserializeJson!AdminApiKeyListResponse();
+        return result;
+    }
+
+    /// Create an admin API key.
+    AdminApiKey createAdminApiKey(in CreateAdminApiKeyRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto body = serializeJson(request);
+        auto content = cast(char[]) post!ubyte(buildUrl("/organization/admin_api_keys"), body, http);
+        return content.deserializeJson!AdminApiKey();
+    }
+
+    /// Retrieve an admin API key by ID.
+    AdminApiKey getAdminApiKey(string keyId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (keyId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/organization/admin_api_keys/" ~ keyId), http);
+        return content.deserializeJson!AdminApiKey();
+    }
+
+    /// Delete an admin API key.
+    DeleteAdminApiKeyResponse deleteAdminApiKey(string keyId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (keyId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        import std.array : appender;
+
+        auto buf = appender!(char[])();
+        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
+        del(buildUrl("/organization/admin_api_keys/" ~ keyId), http);
+        auto content = buf.data;
+        return content.deserializeJson!DeleteAdminApiKeyResponse();
+    }
+
+    /// List audit logs for the organization.
+    ListAuditLogsResponse listAuditLogs(in ListAuditLogsRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        import std.format : format;
+        import std.algorithm : map;
+        import std.uri : encodeComponent;
+
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildUrl("/organization/audit_logs");
+        string sep = "?";
+        if (request.projectIds !is null && request.projectIds.length)
+            url ~= format("%sproject_ids=%s", sep, request.projectIds.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.eventTypes !is null && request.eventTypes.length)
+            url ~= format("%sevent_types=%s", sep, request.eventTypes.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.actorIds !is null && request.actorIds.length)
+            url ~= format("%sactor_ids=%s", sep, request.actorIds.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.limit)
+            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
+        if (request.after.length)
+            url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
+        if (request.before.length)
+            url ~= format("%sbefore=%s", sep, encodeComponent(request.before));
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!ListAuditLogsResponse();
+    }
+
+    /// List projects.
+    ProjectListResponse listProjects(in ListProjectsRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        import std.format : format;
+        import std.uri : encodeComponent;
+
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildUrl("/organization/projects");
+        string sep = "?";
+        if (request.limit)
+            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
+        if (request.after.length)
+            url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
+        if (request.includeArchived)
+            url ~= format("%sinclude_archived=true", sep), sep = "&";
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!ProjectListResponse();
+    }
+
+    /// Create a project.
+    Project createProject(in ProjectCreateRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto body = serializeJson(request);
+        auto content = cast(char[]) post!ubyte(buildUrl("/organization/projects"), body, http);
+        return content.deserializeJson!Project();
+    }
+
+    /// Retrieve a project by ID.
+    Project retrieveProject(string projectId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (projectId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/organization/projects/" ~ projectId), http);
+        return content.deserializeJson!Project();
+    }
+
+    /// Modify a project.
+    Project modifyProject(string projectId, in ProjectUpdateRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (projectId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto body = serializeJson(request);
+        auto content = cast(char[]) post!ubyte(buildUrl("/organization/projects/" ~ projectId), body, http);
+        return content.deserializeJson!Project();
+    }
+
+    /// Archive a project.
+    Project archiveProject(string projectId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (projectId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        auto content = cast(char[]) post!ubyte(buildUrl("/organization/projects/" ~ projectId ~ "/archive"), "{}", http);
+        return content.deserializeJson!Project();
+    }
+
+    /// List organization certificates.
+    ListCertificatesResponse listCertificates() @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/organization/certificates"), http);
+        return content.deserializeJson!ListCertificatesResponse();
+    }
+
+    /// Activate organization certificates.
+    ListCertificatesResponse activateCertificates(in ToggleCertificatesRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto body = serializeJson(request);
+        auto content = cast(char[]) post!ubyte(buildUrl("/organization/certificates/activate"), body, http);
+        return content.deserializeJson!ListCertificatesResponse();
+    }
+
+    /// Deactivate organization certificates.
+    ListCertificatesResponse deactivateCertificates(in ToggleCertificatesRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto body = serializeJson(request);
+        auto content = cast(char[]) post!ubyte(buildUrl("/organization/certificates/deactivate"), body, http);
+        return content.deserializeJson!ListCertificatesResponse();
+    }
+
+    /// Modify a certificate.
+    Certificate modifyCertificate(string certificateId, in ModifyCertificateRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (certificateId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto body = serializeJson(request);
+        auto content = cast(char[]) post!ubyte(buildUrl("/organization/certificates/" ~ certificateId), body, http);
+        return content.deserializeJson!Certificate();
     }
 
     private string buildListInputItemsUrl(in ListInputItemsRequest request) const @safe

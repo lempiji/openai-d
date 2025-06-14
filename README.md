@@ -44,7 +44,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 - [ ] [Vector stores](https://platform.openai.com/docs/api-reference/vector-stores) (TODO)
 - [ ] [Containers](https://platform.openai.com/docs/api-reference/containers) (TODO)
 - [ ] [Assistants (Beta)](https://platform.openai.com/docs/api-reference/assistants) (TODO)
-- [ ] [Administration](https://platform.openai.com/docs/api-reference/administration) (TODO)
+ - [x] [Administration](https://platform.openai.com/docs/api-reference/administration)
 
 __legacy__
 - [x] Completions (Legacy)
@@ -221,6 +221,18 @@ write("image.png", Base64.decode(response.data[0].b64Json));
 ```
 
 See `examples/images` for a complete example.
+
+__Administration__
+
+```d name=admin_projects
+import std;
+import openai;
+
+auto client = new OpenAIClient();
+auto list = client.listProjects(listProjectsRequest(20));
+writeln(list.data.length);
+```
+
 
 ## OpenAIClientConfig
 
