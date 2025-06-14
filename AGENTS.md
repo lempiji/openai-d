@@ -98,7 +98,14 @@
 
 ## 10. Reflection & Improvement
 
-After completing your tasks, the agent **must create** a new file in `.agents/reflections/` named `YYYY-MM-DD-hhmm-{task-summary}.md`. Start the file with the exact block found in `.agents/reflection-template.md`.
+After completing your tasks, the agent **must create** a new file in `.agents/reflections/` named `YYYY-MM-DD-hhmm-{task-summary}.md`. Start the file with the exact block found in `.agents/reflection-template.md`. The header must be in the format `### :book: Reflection for [YYYY-MM-DD HH:MM]` (note the required square brackets).
+
+```
+### :book: Reflection for [2025-06-13 14:28]
+```
+
+Existing reflections before mid-2025 may omit these brackets. Update their
+headers when modifying or archiving those files to maintain consistency.
 
 > **One Bold Change rule**: every reflection must propose **exactly one** high-leverage improvement that could eliminate the biggest pain point next time.
 
