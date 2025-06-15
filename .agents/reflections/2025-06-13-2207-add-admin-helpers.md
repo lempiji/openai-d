@@ -9,7 +9,6 @@
 
 #### :warning: Pain points
   - Local compilation of examples pulled dependencies again, increasing build time
-  - Example: Local `dub build` in `examples/administration` took over a minute due to downloads
 
 #### :bulb: Proposed Improvement
   - Cache example build artifacts or dependencies to avoid repeated downloads during local builds
