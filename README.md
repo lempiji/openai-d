@@ -131,6 +131,7 @@ writeln(items.data.length);
 ```
 
 See `examples/responses` for a complete example.
+See `examples/responses_code_interpreter` for a code interpreter example.
 
 __Embedding__
 
