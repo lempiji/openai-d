@@ -695,10 +695,13 @@ class OpenAIClient
 
         string url = buildUrl("/organization/admin_api_keys");
         string sep = "?";
-        if (request.limit)
-            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
-        if (request.after.length)
+        if (request.limit) {
+            url ~= format("%slimit=%s", sep, request.limit);
+            sep = "&";
+        }
+        if (request.after.length) {
             url ~= format("%safter=%s", sep, encodeComponent(request.after));
+        }
 
         auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
         auto result = content.deserializeJson!AdminApiKeyListResponse();
