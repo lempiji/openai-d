@@ -44,7 +44,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 - [ ] [Vector stores](https://platform.openai.com/docs/api-reference/vector-stores) (TODO)
 - [ ] [Containers](https://platform.openai.com/docs/api-reference/containers) (TODO)
 - [ ] [Assistants (Beta)](https://platform.openai.com/docs/api-reference/assistants) (TODO)
- - [x] [Administration](https://platform.openai.com/docs/api-reference/administration)
+- [x] [Administration](https://platform.openai.com/docs/api-reference/administration)
 
 __legacy__
 - [x] Completions (Legacy)
