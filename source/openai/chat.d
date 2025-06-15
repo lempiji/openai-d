@@ -16,11 +16,10 @@ import openai.completion : CompletionUsage;
 @safe:
 
 @serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "function")
 struct ChatMessageToolCall
 {
     string id;
-
-    string type = "function";
 
     @serdeKeys("function")
     ChatMessageFunctionCall function_;
@@ -72,20 +71,18 @@ struct ChatCompletionFunction
 
 ///
 @serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "function")
 struct ChatCompletionTool
 {
-    string type = "function";
-
     @serdeKeys("function")
     ChatCompletionFunction function_;
 }
 
 ///
 @serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "function")
 struct ChatCompletionToolChoiceInfo
 {
-    string type = "function";
-
     @serdeKeys("function")
     ChatCompletionToolFunctionChoice function_;
 }
@@ -102,9 +99,9 @@ alias ChatCompletionToolChoice = Algebraic!(string, ChatCompletionToolChoiceInfo
 
 ///
 @serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "text")
 struct ChatUserMessageTextContent
 {
-    string type = "text";
     string text;
 }
 
@@ -121,10 +118,9 @@ struct ChatUserMessageImageUrl
 
 ///
 @serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "image_url")
 struct ChatUserMessageImageContent
 {
-    string type = "image_url";
-
     @serdeKeys("image_url")
     ChatUserMessageImageUrl imageUrl;
 }
@@ -284,7 +280,7 @@ ChatMessage userChatMessage(string[] contents, string name = null)
     auto items = new ChatUserMessageContentItem[](contents.length);
     foreach (i, message; contents)
     {
-        items[i] = ChatUserMessageContentItem(ChatUserMessageTextContent("text", message));
+        items[i] = ChatUserMessageContentItem(ChatUserMessageTextContent(message));
     }
     return ChatMessage("user", ChatMessageContent(items), name);
 }
@@ -599,13 +595,11 @@ struct ChatCompletionRequest
 unittest
 {
     ChatCompletionTool tool1;
-    tool1.type = "function";
     tool1.function_.name = "tool1";
     tool1.function_.description = "Description of tool1";
     tool1.function_.parameters = JsonValue("{}");
 
     ChatCompletionTool tool2;
-    tool2.type = "function";
     tool2.function_.name = "tool2";
     tool2.function_.description = "Description of tool2";
     tool2.function_.parameters = JsonValue("{}");
@@ -621,22 +615,18 @@ unittest
     request.toolChoice = "auto";
 
     assert(request.tools.length == 2);
-    assert(request.tools[0].type == "function");
     assert(request.tools[0].function_.name == "tool1");
-    assert(request.tools[1].type == "function");
     assert(request.tools[1].function_.name == "tool2");
 }
 
 unittest
 {
     ChatCompletionTool tool3;
-    tool3.type = "function";
     tool3.function_.name = "tool3";
     tool3.function_.description = "Description of tool3";
     tool3.function_.parameters = JsonValue("{}");
 
     ChatCompletionToolChoiceInfo toolChoiceInfo;
-    toolChoiceInfo.type = "function";
     toolChoiceInfo.function_.name = "tool3";
 
     ChatCompletionRequest request;
@@ -648,7 +638,6 @@ unittest
     request.tools = [tool3];
     request.toolChoice = ChatCompletionToolChoice(toolChoiceInfo);
 
-    assert(request.toolChoice.get!ChatCompletionToolChoiceInfo().type == "function");
     assert(request.toolChoice.get!ChatCompletionToolChoiceInfo().function_.name == "tool3");
 }
 
