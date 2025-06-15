@@ -43,6 +43,7 @@
   dub fetch dfmt && dub run dfmt -- --version
   ```
   Network access or a setup script is required for this step.
+* **Run dfmt immediately before committing and never alter its output by hand.**
 
 * Library source:
 
@@ -56,6 +57,7 @@
   ```
 
 * CI runs dfmt on `source` and `examples` and fails if `git diff --exit-code` detects changes.
+* **Never edit dfmt output manually. Commit formatting changes exactly as produced.**
 
 ## 6. Linter
 
