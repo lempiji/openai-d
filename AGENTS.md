@@ -79,6 +79,11 @@
      are required for verifying new features.
    All examples should compile before major releases or when unsure.
    Example groups are determined by the API prefix before the underscore in each directory.
+   **Quick guide**
+   - Use a single group such as `chat` when only that example directory changed.
+   - Provide multiple groups (`chat audio`) if several examples were modified.
+   - Prefix with `fast` (`fast` or `fast <group>`) for quick iteration.
+   - Use `all` to replicate CI builds or before a release.
 5. If all checks pass, commit changes and open a pull request.
 
 ## 8. CI/CD & PR Guidelines
