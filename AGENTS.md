@@ -55,6 +55,8 @@
   dub run dfmt -- examples
   ```
 
+* CI runs dfmt on `source` and `examples` and fails if `git diff --exit-code` detects changes.
+
 ## 6. Linter
 
 * Run linter:
@@ -91,7 +93,7 @@
 * CI: GitHub Actions workflows are defined in `.github/workflows/`.
 * PR title format: `[<module>] <short description>`
 * Commit messages: Follow Conventional Commits.
-* Pre-merge checks: Formatter → Linter → Tests → Coverage report.
+* Pre-merge checks: Formatter → Linter → Tests → Coverage report. CI fails if formatting changes are needed.
 
 ## 9. Directory Structure
 
