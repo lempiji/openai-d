@@ -1000,7 +1000,9 @@ class OpenAIClient
     }
 
     private void appendFileChunked(scope ref Appender!(ubyte[])
+
         
+
         body,
         string boundary,
         string name,
