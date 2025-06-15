@@ -990,7 +990,9 @@ class OpenAIClient
             }
 
         body.put(cast(ubyte[])("--" ~ boundary ~ "--\r\n"));
+        // dfmt off
         return body.data;
+        // dfmt on
     }
 
     @("buildUrl - openai mode")
