@@ -1,7 +1,7 @@
 .dub
 docs.json
 __dummy.html
-docs/
+docs/*.tmp
 /taskchain
 taskchain.so
 taskchain.dylib
