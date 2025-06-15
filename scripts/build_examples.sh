@@ -33,6 +33,7 @@ fast_examples=(
     embedding
     moderation
     responses
+    responses_code_interpreter
 )
 
 # Collect all example directories
