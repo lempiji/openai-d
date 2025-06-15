@@ -11,8 +11,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 
 ## Requirements
 
-`dmd` and `dub` must be installed. Use the [official D installer](https://dlang.org/download.html)
-or run `/workspace/dlang/install.sh` to set them up.
+`dmd` and `dub` must be installed. Use the [official D installer](https://dlang.org/download.html).
 
 ## Features
 
