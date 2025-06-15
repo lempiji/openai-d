@@ -24,6 +24,12 @@ jobs:
           path: ~/.dub/packages
           key: dub-${{ runner.os }}-${{ matrix.dlang }}-${{ hashFiles('dub.json') }}
           restore-keys: dub-${{ runner.os }}-${{ matrix.dlang }}-
+      - name: Check formatting
+        run: |
+          dub fetch dfmt && dub run dfmt -- --version
+          dub run dfmt -- source
+          dub run dfmt -- examples
+          git diff --exit-code
       - name: Build
         run: dub build --compiler=$DC
       - name: Lint
@@ -59,6 +65,13 @@ jobs:
           path: ${{ env.LOCALAPPDATA }}\dub\packages
           key: dub-${{ runner.os }}-${{ matrix.dlang }}-${{ hashFiles('dub.json') }}
           restore-keys: dub-${{ runner.os }}-${{ matrix.dlang }}-
+      - name: Check formatting
+        shell: pwsh
+        run: |
+          dub fetch dfmt && dub run dfmt -- --version
+          dub run dfmt -- source
+          dub run dfmt -- examples
+          git diff --exit-code
       - name: Build
         run: dub build --compiler=$Env:DC
       - name: Lint
