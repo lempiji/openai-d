@@ -630,7 +630,25 @@ class OpenAIClient
         http.addRequestHeader("Content-Type", "application/json");
 
         auto requestJson = serializeJson(request);
+        scope (failure)
+        {
+            import std.stdio;
+
+            writeln("----------");
+            writeln("# createResponse requestJson");
+            writeln(requestJson);
+            writeln("----------");
+        }
         auto content = cast(char[]) post!ubyte(buildUrl("/responses"), requestJson, http);
+        scope (failure)
+        {
+            import std.stdio;
+
+            writeln("-----------");
+            writeln("# createResponse responseContent");
+            writeln(content);
+            writeln("-----------");
+        }
 
         auto result = content.deserializeJson!ResponsesResponse();
         return result;
@@ -667,7 +685,7 @@ class OpenAIClient
     }
 
     ///
-    ResponseItemList listInputItems(in ListInputItemsRequest request) @system
+    ResponsesItemListResponse listInputItems(in ListInputItemsRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.responseId.length > 0)
     {
@@ -678,7 +696,7 @@ class OpenAIClient
         string url = buildListInputItemsUrl(request);
 
         auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        auto result = content.deserializeJson!ResponseItemList();
+        auto result = content.deserializeJson!ResponsesItemListResponse();
         return result;
     }
 
@@ -980,9 +998,6 @@ class OpenAIClient
     }
 
     private void appendFileChunked(scope ref Appender!(ubyte[])
-
-        
-
         body,
         string boundary,
         string name,
