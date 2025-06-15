@@ -279,3 +279,7 @@ import openai;
 auto config = new OpenAIClientConfig("<Your OpenAI API Key>");
 auto client = new OpenAIClient(config);
 ```
+
+## License
+
+This project is released under the [MIT license](LICENSE).
