@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/chat_vision
+chat_vision.so
+chat_vision.dylib
+chat_vision.dll
+chat_vision.a
+chat_vision.lib
+chat_vision-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst

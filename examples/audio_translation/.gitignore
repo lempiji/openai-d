@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/audio_translation
+audio_translation.so
+audio_translation.dylib
+audio_translation.dll
+audio_translation.a
+audio_translation.lib
+audio_translation-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst

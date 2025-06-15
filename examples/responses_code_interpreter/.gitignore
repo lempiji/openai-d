@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/responses_code_interpreter
+responses_code_interpreter.so
+responses_code_interpreter.dylib
+responses_code_interpreter.dll
+responses_code_interpreter.a
+responses_code_interpreter.lib
+responses_code_interpreter-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst

@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/chat_reasoning
+chat_reasoning.so
+chat_reasoning.dylib
+chat_reasoning.dll
+chat_reasoning.a
+chat_reasoning.lib
+chat_reasoning-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst

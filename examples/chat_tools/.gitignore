@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/chat_tools
+chat_tools.so
+chat_tools.dylib
+chat_tools.dll
+chat_tools.a
+chat_tools.lib
+chat_tools-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
