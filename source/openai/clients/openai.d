@@ -581,9 +581,7 @@ class OpenAIClient
         setupHttpByConfig(http);
         http.addRequestHeader("Accept", "application/json; charset=utf-8");
 
-        string url = buildUrl("/responses/" ~ responseId);
-        if (include !is null && include.length)
-            url ~= "?include=" ~ cast(string) include.joiner(",").array;
+        string url = buildGetResponseUrl(responseId, include);
 
         auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
         auto result = content.deserializeJson!ResponsesResponse();
@@ -697,6 +695,7 @@ class OpenAIClient
     {
         import std.format : format;
         import std.algorithm : map;
+        import std.conv : to;
         import std.uri : encodeComponent;
 
         auto http = HTTP();
@@ -878,6 +877,23 @@ class OpenAIClient
                     .map!(x => encodeComponent(cast(string) x))
                     .joiner(",")
                     .array);
+        return url;
+    }
+
+    private string buildGetResponseUrl(string responseId, string[] include) const @safe
+    {
+        import std.algorithm : map;
+        import std.conv : to;
+        import std.uri : encodeComponent;
+
+        string url = buildUrl("/responses/" ~ responseId);
+        if (include !is null && include.length)
+            url ~= "?include="
+                ~ to!string(
+                    include
+                        .map!(x => encodeComponent(cast(string) x))
+                        .joiner(",")
+                        .array);
         return url;
     }
 
@@ -1371,4 +1387,18 @@ unittest
     assert(url.canFind("order=custom%20%40order"));
     assert(url.canFind("after=foo%20bar"));
     assert(url.canFind("before=bar%2Bbaz"));
+}
+
+@("getResponse encodes include values")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto url = client.buildGetResponseUrl("resp", ["foo bar", "bar+baz"]);
+
+    assert(url.canFind("include=foo%20bar,bar%2Bbaz"));
 }
