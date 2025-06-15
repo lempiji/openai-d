@@ -1,6 +1,0 @@
-name "reasoning"
-description "Simple reasoning example."
-authors "lempiji"
-license "MIT"
-
-dependency "openai-d" path="../.."

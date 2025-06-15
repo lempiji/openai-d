@@ -1,0 +1,6 @@
+name "chat_structured_output"
+description "A minimal D application."
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."

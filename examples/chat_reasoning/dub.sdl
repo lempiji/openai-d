@@ -1,5 +1,5 @@
-name "structured_output"
-description "A minimal D application."
+name "chat_reasoning"
+description "Simple reasoning example."
 authors "lempiji"
 license "MIT"
 
