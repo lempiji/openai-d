@@ -68,24 +68,59 @@ struct ResponseText
     TextResponseFormatConfiguration format;
 }
 
-/// Input message content can be null, plain text, or a list of items such as
-/// text and image URLs.
-alias InputMessageContentItem = ChatUserMessageContentItem;
-alias InputMessageContent = ChatMessageContent;
+///
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "input_text")
+struct ResponsesInputTextContent
+{
+    string text;
+}
+
+///
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "input_image_url")
+struct ResponsesInputImageUrlContent
+{
+    string imageUrl;
+
+    @serdeOptional
+    @serdeIgnoreDefault
+    string detail;
+}
 
 @serdeIgnoreUnexpectedKeys
-struct InputMessage
+@serdeDiscriminatedField("type", "output_text")
+struct ResponsesOutputTextContent
 {
-    /// Always `"message"`.
-    string type = "message";
-    /// Message role.
-    string role;
+    string text;
+}
+
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "output_image_url")
+struct ResponsesOutputImageUrlContent
+{
+    string url;
+}
+
+alias ResponsesItemContent = Algebraic!(
+    ResponsesInputTextContent,
+    ResponsesInputImageUrlContent,
+    ResponsesOutputTextContent,
+    ResponsesOutputImageUrlContent
+);
+
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "message")
+struct ResponsesMessage
+{
+    /// Message ID returned from the API.
+    @serdeOptional @serdeIgnoreDefault string id;
     /// Item status.
     @serdeOptional @serdeIgnoreDefault string status;
     /// Content parts for this item.
-    InputMessageContent content;
-    /// Message ID returned from the API.
-    @serdeOptional @serdeIgnoreDefault string id;
+    ResponsesItemContent[] content;
+    /// Message role.
+    string role;
 }
 
 @serdeIgnoreUnexpectedKeys
@@ -94,16 +129,16 @@ struct ResponseItemList
     /// Resource type.
     string object;
     /// List items.
-    InputMessage[] data;
-    /// Indicates there are more items.
-    @serdeKeys("has_more") bool hasMore;
+    ResponsesMessage[] data;
     /// ID of the first item in the list.
     @serdeKeys("first_id") string firstId;
+    /// Indicates there are more items.
+    @serdeKeys("has_more") bool hasMore;
     /// ID of the last item in the list.
     @serdeKeys("last_id") string lastId;
 }
 
-alias CreateResponseInput = Algebraic!(string, InputMessage[]);
+alias CreateResponseInput = Algebraic!(string, ResponsesMessage[]);
 
 @serdeIgnoreUnexpectedKeys
 struct CreateResponseRequest
@@ -158,7 +193,6 @@ CreateResponseRequest createResponseRequest(string model, CreateResponseInput in
 @serdeDiscriminatedField("type", "output_text")
 struct OutputTextContent
 {
-    string type = "output_text";
     string text;
     /// Text annotations such as citations.
     JsonValue[] annotations;
@@ -168,7 +202,6 @@ struct OutputTextContent
 @serdeDiscriminatedField("type", "refusal")
 struct RefusalContent
 {
-    string type = "refusal";
     string refusal;
 }
 
@@ -273,15 +306,18 @@ unittest
     import mir.deser.json : deserializeJson;
     import mir.ser.json : serializeJson;
 
-    InputMessage msg;
+    ResponsesMessage msg;
     msg.role = "user";
-    msg.content = "hello";
+
+    ResponsesInputTextContent t;
+    t.text = "hello";
+    msg.content = [ResponsesItemContent(t)];
 
     auto jsonString = serializeJson(msg);
-    assert(jsonString == `{"type":"message","role":"user","content":"hello"}`);
+    assert(jsonString == `{"type":"message","content":[{"type":"input_text","text":"hello"}],"role":"user"}`, "jsonString: " ~ jsonString);
 
-    auto back = deserializeJson!InputMessage(jsonString);
-    assert(back.content.get!string() == "hello");
+    auto back = deserializeJson!ResponsesMessage(jsonString);
+    assert(back.content[0].get!ResponsesInputTextContent().text == "hello");
 }
 
 unittest
@@ -289,33 +325,17 @@ unittest
     import mir.deser.json : deserializeJson;
     import mir.ser.json : serializeJson;
 
-    InputMessage msg;
+    ResponsesMessage msg;
     msg.role = "user";
 
-    ChatUserMessageTextContent t;
+    ResponsesInputTextContent t;
     t.text = "Check";
-    ChatUserMessageImageContent img;
-    img.imageUrl = ChatUserMessageImageUrl("https://example.com/image.png");
-    msg.content = [ChatUserMessageContentItem(t), ChatUserMessageContentItem(img)];
+    ResponsesInputImageUrlContent img;
+    img.imageUrl = "https://example.com/image.png";
+    msg.content = [ResponsesItemContent(t), ResponsesItemContent(img)];
 
     string jsonString = serializeJson(msg);
-    assert(jsonString == `{"type":"message","role":"user","content":[{"type":"text","text":"Check"},{"type":"image_url","image_url":{"url":"https://example.com/image.png"}}]}`);
-}
-
-unittest
-{
-    import mir.deser.json : deserializeJson;
-    import mir.ser.json : serializeJson;
-
-    InputMessage msg;
-    msg.role = "system";
-    msg.content = ChatMessageContent(null);
-
-    auto jsonString = serializeJson(msg);
-    assert(jsonString == `{"type":"message","role":"system","content":null}`);
-
-    auto back = deserializeJson!InputMessage(jsonString);
-    assert(back.content.isNull);
+    assert(jsonString == `{"type":"message","content":[{"type":"input_text","text":"Check"},{"type":"input_image_url","imageUrl":"https://example.com/image.png"}],"role":"user"}`);
 }
 
 unittest
@@ -361,4 +381,36 @@ unittest
     auto res = deserializeJson!ResponsesResponse(json);
     assert(res.output.length == 1);
     assert(res.output[0].content[0].get!OutputTextContent().text == "Hello");
+}
+
+unittest
+{
+    import mir.deser.json : deserializeJson;
+
+    enum json = `{
+  "object": "list",
+  "data": [
+    {
+      "id": "msg_202020202020202020202020202020202020202020202020",
+      "type": "message",
+      "status": "completed",
+      "content": [
+        {
+          "type": "input_text",
+          "text": "Hello!"
+        }
+      ],
+      "role": "user"
+    }
+  ],
+  "first_id": "msg_202020202020202020202020202020202020202020202020",
+  "has_more": false,
+  "last_id": "msg_202020202020202020202020202020202020202020202020"
+}`;
+    auto list = deserializeJson!ResponseItemList(json);
+    assert(list.data.length == 1);
+    assert(list.data[0].content[0].get!ResponsesInputTextContent().text == "Hello!");
+    assert(!list.hasMore);
+    assert(list.firstId == "msg_202020202020202020202020202020202020202020202020");
+    assert(list.lastId == "msg_202020202020202020202020202020202020202020202020");
 }
