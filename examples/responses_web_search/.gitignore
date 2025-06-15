@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/responses_web_search
+responses_web_search.so
+responses_web_search.dylib
+responses_web_search.dll
+responses_web_search.a
+responses_web_search.lib
+responses_web_search-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst

@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/audio_speech
+audio_speech.so
+audio_speech.dylib
+audio_speech.dll
+audio_speech.a
+audio_speech.lib
+audio_speech-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
