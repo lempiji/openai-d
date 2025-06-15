@@ -381,55 +381,33 @@ class OpenAIClient
     in (request.file.length > 0)
     in (request.model.length > 0)
     {
-        import std.array : appender;
         import std.conv : to;
-        import std.path : baseName;
-        import std.random : uniform;
 
         auto http = HTTP();
         setupHttpByConfig(http);
         http.addRequestHeader("Accept", "application/json; charset=utf-8");
 
-        // create multipart body
-        auto boundary = "--------------------------" ~ to!string(uniform(0, int.max));
-        http.addRequestHeader("Content-Type",
-            "multipart/form-data; boundary=" ~ boundary);
-
-        auto body = appender!(ubyte[])();
-
-        void addText(string name, string value)
-        {
-            body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
-            body.put(cast(ubyte[])("Content-Disposition: form-data; name=\"" ~ name ~ "\"\r\n\r\n"));
-            body.put(cast(ubyte[]) value);
-            body.put(cast(ubyte[]) "\r\n");
-        }
-
-        void addFile(string name, string filePath)
-        {
-            appendFileChunked(body, boundary, name, filePath);
-        }
-
-        addFile("file", request.file);
-        addText("model", request.model);
+        MultipartPart[] files = [MultipartPart("file", request.file)];
+        MultipartPart[] texts;
+        texts ~= MultipartPart("model", request.model);
         if (request.language.length)
-            addText("language", request.language);
+            texts ~= MultipartPart("language", request.language);
         if (request.prompt.length)
-            addText("prompt", request.prompt);
+            texts ~= MultipartPart("prompt", request.prompt);
         if (request.responseFormat.length)
-            addText("response_format", request.responseFormat);
+            texts ~= MultipartPart("response_format", request.responseFormat);
         if (request.temperature != 0)
-            addText("temperature", to!string(request.temperature));
+            texts ~= MultipartPart("temperature", to!string(request.temperature));
         foreach (inc; request.include)
-            addText("include", inc);
+            texts ~= MultipartPart("include", inc);
         foreach (t; request.timestampGranularities)
-            addText("timestamp_granularities", t);
+            texts ~= MultipartPart("timestamp_granularities", t);
         if (request.stream)
-            addText("stream", "true");
+            texts ~= MultipartPart("stream", "true");
 
-        body.put(cast(ubyte[])("--" ~ boundary ~ "--\r\n"));
+        auto body = buildMultipartBody(http, texts, files);
 
-        auto content = post!ubyte(buildUrl("/audio/transcriptions"), body.data, http);
+        auto content = post!ubyte(buildUrl("/audio/transcriptions"), body, http);
 
         auto text = cast(char[]) content;
         if (request.responseFormat == AudioResponseFormatVerboseJson)
@@ -450,47 +428,25 @@ class OpenAIClient
     in (request.file.length > 0)
     in (request.model.length > 0)
     {
-        import std.array : appender;
         import std.conv : to;
-        import std.path : baseName;
-        import std.random : uniform;
 
         auto http = HTTP();
         setupHttpByConfig(http);
         http.addRequestHeader("Accept", "application/json; charset=utf-8");
 
-        // create multipart body
-        auto boundary = "--------------------------" ~ to!string(uniform(0, int.max));
-        http.addRequestHeader("Content-Type",
-            "multipart/form-data; boundary=" ~ boundary);
-
-        auto body = appender!(ubyte[])();
-
-        void addText(string name, string value)
-        {
-            body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
-            body.put(cast(ubyte[])("Content-Disposition: form-data; name=\"" ~ name ~ "\"\r\n\r\n"));
-            body.put(cast(ubyte[]) value);
-            body.put(cast(ubyte[]) "\r\n");
-        }
-
-        void addFile(string name, string filePath)
-        {
-            appendFileChunked(body, boundary, name, filePath);
-        }
-
-        addFile("file", request.file);
-        addText("model", request.model);
+        MultipartPart[] files = [MultipartPart("file", request.file)];
+        MultipartPart[] texts;
+        texts ~= MultipartPart("model", request.model);
         if (request.prompt.length)
-            addText("prompt", request.prompt);
+            texts ~= MultipartPart("prompt", request.prompt);
         if (request.responseFormat.length)
-            addText("response_format", request.responseFormat);
+            texts ~= MultipartPart("response_format", request.responseFormat);
         if (request.temperature != 0)
-            addText("temperature", to!string(request.temperature));
+            texts ~= MultipartPart("temperature", to!string(request.temperature));
 
-        body.put(cast(ubyte[])("--" ~ boundary ~ "--\r\n"));
+        auto body = buildMultipartBody(http, texts, files);
 
-        auto content = post!ubyte(buildUrl("/audio/translations"), body.data, http);
+        auto content = post!ubyte(buildUrl("/audio/translations"), body, http);
 
         auto text = cast(char[]) content;
         return text.deserializeJson!AudioTextResponse();
@@ -519,50 +475,31 @@ class OpenAIClient
     in (request.image.length > 0)
     in (request.prompt.length > 0)
     {
-        import std.array : appender;
         import std.conv : to;
-        import std.random : uniform;
 
         auto http = HTTP();
         setupHttpByConfig(http);
         http.addRequestHeader("Accept", "application/json; charset=utf-8");
 
-        auto boundary = "--------------------------" ~ to!string(uniform(0, int.max));
-        http.addRequestHeader("Content-Type", "multipart/form-data; boundary=" ~ boundary);
-
-        auto body = appender!(ubyte[])();
-
-        void addText(string name, string value)
-        {
-            body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
-            body.put(cast(ubyte[])("Content-Disposition: form-data; name=\"" ~ name ~ "\"\r\n\r\n"));
-            body.put(cast(ubyte[]) value);
-            body.put(cast(ubyte[]) "\r\n");
-        }
-
-        void addFile(string name, string filePath)
-        {
-            appendFileChunked(body, boundary, name, filePath);
-        }
-
-        addFile("image", request.image);
+        MultipartPart[] files = [MultipartPart("image", request.image)];
         if (request.mask.length)
-            addFile("mask", request.mask);
-        addText("prompt", request.prompt);
+            files ~= MultipartPart("mask", request.mask);
+        MultipartPart[] texts;
+        texts ~= MultipartPart("prompt", request.prompt);
         if (request.model.length)
-            addText("model", request.model);
+            texts ~= MultipartPart("model", request.model);
         if (request.n != 0)
-            addText("n", to!string(request.n));
+            texts ~= MultipartPart("n", to!string(request.n));
         if (request.size.length)
-            addText("size", request.size);
+            texts ~= MultipartPart("size", request.size);
         if (request.responseFormat.length)
-            addText("response_format", request.responseFormat);
+            texts ~= MultipartPart("response_format", request.responseFormat);
         if (request.user.length)
-            addText("user", request.user);
+            texts ~= MultipartPart("user", request.user);
 
-        body.put(cast(ubyte[])("--" ~ boundary ~ "--\r\n"));
+        auto body = buildMultipartBody(http, texts, files);
 
-        auto content = cast(char[]) post!ubyte(buildUrl("/images/edits"), body.data, http);
+        auto content = cast(char[]) post!ubyte(buildUrl("/images/edits"), body, http);
 
         auto result = content.deserializeJson!ImageResponse();
         return result;
@@ -573,47 +510,28 @@ class OpenAIClient
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.image.length > 0)
     {
-        import std.array : appender;
         import std.conv : to;
-        import std.random : uniform;
 
         auto http = HTTP();
         setupHttpByConfig(http);
         http.addRequestHeader("Accept", "application/json; charset=utf-8");
 
-        auto boundary = "--------------------------" ~ to!string(uniform(0, int.max));
-        http.addRequestHeader("Content-Type", "multipart/form-data; boundary=" ~ boundary);
-
-        auto body = appender!(ubyte[])();
-
-        void addText(string name, string value)
-        {
-            body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
-            body.put(cast(ubyte[])("Content-Disposition: form-data; name=\"" ~ name ~ "\"\r\n\r\n"));
-            body.put(cast(ubyte[]) value);
-            body.put(cast(ubyte[]) "\r\n");
-        }
-
-        void addFile(string name, string filePath)
-        {
-            appendFileChunked(body, boundary, name, filePath);
-        }
-
-        addFile("image", request.image);
+        MultipartPart[] files = [MultipartPart("image", request.image)];
+        MultipartPart[] texts;
         if (request.model.length)
-            addText("model", request.model);
+            texts ~= MultipartPart("model", request.model);
         if (request.n != 0)
-            addText("n", to!string(request.n));
+            texts ~= MultipartPart("n", to!string(request.n));
         if (request.size.length)
-            addText("size", request.size);
+            texts ~= MultipartPart("size", request.size);
         if (request.responseFormat.length)
-            addText("response_format", request.responseFormat);
+            texts ~= MultipartPart("response_format", request.responseFormat);
         if (request.user.length)
-            addText("user", request.user);
+            texts ~= MultipartPart("user", request.user);
 
-        body.put(cast(ubyte[])("--" ~ boundary ~ "--\r\n"));
+        auto body = buildMultipartBody(http, texts, files);
 
-        auto content = cast(char[]) post!ubyte(buildUrl("/images/variations"), body.data, http);
+        auto content = cast(char[]) post!ubyte(buildUrl("/images/variations"), body, http);
 
         auto result = content.deserializeJson!ImageResponse();
         return result;
@@ -1022,6 +940,43 @@ class OpenAIClient
         body.put(cast(ubyte[]) "\r\n");
     }
 
+    private struct MultipartPart
+    {
+        string name;
+        string value;
+    }
+
+    private ubyte[] buildMultipartBody(scope ref HTTP http,
+        scope MultipartPart[] textParts,
+        scope MultipartPart[] fileParts) @system
+    {
+        import std.array : appender;
+        import std.conv : to;
+        import std.random : uniform;
+
+        auto boundary = "--------------------------" ~ to!string(uniform(0, int.max));
+        http.addRequestHeader("Content-Type",
+            "multipart/form-data; boundary=" ~ boundary);
+
+        auto body = appender!(ubyte[])();
+
+        foreach (fp; fileParts)
+            if (fp.value.length)
+                appendFileChunked(body, boundary, fp.name, fp.value);
+
+        foreach (tp; textParts)
+            if (tp.value.length)
+            {
+                body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
+                body.put(cast(ubyte[])("Content-Disposition: form-data; name=\"" ~ tp.name ~ "\"\r\n\r\n"));
+                body.put(cast(ubyte[]) tp.value);
+                body.put(cast(ubyte[]) "\r\n");
+            }
+
+        body.put(cast(ubyte[])("--" ~ boundary ~ "--\r\n"));
+        return body.data;
+    }
+
     @("buildUrl - openai mode")
     unittest
     {
@@ -1339,6 +1294,37 @@ unittest
             "hello\r\n");
 
     assert(body.data == expected);
+}
+
+@("buildMultipartBody") @system unittest
+{
+    import std.file : write, remove, exists;
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+    auto http = HTTP();
+
+    auto tmp = "tmp_multi.txt";
+    write(tmp, "hi");
+    scope (exit)
+        if (exists(tmp))
+            remove(tmp);
+
+    OpenAIClient.MultipartPart[] files = [OpenAIClient.MultipartPart("file", tmp)];
+    OpenAIClient.MultipartPart[] texts = [
+        OpenAIClient.MultipartPart("model", "m"),
+        OpenAIClient.MultipartPart("prompt", "p")
+    ];
+
+    auto body = client.buildMultipartBody(http, texts, files);
+    auto s = cast(string)
+    body;
+    assert(s.canFind("filename=\"tmp_multi.txt\""));
+    assert(s.canFind("name=\"model\""));
+    assert(s.canFind("name=\"prompt\""));
+    assert(s.canFind("hi"));
 }
 
 @("buildListInputItemsUrl")
