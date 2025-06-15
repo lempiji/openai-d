@@ -9,10 +9,6 @@
 
 This library provides unofficial D clients for [OpenAI API](https://platform.openai.com).
 
-## Requirements
-
-`dmd` and `dub` must be installed. Use the [official D installer](https://dlang.org/download.html).
-
 ## Features
 
 ### Endpoint
@@ -285,6 +281,12 @@ import openai;
 auto config = new OpenAIClientConfig("<Your OpenAI API Key>");
 auto client = new OpenAIClient(config);
 ```
+
+## Development
+
+### Requirements
+
+`dmd` and `dub` must be installed. Use the [official D installer](https://dlang.org/download.html).
 
 ## License
 
