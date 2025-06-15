@@ -58,7 +58,7 @@ enum TextResponseFormatType : string
 struct TextResponseFormatConfiguration
 {
     /// Format type.
-    TextResponseFormatType type = TextResponseFormatType.Text;
+    string type = TextResponseFormatType.Text;
 }
 
 @serdeIgnoreUnexpectedKeys
@@ -155,6 +155,7 @@ CreateResponseRequest createResponseRequest(string model, CreateResponseInput in
 // -----------------------------------------------------------------------------
 
 @serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "output_text")
 struct OutputTextContent
 {
     string type = "output_text";
@@ -164,6 +165,7 @@ struct OutputTextContent
 }
 
 @serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "refusal")
 struct RefusalContent
 {
     string type = "refusal";
@@ -224,12 +226,12 @@ struct ResponsesResponse
     string status;
     @serdeOptional Nullable!ResponseError error;
     @serdeOptional Nullable!ResponseIncompleteDetails incompleteDetails;
-    string instructions;
-    @serdeKeys("max_output_tokens") uint maxOutputTokens;
+    @serdeOptional Nullable!string instructions;
+    @serdeOptional @serdeKeys("max_output_tokens") Nullable!uint maxOutputTokens;
     string model;
     OutputMessage[] output;
     @serdeKeys("parallel_tool_calls") bool parallelToolCalls;
-    @serdeKeys("previous_response_id") string previousResponseId;
+    @serdeOptional @serdeKeys("previous_response_id") Nullable!string previousResponseId;
     ResponseReasoning reasoning;
     bool store;
     double temperature;
@@ -239,7 +241,7 @@ struct ResponsesResponse
     @serdeKeys("top_p") double topP;
     string truncation;
     ResponseUsage usage;
-    string user;
+    @serdeOptional Nullable!string user;
     @serdeOptional @serdeIgnoreDefault StringMap!string metadata;
 }
 
@@ -314,4 +316,49 @@ unittest
 
     auto back = deserializeJson!InputMessage(jsonString);
     assert(back.content.isNull);
+}
+
+unittest
+{
+    import mir.deser.json : deserializeJson;
+
+    enum json = `{"id":"msg_1","type":"message","role":"assistant","content":[{"type":"output_text","text":"Hello","annotations":[]}],"status":"completed"}`;
+    auto msg = deserializeJson!OutputMessage(json);
+    assert(msg.id == "msg_1");
+    assert(msg.content.length == 1);
+    assert(msg.content[0].get!OutputTextContent().text == "Hello");
+}
+
+unittest
+{
+    import mir.deser.json : deserializeJson;
+
+    enum json = `{
+      "id": "res_123",
+      "object": "response",
+      "created_at": 1,
+      "status": "completed",
+      "error": null,
+      "incomplete_details": null,
+      "instructions": null,
+      "max_output_tokens": null,
+      "model": "gpt-4o",
+      "output": [{"id":"msg_1","type":"message","role":"assistant","content":[{"type":"output_text","text":"Hello","annotations":[]}],"status":"completed"}],
+      "parallel_tool_calls": false,
+      "previous_response_id": null,
+      "reasoning": {},
+      "store": true,
+      "temperature": 0.5,
+      "text": {"format": {"type":"text"}},
+      "tool_choice": "none",
+      "tools": [],
+      "top_p": 1.0,
+      "truncation": "none",
+      "usage": {"input_tokens":1,"output_tokens":1,"total_tokens":2},
+      "user": null,
+      "metadata": null
+    }`;
+    auto res = deserializeJson!ResponsesResponse(json);
+    assert(res.output.length == 1);
+    assert(res.output[0].content[0].get!OutputTextContent().text == "Hello");
 }
