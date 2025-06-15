@@ -630,7 +630,7 @@ class OpenAIClient
         http.addRequestHeader("Content-Type", "application/json");
 
         auto requestJson = serializeJson(request);
-        scope (failure)
+        debug scope (failure)
         {
             import std.stdio;
 
@@ -640,7 +640,7 @@ class OpenAIClient
             writeln("----------");
         }
         auto content = cast(char[]) post!ubyte(buildUrl("/responses"), requestJson, http);
-        scope (failure)
+        debug scope (failure)
         {
             import std.stdio;
 
