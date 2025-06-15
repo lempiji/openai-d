@@ -40,7 +40,6 @@ void main()
     // dfmt off
     request.tools = [
         ChatCompletionTool(
-            "function",
             ChatCompletionFunction(
                 "execute_query",
                 "Executes a given SQL query using sqlite3. Supports various query types such as CREATE TABLE, SELECT, DELETE, etc. On successful execution of a SELECT query, it returns the fetched records.",

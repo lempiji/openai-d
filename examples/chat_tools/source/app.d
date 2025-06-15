@@ -16,7 +16,7 @@ void main()
     // define tools
     // dfmt off
     request.tools = [
-        ChatCompletionTool("function",
+        ChatCompletionTool(
             ChatCompletionFunction(
                 "add", "add 2 numbers",
                 JsonSchema.object_([
@@ -26,7 +26,7 @@ void main()
                 true
             )
         ),
-        ChatCompletionTool("function",
+        ChatCompletionTool(
             ChatCompletionFunction(
                 "sub", "subtract 2 numbers",
                 JsonSchema.object_([
