@@ -7,7 +7,7 @@
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![GitHub stars](https://img.shields.io/github/stars/lempiji/openai-d.svg)
 
-This library provides unofficial D clients for [OpenAI API](https://platform.openai.com)
+This library provides unofficial D clients for [OpenAI API](https://platform.openai.com).
 
 ## Requirements
 
@@ -30,7 +30,7 @@ or run `/workspace/dlang/install.sh` to set them up.
   - [x] tools (function_call)
   - [x] structured output
   - [x] input vision
-  - [ ] stream
+  - [ ] stream [(design)](docs/chat-streaming-design.md)
 - [ ] [Realtime (Beta)](https://platform.openai.com/docs/api-reference/realtime) (TODO)
 - [x] [Audio](https://platform.openai.com/docs/api-reference/audio)
   - [x] speech
