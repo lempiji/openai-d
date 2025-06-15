@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-13 14:28]
   - **Task**: Update buildListInputItemsUrl to encode query values and add tests
   - **Objective**: Ensure query parameters are URL encoded when building list input items URLs
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Cache prebuilt linter binaries to avoid repeated compilation during development
-<!-- reflection-template:end -->

@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-13 14:36]
   - **Task**: Archive reflection on linter cache
   - **Objective**: Move outdated reflection log to archive
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Automate reflection archival to avoid manual git operations
-<!-- reflection-template:end -->

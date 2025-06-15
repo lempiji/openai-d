@@ -1,5 +1,4 @@
-<!-- reflection-template:start -->
-### :book: Reflection for 2025-06-12 00:00
+### :book: Reflection for [2025-06-12 00:00]
   - **Task**: Make metadata optional in responses
   - **Objective**: Ensure API structs support optional metadata fields
   - **Outcome**: Added `@serdeOptional` attribute, updated formatting, linting, tests, coverage and example builds
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Provide a script to summarize coverage results and clean up old lst files
-<!-- reflection-template:end -->

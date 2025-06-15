@@ -1,5 +1,4 @@
-<!-- reflection-template:start -->
-### :book: Reflection for 2025-06-11 00:00
+### :book: Reflection for [2025-06-11 00:00]
   - **Task**: Document reflection log guidelines
   - **Objective**: Prevent duplicate dates and maintain chronological order
   - **Outcome**: Updated AGENTS.md with instructions to deduplicate and append history properly
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Cache linter dependencies to speed up future runs
-<!-- reflection-template:end -->

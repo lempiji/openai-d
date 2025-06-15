@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-15 12:06]
   - **Task**: Expand workflow docs for example build groups
   - **Objective**: Document new usage patterns for scripts/build_examples.sh
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Cache dfmt and dscanner binaries in CI to avoid repeated installations
-<!-- reflection-template:end -->

@@ -1,5 +1,4 @@
-<!-- reflection-template:start -->
-### :book: Reflection for 2025-06-12 00:00
+### :book: Reflection for [2025-06-12 00:00]
   - **Task**: Update environment variable handling
   - **Objective**: Ensure OPENAI_API_BASE uses default URL when unset or empty
   - **Outcome**: Changed configuration to use `environment.get(envApiBaseName, "")` and kept default fallback. Verified formatting, linting, tests, coverage and example builds.
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Automate cleanup of coverage artifacts after tests
-<!-- reflection-template:end -->

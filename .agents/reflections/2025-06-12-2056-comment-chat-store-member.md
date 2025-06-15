@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-12 20:56]
   - **Task**: Comment out store member in chat.d and adjust docs/tests
   - **Objective**: Remove usage of store parameter per OpenAI data policy
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Provide cached binaries for dfmt/dscanner to speed up CI and local runs
-<!-- reflection-template:end -->

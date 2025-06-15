@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-12 13:34]
   - **Task**: Correct temperature unit typos
   - **Objective**: Replace misspelled "celcius" and "farenheit" in JSON schema examples and run checks
@@ -13,4 +12,3 @@
 
 #### :bulb: Proposed Improvement
   - Add a script to set up and cache D dependencies between tasks to speed up lint and coverage runs
-<!-- reflection-template:end -->

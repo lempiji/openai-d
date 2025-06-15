@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-15 12:22]
   - **Task**: Investigate CI failure
   - **Objective**: Determine why the `main CI` workflow fails and implement a fix if possible
@@ -14,4 +13,3 @@
 
 #### :bulb: Proposed Improvement
   - Provide a downloadable archive of recent CI logs in the repository to aid offline debugging.
-<!-- reflection-template:end -->

@@ -1,5 +1,4 @@
-<!-- reflection-template:start -->
-### :book: Reflection for 2025-06-13 14:36
+### :book: Reflection for [2025-06-13 14:36]
   - **Task**: Document reflection archiving workflow
   - **Objective**: Provide clear instructions for moving reflections once improvements are implemented
   - **Outcome**: Added AGENTS.md in `.agents/reflections` explaining the steps
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Create a helper script that lists reflections with unimplemented improvements
-<!-- reflection-template:end -->

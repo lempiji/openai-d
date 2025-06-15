@@ -1,5 +1,4 @@
-<!-- reflection-template:start -->
-### :book: Reflection for 2025-06-10 00:00
+### :book: Reflection for [2025-06-10 00:00]
   - **Task**: Update chat helpers documentation
   - **Objective**: Expand comments for message constructors and document `chatCompletionRequest` parameters.
   - **Outcome**: Added detailed doc comments and verified formatting, linting, tests, coverage and example builds.
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Provide pre-built artifacts or a cached dependencies layer to speed up example builds.
-<!-- reflection-template:end -->

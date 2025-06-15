@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-15 11:54]
   - **Task**: Extend build_examples.sh to support groups
   - **Objective**: Allow faster builds of targeted example categories
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Cache example builds or use incremental compilation to reduce repeated dependency fetches
-<!-- reflection-template:end -->

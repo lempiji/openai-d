@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-12 13:36]
   - **Task**: Stream file chunks in audio methods
   - **Objective**: Use File.byChunk so large audio files don't load fully in memory
@@ -12,5 +11,4 @@
 
 #### :bulb: Proposed Improvement
   - Automate dependency caching in CI to speed up lint/test steps
-<!-- reflection-template:end -->
 

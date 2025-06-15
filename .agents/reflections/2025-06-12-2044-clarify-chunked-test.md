@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-12 20:44]
   - **Task**: Clarify chunked upload unit test
   - **Objective**: Remove dynamic filename from expected string and use explicit value
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Cache formatted binaries to avoid repeated compilation in CI
-<!-- reflection-template:end -->

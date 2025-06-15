@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-12 22:55]
   - **Task**: Update pagination params and tests
   - **Objective**: Ensure query parameters are omitted when empty and maintain coverage
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Cache Dub dependencies to speed up example builds
-<!-- reflection-template:end -->

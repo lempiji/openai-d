@@ -1,5 +1,4 @@
-<!-- reflection-template:start -->
-### :book: Reflection for 2025-06-11 00:00
+### :book: Reflection for [2025-06-11 00:00]
   - **Task**: Document request helper functions
   - **Objective**: Clarify usage of helper constructors for OpenAI API requests
   - **Outcome**: Added Ddoc comments summarizing parameters and target endpoints
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Provide a helper script to build all example projects in one step
-<!-- reflection-template:end -->
