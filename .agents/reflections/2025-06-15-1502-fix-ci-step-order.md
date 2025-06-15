@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-15 15:02]
   - **Task**: Adjust dfmt step ordering in CI
   - **Objective**: Ensure dfmt runs after dependencies are installed
@@ -13,4 +12,3 @@
 
 #### :bulb: Proposed Improvement
   - Provide a preconfigured docker image with dfmt installed to avoid rebuilds each CI run
-<!-- reflection-template:end -->

@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-13 22:07]
   - **Task**: Add helper builders for administration requests
   - **Objective**: Provide convenience functions for constructing Administration API request structs
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Cache example build artifacts or dependencies to avoid repeated downloads during local builds
-<!-- reflection-template:end -->

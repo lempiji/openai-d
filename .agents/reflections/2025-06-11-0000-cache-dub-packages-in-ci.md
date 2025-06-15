@@ -1,5 +1,4 @@
-<!-- reflection-template:start -->
-### :book: Reflection for 2025-06-11 00:00
+### :book: Reflection for [2025-06-11 00:00]
   - **Task**: Cache Dub packages in CI
   - **Objective**: Speed up continuous integration by avoiding repeated downloads
   - **Outcome**: Added actions/cache steps to store `~/.dub/packages` on Linux and Windows
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Document recommended cache paths for different operating systems
-<!-- reflection-template:end -->

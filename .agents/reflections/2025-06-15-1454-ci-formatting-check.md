@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-15 14:54]
   - **Task**: Add dfmt check to CI workflow
   - **Objective**: Ensure CI fails when code is not formatted
@@ -14,4 +13,3 @@
 
 #### :bulb: Proposed Improvement
   - Cache dfmt build artifacts in CI to speed up formatting checks
-<!-- reflection-template:end -->

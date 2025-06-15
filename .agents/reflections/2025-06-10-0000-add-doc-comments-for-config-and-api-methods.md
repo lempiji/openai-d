@@ -1,5 +1,4 @@
-<!-- reflection-template:start -->
-### :book: Reflection for 2025-06-10 00:00
+### :book: Reflection for [2025-06-10 00:00]
   - **Task**: Add doc comments for configuration and API methods
   - **Objective**: Improve library documentation clarity
   - **Outcome**: Added detailed descriptions to methods and ensured tests pass
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Provide pre-built artifacts or caching for example builds to speed up CI
-<!-- reflection-template:end -->

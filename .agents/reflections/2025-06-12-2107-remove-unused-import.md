@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-12 21:07]
   - **Task**: Clean up unused import in setupHttpByConfig
   - **Objective**: Remove the unnecessary `canFind` import and ensure compilation passes
@@ -12,5 +11,4 @@
 
 #### :bulb: Proposed Improvement
   - Implement a pre-commit script that scans for compilation errors before running full test suite to catch mistakes earlier
-<!-- reflection-template:end -->
 

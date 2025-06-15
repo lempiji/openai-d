@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [YYYY-MM-DD HH:MM]
   - **Task**: [Task Name or Description]
   - **Objective**: [What was the goal of the task?]
@@ -12,10 +11,9 @@
 
 #### :bulb: Proposed Improvement
   - …
-<!-- reflection-template:end -->
 
 ## :memo: Reflection History
-### :book: Reflection for 2025-06-10
+### :book: Reflection for [2025-06-10]
   - **Task**: Update chat helpers documentation
   - **Objective**: Expand comments for message constructors and document `chatCompletionRequest` parameters.
   - **Outcome**: Added detailed doc comments and verified formatting, linting, tests, coverage and example builds.
@@ -29,7 +27,7 @@
 #### :bulb: Proposed Improvement
   - Provide pre-built artifacts or a cached dependencies layer to speed up example builds.
 
-### :book: Reflection for 2025-06-10
+### :book: Reflection for [2025-06-10]
   - **Task**: Add doc comments for configuration and API methods
   - **Objective**: Improve library documentation clarity
   - **Outcome**: Added detailed descriptions to methods and ensured tests pass
@@ -43,7 +41,7 @@
 #### :bulb: Proposed Improvement
   - Provide pre-built artifacts or caching for example builds to speed up CI
 
-### :book: Reflection for 2025-06-11
+### :book: Reflection for [2025-06-11]
   - **Task**: Document request helper functions
   - **Objective**: Clarify usage of helper constructors for OpenAI API requests
   - **Outcome**: Added Ddoc comments summarizing parameters and target endpoints
@@ -57,7 +55,7 @@
 #### :bulb: Proposed Improvement
   - Provide a helper script to build all example projects in one step
 
-### :book: Reflection for 2025-06-11
+### :book: Reflection for [2025-06-11]
   - **Task**: Replace new `OpenAIClient` style
   - **Objective**: Match README style across examples
   - **Outcome**: Updated every example to use `new OpenAIClient()` and verified formatting, linting, tests, coverage, and builds.
@@ -71,7 +69,7 @@
 #### :bulb: Proposed Improvement
   - Add a script to build all examples in parallel.
 
-### :book: Reflection for 2025-06-11
+### :book: Reflection for [2025-06-11]
   - **Task**: Document reflection log guidelines
   - **Objective**: Prevent duplicate dates and maintain chronological order
   - **Outcome**: Updated AGENTS.md with instructions to deduplicate and append history properly
@@ -85,7 +83,7 @@
 #### :bulb: Proposed Improvement
   - Cache linter dependencies to speed up future runs
 
-### :book: Reflection for 2025-06-11
+### :book: Reflection for [2025-06-11]
   - **Task**: Add example build script
   - **Objective**: Speed up building numerous example projects
   - **Outcome**: Created `scripts/build_examples.sh` with fast and all modes and documented its usage in AGENTS.md. Verified formatting, linting, tests, coverage and builds.
@@ -99,7 +97,7 @@
 #### :bulb: Proposed Improvement
   - Investigate caching compiled dependencies or using `dub`'s built-in package cache to allow safe parallel builds.
 
-### :book: Reflection for 2025-06-11
+### :book: Reflection for [2025-06-11]
   - **Task**: Cache Dub packages in CI
   - **Objective**: Speed up continuous integration by avoiding repeated downloads
   - **Outcome**: Added actions/cache steps to store `~/.dub/packages` on Linux and Windows
@@ -113,7 +111,7 @@
 #### :bulb: Proposed Improvement
 - Document recommended cache paths for different operating systems
 
-### :book: Reflection for 2025-06-12
+### :book: Reflection for [2025-06-12]
 - **Task**: Make metadata optional in responses
 - **Objective**: Ensure API structs support optional metadata fields
 - **Outcome**: Added `@serdeOptional` attribute, updated formatting, linting, tests, coverage and example builds
@@ -127,7 +125,7 @@
 ### :bulb: Proposed Improvement
 - Provide a script to summarize coverage results and clean up old lst files
 
-### :book: Reflection for 2025-06-12
+### :book: Reflection for [2025-06-12]
 - **Task**: Update environment variable handling
 - **Objective**: Ensure OPENAI_API_BASE uses default URL when unset or empty
 - **Outcome**: Changed configuration to use `environment.get(envApiBaseName, "")` and kept default fallback. Verified formatting, linting, tests, coverage and example builds.
@@ -141,7 +139,7 @@
 #### :bulb: Proposed Improvement
 - Automate cleanup of coverage artifacts after tests
 
-### :book: Reflection for 2025-06-11 13:46
+### :book: Reflection for [2025-06-11 13:46]
   - **Task**: Add timestamp to reflection history template
   - **Objective**: Avoid merge conflicts when multiple reflections occur on the same day
   - **Outcome**: Updated AGENTS instructions and template to include date and time
@@ -154,7 +152,7 @@
 
 #### :bulb: Proposed Improvement
   - Provide a lightweight documentation-only workflow to skip heavy builds
-### :book: Reflection for 2025-06-11 14:52
+### :book: Reflection for [2025-06-11 14:52]
   - **Task**: Adjust reflection formatting
   - **Objective**: Address reviewer comments to indent bullet lists and remove unnecessary tags
   - **Outcome**: Updated template and latest entry with proper list levels and cleaned tags
@@ -168,7 +166,7 @@
 #### :bulb: Proposed Improvement
   - Introduce a docs-only workflow to speed up checks
 
-### :book: Reflection for 2025-06-12 10:54
+### :book: Reflection for [2025-06-12 10:54]
   - **Task**: Fix reflection header levels
   - **Objective**: Clarify formatting blocks per reviewer comment
   - **Outcome**: Updated template and history entries to use consistent section levels
@@ -181,7 +179,7 @@
 
 #### :bulb: Proposed Improvement
   - Add a linter rule to validate reflection headings automatically
-### :book: Reflection for 2025-06-12 12:16
+### :book: Reflection for [2025-06-12 12:16]
   - **Task**: Ensure example dub.sdl files end with newline
   - **Objective**: Maintain formatting consistency across examples
   - **Outcome**: Added trailing newlines, ran formatter, linter, tests, coverage and example builds

@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-13 15:33]
   - **Task**: Implement Administration API support
   - **Objective**: Add administration data structures and client
@@ -13,4 +12,3 @@
 
 #### :bulb: Proposed Improvement
   - Cache dub dependencies between runs to speed up lint and test steps
-<!-- reflection-template:end -->

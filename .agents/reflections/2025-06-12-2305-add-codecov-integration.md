@@ -1,4 +1,3 @@
-<!-- reflection-template:start -->
 ### :book: Reflection for [2025-06-12 23:05]
   - **Task**: Add Codecov integration
   - **Objective**: Enable automated coverage reporting in CI
@@ -12,4 +11,3 @@
 
 #### :bulb: Proposed Improvement
   - Provide a cached Docker image with common D tools preinstalled to speed up local linting
-<!-- reflection-template:end -->
