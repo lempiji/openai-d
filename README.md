@@ -31,7 +31,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
   - [x] speech
   - [x] transcription
   - [x] translations
-  - [x] [Images](https://platform.openai.com/docs/api-reference/images)
+- [x] [Images](https://platform.openai.com/docs/api-reference/images)
 - [x] [Embeddings](https://platform.openai.com/docs/api-reference/embeddings)
 - [ ] [Evals](https://platform.openai.com/docs/api-reference/evals) (TODO)
 - [ ] [Fine-tunings](https://platform.openai.com/docs/api-reference/fine-tuning) (TODO)
