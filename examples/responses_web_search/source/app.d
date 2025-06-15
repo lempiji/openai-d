@@ -18,6 +18,7 @@ void main()
         client.deleteResponse(res.id);
 
     import std.algorithm : filter;
+
     foreach (ref msg; res.output.filter!(x => x.status == "completed"))
     {
         writeln(msg.content);

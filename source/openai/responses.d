@@ -317,8 +317,9 @@ struct ResponsesToolImageGeneration
 
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "local_shell")
-struct ResponsesToolLocalShell { }
-
+struct ResponsesToolLocalShell
+{
+}
 
 /// Union of all possible tool definitions for the Responses API.
 alias ResponsesTool = Algebraic!(
@@ -331,7 +332,6 @@ alias ResponsesTool = Algebraic!(
     ResponsesToolComputerUsePreview,
     ResponsesToolLocalShell
 );
-
 
 ///
 @serdeIgnoreUnexpectedKeys
@@ -524,6 +524,7 @@ struct ResponsesOutputMessage
     /// Message role.
     @serdeOptional @serdeIgnoreDefault string role;
 }
+
 @serdeIgnoreUnexpectedKeys
 struct ResponseUsage
 {
@@ -579,7 +580,6 @@ struct ResponsesResponse
     @serdeOptional Nullable!string user;
     @serdeOptional @serdeIgnoreDefault StringMap!string metadata;
 }
-
 
 @serdeIgnoreUnexpectedKeys
 struct ResponsesItemListResponse
@@ -877,6 +877,7 @@ unittest
     // tool use - file search
     import mir.deser.json : deserializeJson;
     import mir.ser.json : serializeJson;
+
     ResponsesToolFileSearch tool;
     tool.vectorStoreIds = ["store1", "store2"];
     tool.maxNumResults = 10;
@@ -913,7 +914,8 @@ unittest
     tool.displayWidth = 1920;
     tool.environment = "linux";
     auto jsonString = serializeJson(tool);
-    assert(jsonString == `{"type":"computer_use_preview","display_height":1080,"display_width":1920,"environment":"linux"}`);
+    assert(
+        jsonString == `{"type":"computer_use_preview","display_height":1080,"display_width":1920,"environment":"linux"}`);
 }
 
 unittest

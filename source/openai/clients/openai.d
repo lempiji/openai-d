@@ -713,11 +713,13 @@ class OpenAIClient
 
         string url = buildUrl("/organization/admin_api_keys");
         string sep = "?";
-        if (request.limit) {
+        if (request.limit)
+        {
             url ~= format("%slimit=%s", sep, request.limit);
             sep = "&";
         }
-        if (request.after.length) {
+        if (request.after.length)
+        {
             url ~= format("%safter=%s", sep, encodeComponent(request.after));
         }
 
@@ -998,6 +1000,7 @@ class OpenAIClient
     }
 
     private void appendFileChunked(scope ref Appender!(ubyte[])
+        
         body,
         string boundary,
         string name,
