@@ -15,3 +15,4 @@ public import openai.moderation;
 public import openai.audio;
 public import openai.images;
 public import openai.responses;
+public import openai.administration;
