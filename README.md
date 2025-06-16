@@ -44,7 +44,18 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 - [ ] [Vector stores](https://platform.openai.com/docs/api-reference/vector-stores) (TODO)
 - [ ] [Containers](https://platform.openai.com/docs/api-reference/containers) (TODO)
 - [ ] [Assistants (Beta)](https://platform.openai.com/docs/api-reference/assistants) (TODO)
-- [x] [Administration](https://platform.openai.com/docs/api-reference/administration)
+- [ ] [Administration](https://platform.openai.com/docs/api-reference/administration) (WIP)
+  - [x] Admin API Keys
+  - [ ] Invites (TODO)
+  - [ ] Users (TODO)
+  - [x] Projects (TODO)
+  - [ ] Project users (TODO)
+  - [ ] Project service accounts (TODO)
+  - [ ] Project API keys (TODO)
+  - [ ] Project rate limits (TODO)
+  - [ ] Audit logs (WIP)
+  - [ ] Usage (TODO)
+  - [x] Certificates (TODO)
 
 __legacy__
 - [x] Completions (Legacy)
@@ -71,7 +82,7 @@ dub add openai-d
 
 ## OpenAIClient
 
-__Completion__
+__Completion (Legacy)__
 
 ```d name=completion
 import std;
@@ -132,7 +143,8 @@ writeln(got.output[0].content);
 writeln(items.data.length);
 ```
 
-See `examples/responses` for a complete example.
+See `examples/responses` for a complete example.  
+See `examples/responses_web_search` for a web search example.  
 See `examples/responses_code_interpreter` for a code interpreter example.
 
 __Embedding__
@@ -145,11 +157,11 @@ import openai;
 auto client = new OpenAIClient();
 
 // POST /embeddings
-const request = embeddingRequest("text-embedding-ada-002", "Hello, D Programming Language!");
+const request = embeddingRequest("text-embedding-3-small", "Hello, D Programming Language!");
 auto response = client.embedding(request);
 
 float[] embedding = response.data[0].embedding;
-writeln(embedding.length); // text-embedding-ada-002 -> 1536
+writeln(embedding.length); // text-embedding-3-small -> 1536
 ```
 
 __Moderation__
