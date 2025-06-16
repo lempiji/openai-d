@@ -221,6 +221,9 @@ class OpenAIClient
     {
         import std.exception : enforce;
 
+        enforce(config.apiKey.length > 0,
+            "OPENAI_API_KEY is required");
+
         if (config.isAzure)
         {
             enforce(config.deploymentId.length > 0,
@@ -1238,6 +1241,14 @@ unittest
         environment.remove(ENV_OPENAI_DEPLOYMENT_ID);
 
     assertThrown!Exception(new OpenAIClient());
+}
+
+@("missing API key throws")
+unittest
+{
+    import std.exception : assertThrown;
+
+    assertThrown!Exception(new OpenAIClient(new OpenAIClientConfig()));
 }
 
 @("save & load config file - openai mode")
