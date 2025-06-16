@@ -493,27 +493,22 @@ struct AuditLogCertificateDeleted
 }
 
 @serdeIgnoreUnexpectedKeys
+struct AuditLogEventCertificate
+{
+    string id;
+    string name;
+}
+
+@serdeIgnoreUnexpectedKeys
 struct AuditLogCertificatesActivated
 {
-    @serdeIgnoreUnexpectedKeys static struct Certificate
-    {
-        string id;
-        string name;
-    }
-
-    Certificate[] certificates;
+    AuditLogEventCertificate[] certificates;
 }
 
 @serdeIgnoreUnexpectedKeys
 struct AuditLogCertificatesDeactivated
 {
-    @serdeIgnoreUnexpectedKeys static struct Certificate
-    {
-        string id;
-        string name;
-    }
-
-    Certificate[] certificates;
+    AuditLogEventCertificate[] certificates;
 }
 
 @serdeIgnoreUnexpectedKeys
