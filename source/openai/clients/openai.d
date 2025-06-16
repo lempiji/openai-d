@@ -705,20 +705,7 @@ class OpenAIClient
         setupHttpByConfig(http);
         http.addRequestHeader("Accept", "application/json; charset=utf-8");
 
-        string url = buildUrl("/organization/audit_logs");
-        string sep = "?";
-        if (request.projectIds !is null && request.projectIds.length)
-            url ~= format("%sproject_ids=%s", sep, request.projectIds.map!encodeComponent.joiner(",")), sep = "&";
-        if (request.eventTypes !is null && request.eventTypes.length)
-            url ~= format("%sevent_types=%s", sep, request.eventTypes.map!encodeComponent.joiner(",")), sep = "&";
-        if (request.actorIds !is null && request.actorIds.length)
-            url ~= format("%sactor_ids=%s", sep, request.actorIds.map!encodeComponent.joiner(",")), sep = "&";
-        if (request.limit)
-            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
-        if (request.after.length)
-            url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
-        if (request.before.length)
-            url ~= format("%sbefore=%s", sep, encodeComponent(request.before));
+        string url = buildListAuditLogsUrl(request);
 
         auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
         return content.deserializeJson!ListAuditLogsResponse();
@@ -897,6 +884,46 @@ class OpenAIClient
                         .map!(x => encodeComponent(cast(string) x))
                         .joiner(",")
                         .array);
+        return url;
+    }
+
+    private string buildListAuditLogsUrl(in ListAuditLogsRequest request) const @safe
+    {
+        import std.format : format;
+        import std.algorithm : map;
+        import std.uri : encodeComponent;
+
+        string url = buildUrl("/organization/audit_logs");
+        string sep = "?";
+        if (request.projectIds !is null && request.projectIds.length)
+            url ~= format("%sproject_ids=%s", sep,
+                request.projectIds.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.eventTypes !is null && request.eventTypes.length)
+            url ~= format("%sevent_types=%s", sep,
+                request.eventTypes.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.actorIds !is null && request.actorIds.length)
+            url ~= format("%sactor_ids=%s", sep,
+                request.actorIds.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.actorEmails !is null && request.actorEmails.length)
+            url ~= format("%sactor_emails=%s", sep,
+                request.actorEmails.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.resourceIds !is null && request.resourceIds.length)
+            url ~= format("%sresource_ids=%s", sep,
+                request.resourceIds.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.effectiveAt.gt)
+            url ~= format("%seffective_at[gt]=%s", sep, request.effectiveAt.gt), sep = "&";
+        if (request.effectiveAt.gte)
+            url ~= format("%seffective_at[gte]=%s", sep, request.effectiveAt.gte), sep = "&";
+        if (request.effectiveAt.lt)
+            url ~= format("%seffective_at[lt]=%s", sep, request.effectiveAt.lt), sep = "&";
+        if (request.effectiveAt.lte)
+            url ~= format("%seffective_at[lte]=%s", sep, request.effectiveAt.lte), sep = "&";
+        if (request.limit)
+            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
+        if (request.after.length)
+            url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
+        if (request.before.length)
+            url ~= format("%sbefore=%s", sep, encodeComponent(request.before));
         return url;
     }
 
@@ -1414,4 +1441,27 @@ unittest
     auto url = client.buildGetResponseUrl("resp", ["foo bar", "bar+baz"]);
 
     assert(url.canFind("include=foo%20bar,bar%2Bbaz"));
+}
+
+@("buildListAuditLogsUrl encodes new query parameters")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    AuditLogTimeRange range;
+    range.gt = 10;
+    range.lte = 20;
+
+    auto req = listAuditLogsRequest(5, null, null, null, ["a@example.com"],
+        ["res id"], range);
+    auto url = client.buildListAuditLogsUrl(req);
+
+    assert(url.canFind("actor_emails=a%40example.com"));
+    assert(url.canFind("resource_ids=res%20id"));
+    assert(url.canFind("effective_at[gt]=10"));
+    assert(url.canFind("effective_at[lte]=20"));
 }
