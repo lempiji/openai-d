@@ -2,9 +2,9 @@
 set -euo pipefail
 
 # Build OpenAI D examples
-# Usage: build_examples.sh [all|fast] [GROUP ...]
+# Usage: build_examples.sh [all|core] [GROUP ...]
 #   all    - build every example project (default)
-#   fast   - build a subset of key examples to save time
+#   core   - build a subset of key examples without underscores
 #   GROUP  - optional example group such as "chat" or "audio". Only examples
 #            starting with the group name will be built.
 
@@ -17,7 +17,7 @@ mode="all"
 groups=()
 if [[ $# -gt 0 ]]; then
     case "$1" in
-        all|fast)
+        all|core)
             mode="$1"
             shift
             ;;
@@ -26,14 +26,6 @@ if [[ $# -gt 0 ]]; then
 fi
 
 cd "$EXAMPLES_DIR"
-
-fast_examples=(
-    chat
-    completion
-    embedding
-    moderation
-    responses
-)
 
 # Collect all example directories
 mapfile -t all_dirs < <(find . -maxdepth 1 -mindepth 1 -type d -printf '%f\n' | sort)
@@ -52,13 +44,10 @@ for dir in "${all_dirs[@]}"; do
     fi
 
     if $include; then
-        if [[ "$mode" == "fast" ]]; then
-            for f in "${fast_examples[@]}"; do
-                if [[ "$dir" == "$f" ]]; then
-                    targets+=("$dir")
-                    break
-                fi
-            done
+        if [[ "$mode" == "core" ]]; then
+            if [[ "$dir" != *_* ]]; then
+                targets+=("$dir")
+            fi
         else
             targets+=("$dir")
         fi
