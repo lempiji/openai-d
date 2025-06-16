@@ -73,10 +73,10 @@
 2. Run formatter and linter
 3. Run tests and coverage
 4. Build examples individually or use the helper script:
-   * Run `scripts/build_examples.sh fast` to compile only a small set of key examples.
+   * Run `scripts/build_examples.sh core` to compile only examples without underscores.
    * Run `scripts/build_examples.sh` (or `scripts/build_examples.sh all`) to build them all.
    * Run `scripts/build_examples.sh chat` to build every example starting with `chat`.
-   * Run `scripts/build_examples.sh fast audio` for a faster build of the `audio` group.
+   * Run `scripts/build_examples.sh core audio` for a faster build of the `audio` group.
    Building individually with `dub build` remains valid when touching only a few examples.
    * Build examples that have been modified,
      depend on changed library modules, or
@@ -86,7 +86,7 @@
    **Quick guide**
    - Use a single group such as `chat` when only that example directory changed.
    - Provide multiple groups (`chat audio`) if several examples were modified.
-   - Prefix with `fast` (`fast` or `fast <group>`) for quick iteration.
+   - Prefix with `core` (`core` or `core <group>`) for quicker iteration.
    - Use `all` to replicate CI builds or before a release.
 5. If all checks pass, commit changes and open a pull request.
 
