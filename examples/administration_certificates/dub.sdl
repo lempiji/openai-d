@@ -1,0 +1,6 @@
+name "administration_certificates"
+description "Certificate operations example"
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."
