@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/administration_certificates
+administration_certificates.so
+administration_certificates.dylib
+administration_certificates.dll
+administration_certificates.a
+administration_certificates.lib
+administration_certificates-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
