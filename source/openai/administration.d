@@ -407,7 +407,7 @@ struct UsageTimeBucket
     string object;
     @serdeKeys("start_time") long startTime;
     @serdeKeys("end_time") long endTime;
-    @serdeKeys("results") UsageResult[] results;
+    @serdeKeys("result") UsageResult[] results;
 }
 
 @serdeIgnoreUnexpectedKeys
@@ -1014,7 +1014,7 @@ unittest
 {
     import mir.deser.json : deserializeJson;
 
-    enum example = `{"object":"page","data":[{"object":"bucket","start_time":1730419200,"end_time":1730505600,"results":[{"object":"organization.usage.audio_speeches.result","characters":45,"num_model_requests":1,"project_id":null,"user_id":null,"api_key_id":null,"model":null}]}],"has_more":false,"next_page":null}`;
+    enum example = `{"object":"page","data":[{"object":"bucket","start_time":1730419200,"end_time":1730505600,"result":[{"object":"organization.usage.audio_speeches.result","characters":45,"num_model_requests":1,"project_id":null,"user_id":null,"api_key_id":null,"model":null}]}],"has_more":false,"next_page":null}`;
     auto res = deserializeJson!UsageResponse(example);
     assert(res.data.length == 1);
     assert(res.data[0].results.length == 1);
@@ -1025,7 +1025,7 @@ unittest
 {
     import mir.deser.json : deserializeJson;
 
-    enum example = `{"object":"page","data":[{"object":"bucket","start_time":1730419200,"end_time":1730505600,"results":[{"object":"organization.costs.result","amount":{"value":0.06,"currency":"usd"},"line_item":null,"project_id":null}]}],"has_more":false,"next_page":null}`;
+    enum example = `{"object":"page","data":[{"object":"bucket","start_time":1730419200,"end_time":1730505600,"result":[{"object":"organization.costs.result","amount":{"value":0.06,"currency":"usd"},"line_item":null,"project_id":null}]}],"has_more":false,"next_page":null}`;
     auto res = deserializeJson!UsageResponse(example);
     assert(res.data[0].results[0].get!CostsResult().amount.value == 0.06);
 }
