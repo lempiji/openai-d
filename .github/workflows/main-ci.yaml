@@ -62,7 +62,9 @@ jobs:
       - name: Cache Dub packages
         uses: actions/cache@v3
         with:
-          path: ${{ env.LOCALAPPDATA }}\dub\packages
+          path: |
+            ${{ env.LOCALAPPDATA }}\\dub\\packages
+            ${{ env.APPDATA }}\\dub\\packages
           key: dub-${{ runner.os }}-${{ matrix.dlang }}-${{ hashFiles('dub.json') }}
           restore-keys: dub-${{ runner.os }}-${{ matrix.dlang }}-
       - name: Check formatting
