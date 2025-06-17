@@ -53,7 +53,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
   - [ ] Project service accounts (TODO)
   - [ ] Project API keys (TODO)
   - [ ] Project rate limits (TODO)
-  - [ ] Audit logs (WIP)
+  - [x] Audit logs
   - [ ] Usage (TODO)
   - [x] Certificates (TODO)
 
@@ -246,6 +246,15 @@ import openai;
 auto client = new OpenAIClient();
 auto list = client.listProjects(listProjectsRequest(20));
 writeln(list.data.length);
+```
+
+```d name=admin_audit_logs
+import std;
+import openai;
+
+auto client = new OpenAIClient();
+auto logs = client.listAuditLogs(listAuditLogsRequest(10));
+writeln(logs.data.length);
 ```
 
 
