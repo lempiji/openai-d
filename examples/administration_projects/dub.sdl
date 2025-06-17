@@ -1,0 +1,7 @@
+name "administration_projects"
+description "Administration Projects API example"
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."
+
