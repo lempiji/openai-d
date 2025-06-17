@@ -545,6 +545,13 @@ enum AuditLogEventType
     UserAdded = "user.added",
     UserUpdated = "user.updated",
     UserDeleted = "user.deleted",
+    /// Present in the AuditLog schema but missing from the official
+    /// `AuditLogEventType` enum in OpenAPI 2.3.0.
+    CertificateCreated = "certificate.created",
+    CertificateUpdated = "certificate.updated",
+    CertificateDeleted = "certificate.deleted",
+    CertificatesActivated = "certificates.activated",
+    CertificatesDeactivated = "certificates.deactivated",
 }
 
 @serdeIgnoreUnexpectedKeys
@@ -707,4 +714,16 @@ unittest
     assert(log.actor.session.ipAddress == "127.0.0.1");
     assert(log.apiKeyCreated.id == "key_xxxx");
     assert(log.apiKeyCreated.data.scopes[0] == "resource.operation");
+}
+
+unittest
+{
+    import mir.deser.json : deserializeJson;
+
+    enum exampleCert =
+        `{"id":"req_cert","type":"certificate.created","effective_at":1,"actor":{"type":"session","session":{"user":{"id":"user-cert","email":"cert@example.com"},"ip_address":"127.0.0.1"}},"certificate.created":{"id":"cert-abc","name":"my-cert"}}`;
+    auto log = deserializeJson!AuditLog(exampleCert);
+    assert(log.type == AuditLogEventType.CertificateCreated);
+    assert(log.certificateCreated.id == "cert-abc");
+    assert(log.certificateCreated.name == "my-cert");
 }
