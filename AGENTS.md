@@ -72,22 +72,29 @@
 1. Modify code.
 2. Run formatter and linter
 3. Run tests and coverage
-4. Build examples individually or use the helper script:
-   * Run `scripts/build_examples.sh core` to compile only examples without underscores.
-   * Run `scripts/build_examples.sh` (or `scripts/build_examples.sh all`) to build them all.
-   * Run `scripts/build_examples.sh chat` to build every example starting with `chat`.
-   * Run `scripts/build_examples.sh core audio` for a faster build of the `audio` group.
-   Building individually with `dub build` remains valid when touching only a few examples.
-   * Build examples that have been modified,
-     depend on changed library modules, or
-     are required for verifying new features.
-   All examples should compile before major releases or when unsure.
-   Example groups are determined by the API prefix before the underscore in each directory.
-   **Quick guide**
-   - Use a single group such as `chat` when only that example directory changed.
-   - Provide multiple groups (`chat audio`) if several examples were modified.
-   - Prefix with `core` (`core` or `core <group>`) for quicker iteration.
-   - Use `all` to replicate CI builds or before a release.
+4. Build examples
+
+   1. If you’ve modified any example group (e.g. `chat`, `audio`, `administration`), build **core** plus those groups:
+
+      ```bash
+      scripts/build_examples.sh core <modified-group>[ <another-group> …]
+      ```
+
+      * Example: you fixed something in the administration examples
+
+        ```bash
+        scripts/build_examples.sh core administration
+        ```
+   2. If you haven’t touched any example-specific code, just run **core** (always required):
+
+      ```bash
+      scripts/build_examples.sh core
+      ```
+   3. To mirror CI or prepare a full release, you can still build **all**:
+
+      ```bash
+      scripts/build_examples.sh all
+      ```
 5. If all checks pass, commit changes and open a pull request.
 
 ## 8. CI/CD & PR Guidelines
