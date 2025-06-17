@@ -1,6 +1,7 @@
 module openai.administration;
 
 import mir.serde;
+import mir.serde : serdeEnumProxy;
 import mir.string_map;
 import std.typecons : Nullable;
 
@@ -225,14 +226,41 @@ struct AuditLogActorSession
 {
     AuditLogActorUser user;
     @serdeKeys("ip_address") string ipAddress;
+    /// Not part of the OpenAPI schema but shown in documentation examples.
     @serdeOptional @serdeKeys("user_agent") string userAgent;
+    @serdeOptional string ja3;
+    @serdeOptional string ja4;
+    @serdeOptional @serdeKeys("ip_address_details") AuditLogActorSessionIpAddressDetails ipAddressDetails;
+
+    @serdeIgnoreUnexpectedKeys static struct AuditLogActorSessionIpAddressDetails
+    {
+        string country;
+        string city;
+        string region;
+        @serdeKeys("region_code") string regionCode;
+        string asn;
+        string latitude;
+        string longitude;
+    }
+}
+
+@serdeEnumProxy!string enum AuditLogActorType : string
+{
+    Session = "session",
+    ApiKey = "api_key",
+}
+
+@serdeEnumProxy!string enum AuditLogApiKeyType : string
+{
+    User = "user",
+    ServiceAccount = "service_account",
 }
 
 @serdeIgnoreUnexpectedKeys
 struct AuditLogActorApiKey
 {
     string id;
-    string type;
+    AuditLogApiKeyType type;
     @serdeOptional AuditLogActorUser user;
     @serdeOptional @serdeKeys("service_account") AuditLogActorServiceAccount serviceAccount;
 }
@@ -514,7 +542,7 @@ struct AuditLogCertificatesDeactivated
 @serdeIgnoreUnexpectedKeys
 struct AuditLogActor
 {
-    string type;
+    AuditLogActorType type;
     @serdeOptional AuditLogActorSession session;
     @serdeOptional @serdeKeys("api_key") AuditLogActorApiKey apiKey;
 }
@@ -710,7 +738,7 @@ unittest
     auto log = deserializeJson!AuditLog(example);
     assert(log.id == "req_xxx_20240101");
     assert(log.type == AuditLogEventType.ApiKeyCreated);
-    assert(log.actor.type == "session");
+    assert(log.actor.type == AuditLogActorType.Session);
     assert(log.actor.session.ipAddress == "127.0.0.1");
     assert(log.apiKeyCreated.id == "key_xxxx");
     assert(log.apiKeyCreated.data.scopes[0] == "resource.operation");
@@ -726,4 +754,63 @@ unittest
     assert(log.type == AuditLogEventType.CertificateCreated);
     assert(log.certificateCreated.id == "cert-abc");
     assert(log.certificateCreated.name == "my-cert");
+}
+
+unittest
+{
+    import mir.deser.json : deserializeJson;
+  
+    enum example =
+        `{"id":"req_ja4","type":"login.succeeded","effective_at":0,"actor":{"type":"session","session":{"user":{"id":"user","email":"u@example.com"},"ip_address":"127.0.0.1","user_agent":"UA","ja3":"ja3hash","ja4":"ja4hash","ip_address_details":{"country":"US","city":"SF","region":"CA","region_code":"CA","asn":"1234","latitude":"37.77","longitude":"-122.42"}}}}`;
+    auto log = deserializeJson!AuditLog(example);
+    assert(log.actor.session.ja3 == "ja3hash");
+    assert(log.actor.session.ja4 == "ja4hash");
+    assert(log.actor.session.ipAddressDetails.country == "US");
+    assert(log.actor.session.ipAddressDetails.city == "SF");
+}
+
+unittest
+{
+    import mir.ser.json : serializeJson;
+    import std.algorithm.searching : canFind;
+
+    AuditLogActorSession.AuditLogActorSessionIpAddressDetails details;
+    details.country = "US";
+    details.city = "SF";
+    details.region = "CA";
+    details.regionCode = "CA";
+    details.asn = "1234";
+    details.latitude = "1";
+    details.longitude = "2";
+
+    AuditLogActorSession session;
+    session.user.id = "u";
+    session.user.email = "e@example.com";
+    session.ipAddress = "127.0.0.1";
+    session.userAgent = "UA";
+    session.ja3 = "h3";
+    session.ja4 = "h4";
+    session.ipAddressDetails = details;
+
+    auto js = serializeJson(session);
+    assert(js.canFind("\"ja3\":\"h3\""));
+    assert(js.canFind("\"ja4\":\"h4\""));
+    assert(js.canFind("\"ip_address_details\":{\"country\":\"US\""));
+}
+
+unittest
+{
+    import mir.ser.json : serializeJson;
+
+    AuditLogActor actor;
+    actor.type = AuditLogActorType.ApiKey;
+    actor.apiKey.id = "key1";
+    actor.apiKey.type = AuditLogApiKeyType.User;
+
+    auto js = serializeJson(actor);
+
+    auto back = deserializeJson!AuditLogActor(js);
+    assert(back.type == AuditLogActorType.ApiKey);
+    assert(back.apiKey.type == AuditLogApiKeyType.User);
+    assert(back.apiKey.id == "key1");
 }
