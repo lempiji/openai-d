@@ -759,7 +759,7 @@ unittest
 unittest
 {
     import mir.deser.json : deserializeJson;
-  
+
     enum example =
         `{"id":"req_ja4","type":"login.succeeded","effective_at":0,"actor":{"type":"session","session":{"user":{"id":"user","email":"u@example.com"},"ip_address":"127.0.0.1","user_agent":"UA","ja3":"ja3hash","ja4":"ja4hash","ip_address_details":{"country":"US","city":"SF","region":"CA","region_code":"CA","asn":"1234","latitude":"37.77","longitude":"-122.42"}}}}`;
     auto log = deserializeJson!AuditLog(example);
@@ -801,6 +801,7 @@ unittest
 unittest
 {
     import mir.ser.json : serializeJson;
+    import mir.deser.json : deserializeJson;
 
     AuditLogActor actor;
     actor.type = AuditLogActorType.ApiKey;
