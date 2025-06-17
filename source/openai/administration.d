@@ -596,21 +596,62 @@ struct ListAuditLogsResponse
     @serdeKeys("has_more") bool hasMore;
 }
 
+struct AuditLogTimeRange
+{
+    @serdeOptional @serdeIgnoreDefault long gt;
+    @serdeOptional @serdeIgnoreDefault long gte;
+    @serdeOptional @serdeIgnoreDefault long lt;
+    @serdeOptional @serdeIgnoreDefault long lte;
+}
+
 struct ListAuditLogsRequest
 {
     @serdeOptional @serdeIgnoreDefault string[] projectIds;
     @serdeOptional @serdeIgnoreDefault string[] eventTypes;
     @serdeOptional @serdeIgnoreDefault string[] actorIds;
+    @serdeOptional @serdeIgnoreDefault
+    @serdeKeys("actor_emails")
+    string[] actorEmails;
+    @serdeOptional @serdeIgnoreDefault
+    @serdeKeys("resource_ids")
+    string[] resourceIds;
+    @serdeOptional @serdeIgnoreDefault
+    @serdeKeys("effective_at")
+    AuditLogTimeRange effectiveAt;
     @serdeOptional @serdeIgnoreDefault uint limit;
     @serdeOptional @serdeIgnoreDefault string after;
     @serdeOptional @serdeIgnoreDefault string before;
 }
 
 /// Convenience constructor for `ListAuditLogsRequest`.
-ListAuditLogsRequest listAuditLogsRequest(uint limit)
+ListAuditLogsRequest listAuditLogsRequest(
+    uint limit,
+    string[] projectIds = null,
+    string[] eventTypes = null,
+    string[] actorIds = null,
+    string[] actorEmails = null,
+    string[] resourceIds = null,
+    AuditLogTimeRange effectiveAt = AuditLogTimeRange.init,
+    string after = "",
+    string before = "")
 {
     auto req = ListAuditLogsRequest();
     req.limit = limit;
+    if (projectIds !is null)
+        req.projectIds = projectIds;
+    if (eventTypes !is null)
+        req.eventTypes = eventTypes;
+    if (actorIds !is null)
+        req.actorIds = actorIds;
+    if (actorEmails !is null)
+        req.actorEmails = actorEmails;
+    if (resourceIds !is null)
+        req.resourceIds = resourceIds;
+    req.effectiveAt = effectiveAt;
+    if (after.length)
+        req.after = after;
+    if (before.length)
+        req.before = before;
     return req;
 }
 
