@@ -1,0 +1,6 @@
+name "administration_api_keys"
+description "Admin API key management example"
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."

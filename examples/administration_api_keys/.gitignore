@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/administration_api_keys
+administration_api_keys.so
+administration_api_keys.dylib
+administration_api_keys.dll
+administration_api_keys.a
+administration_api_keys.lib
+administration_api_keys-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
