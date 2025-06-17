@@ -573,6 +573,13 @@ enum AuditLogEventType
     UserAdded = "user.added",
     UserUpdated = "user.updated",
     UserDeleted = "user.deleted",
+    /// Present in the AuditLog schema but missing from the official
+    /// `AuditLogEventType` enum in OpenAPI 2.3.0.
+    CertificateCreated = "certificate.created",
+    CertificateUpdated = "certificate.updated",
+    CertificateDeleted = "certificate.deleted",
+    CertificatesActivated = "certificates.activated",
+    CertificatesDeactivated = "certificates.deactivated",
 }
 
 @serdeIgnoreUnexpectedKeys
@@ -741,6 +748,18 @@ unittest
 {
     import mir.deser.json : deserializeJson;
 
+    enum exampleCert =
+        `{"id":"req_cert","type":"certificate.created","effective_at":1,"actor":{"type":"session","session":{"user":{"id":"user-cert","email":"cert@example.com"},"ip_address":"127.0.0.1"}},"certificate.created":{"id":"cert-abc","name":"my-cert"}}`;
+    auto log = deserializeJson!AuditLog(exampleCert);
+    assert(log.type == AuditLogEventType.CertificateCreated);
+    assert(log.certificateCreated.id == "cert-abc");
+    assert(log.certificateCreated.name == "my-cert");
+}
+
+unittest
+{
+    import mir.deser.json : deserializeJson;
+  
     enum example =
         `{"id":"req_ja4","type":"login.succeeded","effective_at":0,"actor":{"type":"session","session":{"user":{"id":"user","email":"u@example.com"},"ip_address":"127.0.0.1","user_agent":"UA","ja3":"ja3hash","ja4":"ja4hash","ip_address_details":{"country":"US","city":"SF","region":"CA","region_code":"CA","asn":"1234","latitude":"37.77","longitude":"-122.42"}}}}`;
     auto log = deserializeJson!AuditLog(example);
