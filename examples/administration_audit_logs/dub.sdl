@@ -1,0 +1,6 @@
+name "administration_audit_logs"
+description "Audit logs API example"
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."

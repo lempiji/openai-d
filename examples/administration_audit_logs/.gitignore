@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/administration_audit_logs
+administration_audit_logs.so
+administration_audit_logs.dylib
+administration_audit_logs.dll
+administration_audit_logs.a
+administration_audit_logs.lib
+administration_audit_logs-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
