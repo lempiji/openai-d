@@ -90,6 +90,13 @@
       ```bash
       scripts/build_examples.sh core
       ```
+      * `core` intentionally skips directories containing underscores. Use the
+        `all` mode to build them manually. For example, to build the
+        `administration_invites` examples:
+
+        ```bash
+        scripts/build_examples.sh all administration_invites
+        ```
    3. To mirror CI or prepare a full release, you can still build **all**:
 
       ```bash
