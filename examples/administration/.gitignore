@@ -9,6 +9,14 @@ administration.dll
 administration.a
 administration.lib
 administration-test-*
+
+/usage
+usage.so
+usage.dylib
+usage.dll
+usage.a
+usage.lib
+usage-test-*
 *.exe
 *.pdb
 *.o
