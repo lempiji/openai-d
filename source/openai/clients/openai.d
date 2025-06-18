@@ -923,6 +923,132 @@ class OpenAIClient
         return content.deserializeJson!Certificate();
     }
 
+    /// List cost reports for the organization.
+    UsageResponse listCosts(in ListCostsRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildListCostsUrl(request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!UsageResponse();
+    }
+
+    /// List usage reports for a specific type.
+    UsageResponse listUsageCompletions(in ListUsageRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildListUsageUrl("completions", request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!UsageResponse();
+    }
+
+    ///
+    UsageResponse listUsageEmbeddings(in ListUsageRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildListUsageUrl("embeddings", request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!UsageResponse();
+    }
+
+    ///
+    UsageResponse listUsageImages(in ListUsageRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildListUsageUrl("images", request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!UsageResponse();
+    }
+
+    ///
+    UsageResponse listUsageModerations(in ListUsageRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildListUsageUrl("moderations", request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!UsageResponse();
+    }
+
+    ///
+    UsageResponse listUsageAudioSpeeches(in ListUsageRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildListUsageUrl("audio_speeches", request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!UsageResponse();
+    }
+
+    ///
+    UsageResponse listUsageAudioTranscriptions(in ListUsageRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildListUsageUrl("audio_transcriptions", request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!UsageResponse();
+    }
+
+    ///
+    UsageResponse listUsageVectorStores(in ListUsageRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildListUsageUrl("vector_stores", request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!UsageResponse();
+    }
+
+    ///
+    UsageResponse listUsageCodeInterpreterSessions(in ListUsageRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildListUsageUrl("code_interpreter_sessions", request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!UsageResponse();
+    }
+
     private string buildListInputItemsUrl(in ListInputItemsRequest request) const @safe
     {
         import std.format : format;
@@ -1002,6 +1128,71 @@ class OpenAIClient
             url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
         if (request.before.length)
             url ~= format("%sbefore=%s", sep, encodeComponent(request.before));
+        return url;
+    }
+
+    private string buildListUsageUrl(string type, in ListUsageRequest request) const @safe
+    {
+        import std.format : format;
+        import std.algorithm : map;
+        import std.uri : encodeComponent;
+
+        string url = buildUrl("/organization/usage/" ~ type);
+        string sep = "?";
+        url ~= format("%sstart_time=%s", sep, request.startTime);
+        sep = "&";
+        if (request.endTime)
+            url ~= format("%send_time=%s", sep, request.endTime), sep = "&";
+        if (request.bucketWidth.length)
+            url ~= format("%sbucket_width=%s", sep, encodeComponent(request.bucketWidth)), sep = "&";
+        if (request.projectIds !is null && request.projectIds.length)
+            url ~= format("%sproject_ids=%s", sep,
+                request.projectIds.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.userIds !is null && request.userIds.length)
+            url ~= format("%suser_ids=%s", sep,
+                request.userIds.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.apiKeyIds !is null && request.apiKeyIds.length)
+            url ~= format("%sapi_key_ids=%s", sep,
+                request.apiKeyIds.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.models !is null && request.models.length)
+            url ~= format("%smodels=%s", sep,
+                request.models.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.groupBy !is null && request.groupBy.length)
+            url ~= format("%sgroup_by=%s", sep,
+                request.groupBy.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.limit)
+            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
+        if (request.page.length)
+            url ~= format("%spage=%s", sep, encodeComponent(request.page)), sep = "&";
+        if (request.batch)
+            url ~= format("%sbatch=true", sep);
+        return url;
+    }
+
+    private string buildListCostsUrl(in ListCostsRequest request) const @safe
+    {
+        import std.format : format;
+        import std.algorithm : map;
+        import std.uri : encodeComponent;
+
+        string url = buildUrl("/organization/costs");
+        string sep = "?";
+        url ~= format("%sstart_time=%s", sep, request.startTime);
+        sep = "&";
+        if (request.endTime)
+            url ~= format("%send_time=%s", sep, request.endTime), sep = "&";
+        if (request.bucketWidth.length)
+            url ~= format("%sbucket_width=%s", sep, encodeComponent(request.bucketWidth)), sep = "&";
+        if (request.projectIds !is null && request.projectIds.length)
+            url ~= format("%sproject_ids=%s", sep,
+                request.projectIds.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.groupBy !is null && request.groupBy.length)
+            url ~= format("%sgroup_by=%s", sep,
+                request.groupBy.map!encodeComponent.joiner(",")), sep = "&";
+        if (request.limit)
+            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
+        if (request.page.length)
+            url ~= format("%spage=%s", sep, encodeComponent(request.page));
         return url;
     }
 
@@ -1608,4 +1799,62 @@ unittest
     assert(url.canFind("purpose=fine%20tune"));
     assert(url.canFind("after=foo%20bar"));
     assert(url.canFind("before=bar%2Bbaz"));
+}
+
+@("buildListUsageUrl encodes query parameters")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto req = listUsageRequest(1);
+    req.bucketWidth = "day";
+    req.projectIds = ["p id"];
+    req.userIds = ["u id"];
+    req.apiKeyIds = ["key id"];
+    req.models = ["gpt 4"];
+    req.groupBy = ["project_id"];
+    req.limit = 3;
+    req.page = "foo bar";
+    req.batch = true;
+    auto url = client.buildListUsageUrl("completions", req);
+
+    assert(url.canFind("start_time=1"));
+    assert(url.canFind("bucket_width=day"));
+    assert(url.canFind("project_ids=p%20id"));
+    assert(url.canFind("user_ids=u%20id"));
+    assert(url.canFind("api_key_ids=key%20id"));
+    assert(url.canFind("models=gpt%204"));
+    assert(url.canFind("group_by=project_id"));
+    assert(url.canFind("limit=3"));
+    assert(url.canFind("page=foo%20bar"));
+    assert(url.canFind("batch=true"));
+}
+
+@("buildListCostsUrl encodes query parameters")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto req = listCostsRequest(2);
+    req.bucketWidth = "month";
+    req.projectIds = ["p id"];
+    req.groupBy = ["project_id"];
+    req.limit = 5;
+    req.page = "bar+baz";
+    auto url = client.buildListCostsUrl(req);
+
+    assert(url.canFind("start_time=2"));
+    assert(url.canFind("bucket_width=month"));
+    assert(url.canFind("project_ids=p%20id"));
+    assert(url.canFind("group_by=project_id"));
+    assert(url.canFind("limit=5"));
+    assert(url.canFind("page=bar%2Bbaz"));
 }
