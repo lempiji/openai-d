@@ -13,4 +13,3 @@
 
 #### :bulb: Proposed Improvement
   - Provide a cleaned example build mode that avoids generating `dub.selections.json` or binaries to reduce cleanup effort
-  - …
