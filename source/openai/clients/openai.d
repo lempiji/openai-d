@@ -1185,8 +1185,6 @@ class OpenAIClient
             url ~= format("%slimit=%s", sep, request.limit), sep = "&";
         if (request.after.length)
             url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
-        if (request.before.length)
-            url ~= format("%sbefore=%s", sep, encodeComponent(request.before));
         return url;
     }
 
@@ -1270,8 +1268,7 @@ class OpenAIClient
             url ~= format("%sorder=%s", sep, encodeComponent(request.order)), sep = "&";
         if (request.after.length)
             url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
-        if (request.before.length)
-            url ~= format("%sbefore=%s", sep, encodeComponent(request.before));
+        // 'before' parameter removed in API; no longer supported
         return url;
     }
 
@@ -1844,16 +1841,13 @@ unittest
     auto url = client.buildListFilesUrl(req);
 
     assert(!url.canFind("after="));
-    assert(!url.canFind("before="));
 
     req.after = "a";
     url = client.buildListFilesUrl(req);
     assert(url.canFind("after=a"));
 
     req.after = "";
-    req.before = "b";
     url = client.buildListFilesUrl(req);
-    assert(url.canFind("before=b"));
     assert(!url.canFind("after="));
 }
 
@@ -1869,12 +1863,10 @@ unittest
     auto req = listFilesRequest();
     req.purpose = "fine tune";
     req.after = "foo bar";
-    req.before = "bar+baz";
     auto url = client.buildListFilesUrl(req);
 
     assert(url.canFind("purpose=fine%20tune"));
     assert(url.canFind("after=foo%20bar"));
-    assert(url.canFind("before=bar%2Bbaz"));
 }
 
 @("buildListUsageUrl encodes query parameters")
