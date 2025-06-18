@@ -1,0 +1,6 @@
+name "administration_usage"
+description "Usage reporting example"
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."
