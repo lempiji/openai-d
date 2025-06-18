@@ -37,7 +37,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 - [ ] [Fine-tunings](https://platform.openai.com/docs/api-reference/fine-tuning) (TODO)
 - [ ] [Graders](https://platform.openai.com/docs/api-reference/graders) (TODO)
 - [ ] [Batch](https://platform.openai.com/docs/api-reference/batch) (TODO)
- - [ ] [Files](https://platform.openai.com/docs/api-reference/files) (WIP)
+ - [x] [Files](https://platform.openai.com/docs/api-reference/files) — upload, list, retrieve, delete, download
 - [ ] [Uploads](https://platform.openai.com/docs/api-reference/uploads) (TODO)
 - [x] [Models](https://platform.openai.com/docs/api-reference/models)
 - [x] [Moderations](https://platform.openai.com/docs/api-reference/moderations)
