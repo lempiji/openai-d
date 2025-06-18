@@ -927,6 +927,90 @@ class OpenAIClient
         return content.deserializeJson!Project();
     }
 
+    /// List API keys for a project.
+    ProjectApiKeyListResponse listProjectApiKeys(string projectId, in ListProjectApiKeysRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (projectId.length > 0)
+    {
+        import std.format : format;
+        import std.uri : encodeComponent;
+
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildUrl("/organization/projects/" ~ projectId ~ "/api_keys");
+        string sep = "?";
+        if (request.limit)
+            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
+        if (request.after.length)
+            url ~= format("%safter=%s", sep, encodeComponent(request.after));
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!ProjectApiKeyListResponse();
+    }
+
+    /// Create a project API key.
+    ProjectApiKey createProjectApiKey(string projectId, in CreateProjectApiKeyRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (projectId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto body = serializeJson(request);
+        auto content = cast(char[]) post!ubyte(buildUrl("/organization/projects/" ~ projectId ~ "/api_keys"), body, http);
+        return content.deserializeJson!ProjectApiKey();
+    }
+
+    /// Retrieve a project API key by ID.
+    ProjectApiKey retrieveProjectApiKey(string keyId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (keyId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/organization/api_keys/" ~ keyId), http);
+        return content.deserializeJson!ProjectApiKey();
+    }
+
+    /// Modify a project API key.
+    ProjectApiKey modifyProjectApiKey(string keyId, in ModifyProjectApiKeyRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (keyId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto body = serializeJson(request);
+        auto content = cast(char[]) post!ubyte(buildUrl("/organization/api_keys/" ~ keyId), body, http);
+        return content.deserializeJson!ProjectApiKey();
+    }
+
+    /// Delete a project API key.
+    DeleteProjectApiKeyResponse deleteProjectApiKey(string keyId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (keyId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        import std.array : appender;
+
+        auto buf = appender!(char[])();
+        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
+        del(buildUrl("/organization/api_keys/" ~ keyId), http);
+        auto content = buf.data;
+        return content.deserializeJson!DeleteProjectApiKeyResponse();
+    }
+
     /// List organization certificates.
     ListCertificatesResponse listCertificates() @system
     in (config.apiKey != null && config.apiKey.length > 0)
