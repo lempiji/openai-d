@@ -1,0 +1,6 @@
+name "files"
+description "Files API example"
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."

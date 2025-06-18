@@ -17,6 +17,7 @@ import openai.models;
 import openai.moderation;
 import openai.audio;
 import openai.images;
+import openai.files;
 import openai.responses;
 import openai.administration;
 
@@ -540,6 +541,83 @@ class OpenAIClient
         return result;
     }
 
+    /// List uploaded files.
+    FileListResponse listFiles(in ListFilesRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildListFilesUrl(request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!FileListResponse();
+    }
+
+    /// Upload a file.
+    FileObject uploadFile(in FileUploadRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (request.file.length > 0)
+    in (request.purpose.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        MultipartPart[] files = [MultipartPart("file", request.file)];
+        MultipartPart[] texts = [MultipartPart("purpose", request.purpose)];
+
+        auto body = buildMultipartBody(http, texts, files);
+
+        auto content = cast(char[]) post!ubyte(buildUrl("/files"), body, http);
+        return content.deserializeJson!FileObject();
+    }
+
+    /// Retrieve a file by ID.
+    FileObject retrieveFile(string fileId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (fileId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/files/" ~ fileId), http);
+        return content.deserializeJson!FileObject();
+    }
+
+    /// Delete a file.
+    DeleteFileResponse deleteFile(string fileId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (fileId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        import std.array : appender;
+
+        auto buf = appender!(char[])();
+        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
+        del(buildUrl("/files/" ~ fileId), http);
+        auto content = buf.data;
+        return content.deserializeJson!DeleteFileResponse();
+    }
+
+    /// Download the file content.
+    ubyte[] downloadFileContent(string fileId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (fileId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/octet-stream");
+
+        auto content = get!(HTTP, ubyte)(buildUrl("/files/" ~ fileId ~ "/content"), http);
+        return cast(ubyte[]) content;
+    }
+
     ///
     ResponsesResponse createResponse(in CreateResponseRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
@@ -920,6 +998,26 @@ class OpenAIClient
             url ~= format("%seffective_at[lte]=%s", sep, request.effectiveAt.lte), sep = "&";
         if (request.limit)
             url ~= format("%slimit=%s", sep, request.limit), sep = "&";
+        if (request.after.length)
+            url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
+        if (request.before.length)
+            url ~= format("%sbefore=%s", sep, encodeComponent(request.before));
+        return url;
+    }
+
+    private string buildListFilesUrl(in ListFilesRequest request) const @safe
+    {
+        import std.format : format;
+        import std.uri : encodeComponent;
+
+        string url = buildUrl("/files");
+        string sep = "?";
+        if (request.purpose.length)
+            url ~= format("%spurpose=%s", sep, encodeComponent(request.purpose)), sep = "&";
+        if (request.limit)
+            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
+        if (request.order.length)
+            url ~= format("%sorder=%s", sep, encodeComponent(request.order)), sep = "&";
         if (request.after.length)
             url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
         if (request.before.length)
@@ -1464,4 +1562,50 @@ unittest
     assert(url.canFind("resource_ids=res%20id"));
     assert(url.canFind("effective_at[gt]=10"));
     assert(url.canFind("effective_at[lte]=20"));
+}
+
+@("buildListFilesUrl")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto req = listFilesRequest();
+    auto url = client.buildListFilesUrl(req);
+
+    assert(!url.canFind("after="));
+    assert(!url.canFind("before="));
+
+    req.after = "a";
+    url = client.buildListFilesUrl(req);
+    assert(url.canFind("after=a"));
+
+    req.after = "";
+    req.before = "b";
+    url = client.buildListFilesUrl(req);
+    assert(url.canFind("before=b"));
+    assert(!url.canFind("after="));
+}
+
+@("buildListFilesUrl encodes query parameters")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto req = listFilesRequest();
+    req.purpose = "fine tune";
+    req.after = "foo bar";
+    req.before = "bar+baz";
+    auto url = client.buildListFilesUrl(req);
+
+    assert(url.canFind("purpose=fine%20tune"));
+    assert(url.canFind("after=foo%20bar"));
+    assert(url.canFind("before=bar%2Bbaz"));
 }

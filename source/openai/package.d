@@ -16,3 +16,4 @@ public import openai.audio;
 public import openai.images;
 public import openai.responses;
 public import openai.administration;
+public import openai.files;

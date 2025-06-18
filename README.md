@@ -37,7 +37,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 - [ ] [Fine-tunings](https://platform.openai.com/docs/api-reference/fine-tuning) (TODO)
 - [ ] [Graders](https://platform.openai.com/docs/api-reference/graders) (TODO)
 - [ ] [Batch](https://platform.openai.com/docs/api-reference/batch) (TODO)
-- [ ] [Files](https://platform.openai.com/docs/api-reference/files) (TODO)
+ - [ ] [Files](https://platform.openai.com/docs/api-reference/files) (WIP)
 - [ ] [Uploads](https://platform.openai.com/docs/api-reference/uploads) (TODO)
 - [x] [Models](https://platform.openai.com/docs/api-reference/models)
 - [x] [Moderations](https://platform.openai.com/docs/api-reference/moderations)
@@ -163,6 +163,21 @@ auto response = client.embedding(request);
 float[] embedding = response.data[0].embedding;
 writeln(embedding.length); // text-embedding-3-small -> 1536
 ```
+
+__Files__
+
+```d name=files
+import std;
+import openai;
+
+auto client = new OpenAIClient();
+auto up = fileUploadRequest("input.jsonl", FilePurpose.FineTune);
+client.uploadFile(up);
+auto list = client.listFiles(listFilesRequest());
+writeln(list.data.length);
+```
+
+See `examples/files` for a complete example.
 
 __Moderation__
 
