@@ -53,7 +53,6 @@ struct ListFilesRequest
     @serdeOptional @serdeIgnoreDefault size_t limit = 10_000;
     @serdeOptional @serdeIgnoreDefault string order = "desc";
     @serdeOptional @serdeIgnoreDefault string after;
-    @serdeOptional @serdeIgnoreDefault string before;
 }
 
 /// Convenience constructor for `ListFilesRequest`.
