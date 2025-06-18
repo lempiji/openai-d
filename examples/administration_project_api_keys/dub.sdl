@@ -1,0 +1,6 @@
+name "administration_project_api_keys"
+description "Project API key management example"
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."
