@@ -142,3 +142,14 @@ unittest
     assert(list.firstId == "file-1");
     assert(!list.hasMore);
 }
+
+unittest
+{
+    import mir.deser.json : deserializeJson;
+
+    enum json = `{"id":"file-123","object":"file","deleted":true}`;
+    auto resp = deserializeJson!DeleteFileResponse(json);
+    assert(resp.id == "file-123");
+    assert(resp.object == "file");
+    assert(resp.deleted);
+}
