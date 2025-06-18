@@ -263,6 +263,15 @@ auto list = client.listProjects(listProjectsRequest(20));
 writeln(list.data.length);
 ```
 
+```d name=admin_invites
+import std;
+import openai;
+
+auto client = new OpenAIClient();
+auto list = client.listInvites(listInvitesRequest(20));
+writeln(list.data.length);
+```
+
 ```d name=admin_audit_logs
 import std;
 import openai;
@@ -283,7 +292,8 @@ auto usage = client.listUsageCompletions(req);
 writeln(usage.data.length);
 ```
 
-Requires an admin API key. See `examples/administration` for a complete example.
+Requires an admin API key. See `examples/administration` and
+`examples/administration_invites` for complete examples.
 
 
 ## OpenAIClientConfig
