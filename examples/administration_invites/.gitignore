@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/administration_invites
+administration_invites.so
+administration_invites.dylib
+administration_invites.dll
+administration_invites.a
+administration_invites.lib
+administration_invites-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst

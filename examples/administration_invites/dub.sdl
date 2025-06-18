@@ -1,0 +1,6 @@
+name "administration_invites"
+description "Organization invites example"
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."

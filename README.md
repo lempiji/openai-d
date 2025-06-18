@@ -46,7 +46,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 - [ ] [Assistants (Beta)](https://platform.openai.com/docs/api-reference/assistants) (TODO)
 - [ ] [Administration](https://platform.openai.com/docs/api-reference/administration) (WIP)
   - [x] Admin API Keys
-  - [ ] Invites (WIP)
+  - [x] Invites
   - [ ] Users (TODO)
   - [x] Projects
   - [ ] Project users (TODO)
