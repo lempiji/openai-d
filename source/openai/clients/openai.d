@@ -770,6 +770,65 @@ class OpenAIClient
         return content.deserializeJson!DeleteAdminApiKeyResponse();
     }
 
+    /// List invites for the organization.
+    InviteListResponse listInvites(in ListInvitesRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildListInvitesUrl(request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!InviteListResponse();
+    }
+
+    /// Create an invite.
+    Invite createInvite(in InviteRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto body = serializeJson(request);
+        auto content = cast(char[]) post!ubyte(buildUrl("/organization/invites"), body, http);
+        return content.deserializeJson!Invite();
+    }
+
+    /// Retrieve an invite by ID.
+    Invite retrieveInvite(string inviteId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (inviteId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/organization/invites/" ~ inviteId), http);
+        return content.deserializeJson!Invite();
+    }
+
+    /// Delete an invite.
+    InviteDeleteResponse deleteInvite(string inviteId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (inviteId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        import std.array : appender;
+
+        auto buf = appender!(char[])();
+        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
+        del(buildUrl("/organization/invites/" ~ inviteId), http);
+        auto content = buf.data;
+        return content.deserializeJson!InviteDeleteResponse();
+    }
+
     /// List audit logs for the organization.
     ListAuditLogsResponse listAuditLogs(in ListAuditLogsRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
@@ -1213,6 +1272,23 @@ class OpenAIClient
             url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
         if (request.before.length)
             url ~= format("%sbefore=%s", sep, encodeComponent(request.before));
+        return url;
+    }
+
+    private string buildListInvitesUrl(in ListInvitesRequest request) const @safe
+    {
+        import std.format : format;
+        import std.uri : encodeComponent;
+
+        string url = buildUrl("/organization/invites");
+        string sep = "?";
+        if (request.limit)
+        {
+            url ~= format("%slimit=%s", sep, request.limit);
+            sep = "&";
+        }
+        if (request.after.length)
+            url ~= format("%safter=%s", sep, encodeComponent(request.after));
         return url;
     }
 
@@ -1857,4 +1933,48 @@ unittest
     assert(url.canFind("group_by=project_id"));
     assert(url.canFind("limit=5"));
     assert(url.canFind("page=bar%2Bbaz"));
+}
+
+@("buildListInvitesUrl")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto req = ListInvitesRequest();
+    auto url = client.buildListInvitesUrl(req);
+
+    assert(!url.canFind("limit="));
+    assert(!url.canFind("after="));
+
+    req.limit = 2;
+    url = client.buildListInvitesUrl(req);
+    assert(url.canFind("limit=2"));
+
+    req.limit = 0;
+    req.after = "foo";
+    url = client.buildListInvitesUrl(req);
+    assert(url.canFind("after=foo"));
+    assert(!url.canFind("limit="));
+}
+
+@("buildListInvitesUrl encodes query parameters")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto req = ListInvitesRequest();
+    req.limit = 3;
+    req.after = "foo bar";
+    auto url = client.buildListInvitesUrl(req);
+
+    assert(url.canFind("limit=3"));
+    assert(url.canFind("after=foo%20bar"));
 }
