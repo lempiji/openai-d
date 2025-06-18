@@ -167,17 +167,25 @@ writeln(embedding.length); // text-embedding-3-small -> 1536
 __Files__
 
 ```d name=files
-import std;
+import std.stdio;
+import std.file : write;
 import openai;
 
 auto client = new OpenAIClient();
 auto up = fileUploadRequest("input.jsonl", FilePurpose.FineTune);
-client.uploadFile(up);
-auto list = client.listFiles(listFilesRequest());
-writeln(list.data.length);
+auto uploaded = client.uploadFile(up);
+
+auto retrieved = client.retrieveFile(uploaded.id);
+writeln("retrieved: ", retrieved.filename);
+
+auto content = client.downloadFileContent(uploaded.id);
+write("copy.jsonl", content);
+
+client.deleteFile(uploaded.id);
 ```
 
-See `examples/files` for a complete example.
+See `examples/files` for a complete example showing upload, retrieval, download,
+and deletion.
 
 __Moderation__
 
