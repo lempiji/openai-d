@@ -54,7 +54,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
   - [ ] Project API keys (TODO)
   - [ ] Project rate limits (TODO)
   - [x] Audit logs
-  - [ ] Usage (TODO)
+  - [x] Usage
   - [x] Certificates
 
 __legacy__
@@ -271,6 +271,19 @@ auto client = new OpenAIClient();
 auto logs = client.listAuditLogs(listAuditLogsRequest(10));
 writeln(logs.data.length);
 ```
+
+```d name=admin_usage
+import std;
+import openai;
+
+auto client = new OpenAIClient();
+auto req = listUsageRequest(0);
+req.limit = 3;
+auto usage = client.listUsageCompletions(req);
+writeln(usage.data.length);
+```
+
+Requires an admin API key. See `examples/administration` for a complete example.
 
 
 ## OpenAIClientConfig
