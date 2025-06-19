@@ -1,0 +1,6 @@
+name "administration_project_service_accounts"
+description "Project service account management example"
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."
