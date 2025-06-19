@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/administration_users
+administration_users.so
+administration_users.dylib
+administration_users.dll
+administration_users.a
+administration_users.lib
+administration_users-test-*
+*.exe
+*.pdb
+*.o
+*.obj
+*.lst
