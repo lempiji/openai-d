@@ -47,7 +47,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 - [ ] [Administration](https://platform.openai.com/docs/api-reference/administration) (WIP)
   - [x] Admin API Keys
   - [x] Invites
-  - [ ] Users (TODO)
+  - [x] Users
   - [x] Projects
   - [ ] Project users (TODO)
   - [ ] Project service accounts (TODO)
@@ -280,6 +280,15 @@ auto list = client.listInvites(listInvitesRequest(20));
 writeln(list.data.length);
 ```
 
+```d name=admin_users
+import std;
+import openai;
+
+auto client = new OpenAIClient();
+auto list = client.listUsers(listUsersRequest(20));
+writeln(list.data.length);
+```
+
 ```d name=admin_audit_logs
 import std;
 import openai;
@@ -311,8 +320,9 @@ writeln(list.data.length);
 ```
 
 Requires an admin API key. See `examples/administration`,
-`examples/administration_invites`, and
-`examples/administration_project_api_keys` for complete examples.
+`examples/administration_invites`,
+`examples/administration_project_api_keys`, and
+`examples/administration_users` for complete examples.
 
 
 
