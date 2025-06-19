@@ -50,7 +50,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
   - [x] Users
   - [x] Projects
   - [x] Project users
-  - [ ] Project service accounts (TODO)
+  - [ ] Project service accounts (WIP)
   - [x] Project API keys
   - [ ] Project rate limits (TODO)
   - [x] Audit logs
