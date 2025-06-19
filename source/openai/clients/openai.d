@@ -1067,6 +1067,71 @@ class OpenAIClient
         return content.deserializeJson!ProjectUserDeleteResponse();
     }
 
+    /// List service accounts for a project.
+    ProjectServiceAccountListResponse listProjectServiceAccounts(string projectId, in ListProjectServiceAccountsRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (projectId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildListProjectServiceAccountsUrl(projectId, request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!ProjectServiceAccountListResponse();
+    }
+
+    /// Create a project service account.
+    ProjectServiceAccountCreateResponse createProjectServiceAccount(string projectId, in ProjectServiceAccountCreateRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (projectId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto body = serializeJson(request);
+        auto content = cast(char[]) post!ubyte(
+            buildUrl("/organization/projects/" ~ projectId ~ "/service_accounts"), body, http);
+        return content.deserializeJson!ProjectServiceAccountCreateResponse();
+    }
+
+    /// Retrieve a project service account by ID.
+    ProjectServiceAccount retrieveProjectServiceAccount(string projectId, string serviceAccountId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (projectId.length > 0)
+    in (serviceAccountId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(
+            buildUrl("/organization/projects/" ~ projectId ~ "/service_accounts/" ~ serviceAccountId), http);
+        return content.deserializeJson!ProjectServiceAccount();
+    }
+
+    /// Delete a project service account.
+    ProjectServiceAccountDeleteResponse deleteProjectServiceAccount(string projectId, string serviceAccountId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (projectId.length > 0)
+    in (serviceAccountId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        import std.array : appender;
+
+        auto buf = appender!(char[])();
+        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
+        del(buildUrl("/organization/projects/" ~ projectId ~ "/service_accounts/" ~ serviceAccountId), http);
+        auto content = buf.data;
+        return content.deserializeJson!ProjectServiceAccountDeleteResponse();
+    }
+
     /// List API keys for a project.
     ProjectApiKeyListResponse listProjectApiKeys(string projectId, in ListProjectApiKeysRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
@@ -1536,6 +1601,23 @@ class OpenAIClient
         import std.uri : encodeComponent;
 
         string url = buildUrl("/organization/projects/" ~ projectId ~ "/users");
+        string sep = "?";
+        if (request.limit)
+        {
+            url ~= format("%slimit=%s", sep, request.limit);
+            sep = "&";
+        }
+        if (request.after.length)
+            url ~= format("%safter=%s", sep, encodeComponent(request.after));
+        return url;
+    }
+
+    private string buildListProjectServiceAccountsUrl(string projectId, in ListProjectServiceAccountsRequest request) const @safe
+    {
+        import std.format : format;
+        import std.uri : encodeComponent;
+
+        string url = buildUrl("/organization/projects/" ~ projectId ~ "/service_accounts");
         string sep = "?";
         if (request.limit)
         {
@@ -2224,6 +2306,50 @@ unittest
     req.limit = 3;
     req.after = "foo bar";
     auto url = client.buildListInvitesUrl(req);
+
+    assert(url.canFind("limit=3"));
+    assert(url.canFind("after=foo%20bar"));
+}
+
+@("buildListProjectServiceAccountsUrl")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto req = ListProjectServiceAccountsRequest();
+    auto url = client.buildListProjectServiceAccountsUrl("p", req);
+
+    assert(!url.canFind("limit="));
+    assert(!url.canFind("after="));
+
+    req.limit = 2;
+    url = client.buildListProjectServiceAccountsUrl("p", req);
+    assert(url.canFind("limit=2"));
+
+    req.limit = 0;
+    req.after = "foo";
+    url = client.buildListProjectServiceAccountsUrl("p", req);
+    assert(url.canFind("after=foo"));
+    assert(!url.canFind("limit="));
+}
+
+@("buildListProjectServiceAccountsUrl encodes query parameters")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto req = ListProjectServiceAccountsRequest();
+    req.limit = 3;
+    req.after = "foo bar";
+    auto url = client.buildListProjectServiceAccountsUrl("p", req);
 
     assert(url.canFind("limit=3"));
     assert(url.canFind("after=foo%20bar"));
