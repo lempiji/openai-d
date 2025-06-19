@@ -829,6 +829,66 @@ class OpenAIClient
         return content.deserializeJson!InviteDeleteResponse();
     }
 
+    /// List users.
+    UserListResponse listUsers(in ListUsersRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        string url = buildListUsersUrl(request);
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        return content.deserializeJson!UserListResponse();
+    }
+
+    /// Retrieve a user by ID.
+    User retrieveUser(string userId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (userId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/organization/users/" ~ userId), http);
+        return content.deserializeJson!User();
+    }
+
+    /// Modify a user.
+    User modifyUser(string userId, in UserRoleUpdateRequest request) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (userId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        http.addRequestHeader("Content-Type", "application/json");
+
+        auto body = serializeJson(request);
+        auto content = cast(char[]) post!ubyte(buildUrl("/organization/users/" ~ userId), body, http);
+        return content.deserializeJson!User();
+    }
+
+    /// Delete a user.
+    UserDeleteResponse deleteUser(string userId) @system
+    in (config.apiKey != null && config.apiKey.length > 0)
+    in (userId.length > 0)
+    {
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+
+        import std.array : appender;
+
+        auto buf = appender!(char[])();
+        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
+        del(buildUrl("/organization/users/" ~ userId), http);
+        auto content = buf.data;
+        return content.deserializeJson!UserDeleteResponse();
+    }
+
     /// List audit logs for the organization.
     ListAuditLogsResponse listAuditLogs(in ListAuditLogsRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
@@ -1362,6 +1422,23 @@ class OpenAIClient
         import std.uri : encodeComponent;
 
         string url = buildUrl("/organization/invites");
+        string sep = "?";
+        if (request.limit)
+        {
+            url ~= format("%slimit=%s", sep, request.limit);
+            sep = "&";
+        }
+        if (request.after.length)
+            url ~= format("%safter=%s", sep, encodeComponent(request.after));
+        return url;
+    }
+
+    private string buildListUsersUrl(in ListUsersRequest request) const @safe
+    {
+        import std.format : format;
+        import std.uri : encodeComponent;
+
+        string url = buildUrl("/organization/users");
         string sep = "?";
         if (request.limit)
         {
@@ -2050,6 +2127,50 @@ unittest
     req.limit = 3;
     req.after = "foo bar";
     auto url = client.buildListInvitesUrl(req);
+
+    assert(url.canFind("limit=3"));
+    assert(url.canFind("after=foo%20bar"));
+}
+
+@("buildListUsersUrl")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto req = ListUsersRequest();
+    auto url = client.buildListUsersUrl(req);
+
+    assert(!url.canFind("limit="));
+    assert(!url.canFind("after="));
+
+    req.limit = 2;
+    url = client.buildListUsersUrl(req);
+    assert(url.canFind("limit=2"));
+
+    req.limit = 0;
+    req.after = "foo";
+    url = client.buildListUsersUrl(req);
+    assert(url.canFind("after=foo"));
+    assert(!url.canFind("limit="));
+}
+
+@("buildListUsersUrl encodes query parameters")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIClient(cfg);
+
+    auto req = ListUsersRequest();
+    req.limit = 3;
+    req.after = "foo bar";
+    auto url = client.buildListUsersUrl(req);
 
     assert(url.canFind("limit=3"));
     assert(url.canFind("after=foo%20bar"));
