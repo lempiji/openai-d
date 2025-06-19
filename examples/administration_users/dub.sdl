@@ -1,0 +1,6 @@
+name "administration_users"
+description "List users example"
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."
