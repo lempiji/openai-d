@@ -49,7 +49,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
   - [x] Invites
   - [x] Users
   - [x] Projects
-  - [ ] Project users (TODO)
+  - [x] Project users
   - [ ] Project service accounts (TODO)
   - [x] Project API keys
   - [ ] Project rate limits (TODO)
@@ -321,7 +321,8 @@ writeln(list.data.length);
 
 Requires an admin API key. See `examples/administration`,
 `examples/administration_invites`,
-`examples/administration_project_api_keys`, and
+`examples/administration_project_api_keys`,
+`examples/administration_project_users`, and
 `examples/administration_users` for complete examples.
 
 
