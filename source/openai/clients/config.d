@@ -42,6 +42,23 @@ class OpenAIClientConfig
         return apiBase.canFind(".api.cognitive.microsoft.com");
     }
 
+    /// Validate the configuration fields.
+    ///
+    /// Ensures that `apiKey` is present and, when using Azure endpoints,
+    /// that `deploymentId` is also provided.
+    void validate() const
+    {
+        import std.exception : enforce;
+
+        enforce(apiKey.length > 0, "OPENAI_API_KEY is required");
+
+        if (isAzure)
+        {
+            enforce(deploymentId.length > 0,
+                "OPENAI_DEPLOYMENT_ID is required for Azure mode");
+        }
+    }
+
     package this()
     {
         this.apiBase = "https://api.openai.com/v1";
