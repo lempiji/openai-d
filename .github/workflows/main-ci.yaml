@@ -22,7 +22,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.dub/packages
-          key: dub-${{ runner.os }}-${{ matrix.dlang }}-${{ hashFiles('dub.json') }}
+          key: dub-${{ runner.os }}-${{ matrix.dlang }}-${{ hashFiles('dub.selections.json') }}
           restore-keys: dub-${{ runner.os }}-${{ matrix.dlang }}-
       - name: Check formatting
         run: |
@@ -66,7 +66,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.APPDATA }}\dub\packages
-          key: dub-${{ runner.os }}-${{ matrix.dlang }}-${{ hashFiles('dub.json') }}
+          key: dub-${{ runner.os }}-${{ matrix.dlang }}-${{ hashFiles('dub.selections.json') }}
           restore-keys: dub-${{ runner.os }}-${{ matrix.dlang }}-
       - name: Check formatting
         shell: pwsh
