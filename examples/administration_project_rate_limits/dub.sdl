@@ -1,0 +1,6 @@
+name "administration_project_rate_limits"
+description "Project rate limit management example"
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."
