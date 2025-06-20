@@ -4,7 +4,7 @@ import openai;
 
 void main()
 {
-    auto client = new OpenAIClient();
+    auto client = new OpenAIAdminClient();
 
     auto created = client.createAdminApiKey(createAdminApiKeyRequest("Example Key"));
     auto got = client.getAdminApiKey(created.id);

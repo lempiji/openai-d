@@ -4,7 +4,7 @@ import openai;
 
 void main()
 {
-    auto client = new OpenAIClient();
+    auto client = new OpenAIAdminClient();
 
     // List existing invites
     auto list = client.listInvites(listInvitesRequest(20));

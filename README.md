@@ -25,7 +25,7 @@ dub add openai-d
 ```d
 import openai;
 
-auto client = new OpenAIClient();
+auto client = new OpenAIAdminClient();
 auto res = client.chatCompletion(
     chatCompletionRequest(openai.GPT4O, [userChatMessage("Hello!")]));
 writeln(res.choices[0].message.content);
@@ -232,7 +232,7 @@ See `examples/images` for the full example.
 import std;
 import openai;
 
-auto client = new OpenAIClient();
+auto client = new OpenAIAdminClient();
 auto list = client.listProjects(listProjectsRequest(20));
 writeln(list.data.length);
 ```

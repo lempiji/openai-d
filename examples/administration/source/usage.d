@@ -5,7 +5,7 @@ import openai;
 /// Simple helper demonstrating the Usage API.
 void runUsageExample()
 {
-    auto client = new OpenAIClient();
+    auto client = new OpenAIAdminClient();
 
     auto req = listUsageRequest(0);
     req.limit = 3;
