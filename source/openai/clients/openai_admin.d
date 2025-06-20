@@ -1,4 +1,4 @@
-module openai.clients.admin;
+module openai.clients.openai_admin;
 
 import std.net.curl;
 import std.format;
