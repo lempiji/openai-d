@@ -20,7 +20,7 @@ class OpenAIAdminClient
     this()
     {
         this.config = OpenAIClientConfig.fromEnvironment();
-        validateConfig();
+        config.validate();
         enforce(!config.isAzure, "Administration API is not supported on Azure");
     }
 
@@ -28,19 +28,8 @@ class OpenAIAdminClient
     in (config !is null)
     {
         this.config = config;
-        validateConfig();
+        this.config.validate();
         enforce(!this.config.isAzure, "Administration API is not supported on Azure");
-    }
-
-private:
-    void validateConfig()
-    {
-        enforce(config.apiKey.length > 0, "OPENAI_API_KEY is required");
-        if (config.isAzure)
-        {
-            enforce(config.deploymentId.length > 0,
-                "OPENAI_DEPLOYMENT_ID is required for Azure mode");
-        }
     }
 
     string buildListAuditLogsUrl(in ListAuditLogsRequest request) const @safe

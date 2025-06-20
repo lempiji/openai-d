@@ -34,7 +34,7 @@ class OpenAIClient
     this()
     {
         this.config = OpenAIClientConfig.fromEnvironment();
-        validateConfig();
+        config.validate();
     }
 
     ///
@@ -43,21 +43,7 @@ class OpenAIClient
     do
     {
         this.config = config;
-        validateConfig();
-    }
-
-    private void validateConfig()
-    {
-        import std.exception : enforce;
-
-        enforce(config.apiKey.length > 0,
-            "OPENAI_API_KEY is required");
-
-        if (config.isAzure)
-        {
-            enforce(config.deploymentId.length > 0,
-                "OPENAI_DEPLOYMENT_ID is required for Azure mode");
-        }
+        this.config.validate();
     }
 
     mixin ClientHelpers;
