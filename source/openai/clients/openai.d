@@ -65,7 +65,6 @@ class OpenAIClient
     private string buildListInputItemsUrl(in ListInputItemsRequest request) const @safe
     {
         import std.algorithm : map;
-        import std.array : array;
 
         auto b = QueryParamsBuilder(
             buildUrl("/responses/" ~ request.responseId ~ "/input_items"));
