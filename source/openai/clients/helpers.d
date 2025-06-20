@@ -10,7 +10,7 @@ mixin template ClientHelpers()
     import openai.responses;
     import openai.administration;
     import openai.files;
-    import openai.clients.openai : OpenAIClientConfig;
+    import openai.clients.config : OpenAIClientConfig;
 
     private string buildListAuditLogsUrl(in ListAuditLogsRequest request) const @safe
     {

@@ -9,7 +9,7 @@ import mir.ser.json;
 
 import openai.administration;
 import openai.responses;
-import openai.clients.openai : OpenAIClientConfig;
+import openai.clients.config : OpenAIClientConfig;
 
 import openai.clients.helpers; // for ClientHelpers mixin
 
