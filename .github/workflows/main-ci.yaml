@@ -59,9 +59,6 @@ jobs:
         uses: dlang-community/setup-dlang@v1
         with:
           compiler: ${{ matrix.dlang }}
-      - name: Ensure DUB cache directory exists
-        shell: pwsh
-        run: New-Item -ItemType Directory -Path "$env:USERPROFILE/.dub/packages" -Force
       - name: Cache Dub packages
         uses: actions/cache@v3
         with:
