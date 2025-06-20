@@ -139,3 +139,8 @@ headers when modifying or archiving those files to maintain consistency.
 * Replace `{task-summary}` with a short hyphenated summary of the task.
 * When documenting pain points, include your environment (CI, local machine, OS, etc.) and specify which step or command was slow.
 * After your proposed improvement is implemented, move the reflection to `.codex/archive/`. See [`.codex/reflections/AGENTS.md`](.codex/reflections/AGENTS.md) for the full archiving workflow.
+* Review all outstanding improvements:
+
+  ```bash
+  rdmd scripts/list_reflections.d
+  ```
