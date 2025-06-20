@@ -3,7 +3,7 @@ import openai;
 
 void main()
 {
-    auto client = new OpenAIClient();
+    auto client = new OpenAIAdminClient();
 
     // create a project for the user operations
     auto project = client.createProject(projectCreateRequest("example"));

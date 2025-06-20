@@ -5,7 +5,7 @@ import openai;
 /// Demonstrate the Administration Usage API.
 void main()
 {
-    auto client = new OpenAIClient();
+    auto client = new OpenAIAdminClient();
 
     auto req = listUsageRequest(0);
     req.limit = 3;

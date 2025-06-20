@@ -5,7 +5,7 @@ import openai;
 
 void main()
 {
-    auto client = new OpenAIClient();
+    auto client = new OpenAIAdminClient();
 
     // List existing certificates
     auto list = client.listCertificates();

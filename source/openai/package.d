@@ -4,6 +4,7 @@ OpenAI API Client Library
 module openai;
 
 public import openai.clients.openai;
+public import openai.clients.admin;
 
 public import openai.common;
 
