@@ -6,6 +6,7 @@ import std.algorithm : sort, canFind, filter, map;
 import std.string;
 import std.process;
 import core.stdc.stdlib : exit;
+import std.algorithm.searching : endsWith;
 
 void main(string[] args)
 {
@@ -14,18 +15,28 @@ void main(string[] args)
 
     string mode = "all";
     string[] groups;
+    bool clean = false;
+    string[] params;
 
-    if (args.length > 1)
+    foreach (arg; args[1 .. $])
     {
-        auto first = args[1];
+        if (arg == "--clean")
+            clean = true;
+        else
+            params ~= arg;
+    }
+
+    if (params.length > 0)
+    {
+        auto first = params[0];
         if (first == "all" || first == "core")
         {
             mode = first;
-            groups = args[2 .. $];
+            groups = params[1 .. $];
         }
         else
         {
-            groups = args[1 .. $];
+            groups = params;
         }
     }
 
@@ -82,6 +93,23 @@ void main(string[] args)
         {
             writeln("dub build failed for " ~ dir);
             exit(status);
+        }
+
+        if (clean)
+        {
+            auto cleanPid = spawnProcess(["dub", "clean"], null, Config.none, workDir);
+            wait(cleanPid);
+
+            string bin = buildPath(workDir, dir);
+            if (exists(bin))
+                remove(bin);
+            string binExe = bin ~ ".exe";
+            if (exists(binExe))
+                remove(binExe);
+
+            string selections = buildPath(workDir, "dub.selections.json");
+            if (exists(selections))
+                remove(selections);
         }
     }
 }
