@@ -5,7 +5,7 @@ module openai;
 
 public import openai.clients.config;
 public import openai.clients.openai;
-public import openai.clients.admin;
+public import openai.clients.openai_admin;
 
 public import openai.common;
 
