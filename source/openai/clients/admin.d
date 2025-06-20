@@ -13,6 +13,8 @@ import openai.clients.config : OpenAIClientConfig;
 
 import openai.clients.helpers; // for ClientHelpers mixin
 
+@safe:
+
 class OpenAIAdminClient
 {
     OpenAIClientConfig config;
