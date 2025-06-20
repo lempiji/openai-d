@@ -554,186 +554,82 @@ class OpenAIClient
         return result;
     }
 
-    @("buildUrl - openai mode")
+    @("buildUrl variations")
     unittest
     {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/models") == "https://api.openai.com/v1/models");
-    }
+        import std.typecons : tuple;
 
-    @("buildUrl - openai mode with trailing slash")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        cfg.apiBase = "https://api.openai.com/v1/";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/models") == "https://api.openai.com/v1/models");
-    }
+        void checkUrl(string desc, string apiBase, string path, string expected)
+        {
+            auto cfg = new OpenAIClientConfig;
+            cfg.apiKey = "k";
+            cfg.apiBase = apiBase;
+            cfg.deploymentId = "dep";
+            cfg.apiVersion = "2024-05-01";
+            auto client = new OpenAIClient(cfg);
+            assert(client.buildUrl(path) == expected, desc);
+        }
 
-    @("buildUrl - azure mode")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
-        cfg.deploymentId = "dep";
-        cfg.apiVersion = "2024-05-01";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/chat/completions") ==
-                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/chat/completions?api-version=2024-05-01");
-    }
-
-    @("buildUrl - azure mode with trailing slash")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        cfg.apiBase = "https://westus.api.cognitive.microsoft.com/";
-        cfg.deploymentId = "dep";
-        cfg.apiVersion = "2024-05-01";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/chat/completions") ==
-                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/chat/completions?api-version=2024-05-01");
-    }
-
-    @("buildUrl transcription - openai")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/audio/transcriptions") == "https://api.openai.com/v1/audio/transcriptions");
-    }
-
-    @("buildUrl transcription - azure")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
-        cfg.deploymentId = "dep";
-        cfg.apiVersion = "2024-05-01";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/audio/transcriptions") ==
-                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/audio/transcriptions?api-version=2024-05-01");
-    }
-
-    @("buildUrl translation - openai")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/audio/translations") ==
-                "https://api.openai.com/v1/audio/translations");
-    }
-
-    @("buildUrl translation - azure")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
-        cfg.deploymentId = "dep";
-        cfg.apiVersion = "2024-05-01";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/audio/translations") ==
-                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/audio/translations?api-version=2024-05-01");
-    }
-
-    @("buildUrl speech - openai")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/audio/speech") ==
-                "https://api.openai.com/v1/audio/speech");
-    }
-
-    @("buildUrl speech - azure")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
-        cfg.deploymentId = "dep";
-        cfg.apiVersion = "2024-05-01";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/audio/speech") ==
-                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/audio/speech?api-version=2024-05-01");
-    }
-
-    @("buildUrl image generation - openai")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/images/generations") ==
-                "https://api.openai.com/v1/images/generations");
-    }
-
-    @("buildUrl image generation - azure")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
-        cfg.deploymentId = "dep";
-        cfg.apiVersion = "2024-05-01";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/images/generations") ==
-                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/images/generations?api-version=2024-05-01");
-    }
-
-    @("buildUrl image edit - openai")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/images/edits") ==
-                "https://api.openai.com/v1/images/edits");
-    }
-
-    @("buildUrl image edit - azure")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
-        cfg.deploymentId = "dep";
-        cfg.apiVersion = "2024-05-01";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/images/edits") ==
-                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/images/edits?api-version=2024-05-01");
-    }
-
-    @("buildUrl image variation - openai")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/images/variations") ==
-                "https://api.openai.com/v1/images/variations");
-    }
-
-    @("buildUrl image variation - azure")
-    unittest
-    {
-        auto cfg = new OpenAIClientConfig;
-        cfg.apiKey = "k";
-        cfg.apiBase = "https://westus.api.cognitive.microsoft.com";
-        cfg.deploymentId = "dep";
-        cfg.apiVersion = "2024-05-01";
-        auto client = new OpenAIClient(cfg);
-        assert(client.buildUrl("/images/variations") ==
-                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/images/variations?api-version=2024-05-01");
+        foreach (t; [
+            tuple("openai mode", "https://api.openai.com/v1", "/models",
+                "https://api.openai.com/v1/models"),
+            tuple("openai mode with trailing slash",
+                "https://api.openai.com/v1/", "/models",
+                "https://api.openai.com/v1/models"),
+            tuple("azure mode",
+                "https://westus.api.cognitive.microsoft.com",
+                "/chat/completions",
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/chat/completions?api-version=2024-05-01"),
+            tuple("azure mode with trailing slash",
+                "https://westus.api.cognitive.microsoft.com/",
+                "/chat/completions",
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/chat/completions?api-version=2024-05-01"),
+            tuple("transcription - openai", "https://api.openai.com/v1",
+                "/audio/transcriptions",
+                "https://api.openai.com/v1/audio/transcriptions"),
+            tuple("transcription - azure",
+                "https://westus.api.cognitive.microsoft.com",
+                "/audio/transcriptions",
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/audio/transcriptions?api-version=2024-05-01"),
+            tuple("translation - openai", "https://api.openai.com/v1",
+                "/audio/translations",
+                "https://api.openai.com/v1/audio/translations"),
+            tuple("translation - azure",
+                "https://westus.api.cognitive.microsoft.com",
+                "/audio/translations",
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/audio/translations?api-version=2024-05-01"),
+            tuple("speech - openai", "https://api.openai.com/v1",
+                "/audio/speech",
+                "https://api.openai.com/v1/audio/speech"),
+            tuple("speech - azure",
+                "https://westus.api.cognitive.microsoft.com",
+                "/audio/speech",
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/audio/speech?api-version=2024-05-01"),
+            tuple("image generation - openai", "https://api.openai.com/v1",
+                "/images/generations",
+                "https://api.openai.com/v1/images/generations"),
+            tuple("image generation - azure",
+                "https://westus.api.cognitive.microsoft.com",
+                "/images/generations",
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/images/generations?api-version=2024-05-01"),
+            tuple("image edit - openai", "https://api.openai.com/v1",
+                "/images/edits",
+                "https://api.openai.com/v1/images/edits"),
+            tuple("image edit - azure",
+                "https://westus.api.cognitive.microsoft.com",
+                "/images/edits",
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/images/edits?api-version=2024-05-01"),
+            tuple("image variation - openai", "https://api.openai.com/v1",
+                "/images/variations",
+                "https://api.openai.com/v1/images/variations"),
+            tuple("image variation - azure",
+                "https://westus.api.cognitive.microsoft.com",
+                "/images/variations",
+                "https://westus.api.cognitive.microsoft.com/openai/deployments/dep/images/variations?api-version=2024-05-01")
+        ])
+        {
+            checkUrl(t[0], t[1], t[2], t[3]);
+        }
     }
 }
 
