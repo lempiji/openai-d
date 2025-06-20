@@ -12,48 +12,6 @@ mixin template ClientHelpers()
     import openai.files;
     import openai.clients.openai : OpenAIClientConfig;
 
-    private string buildListInputItemsUrl(in ListInputItemsRequest request) const @safe
-    {
-        import std.format : format;
-        import std.algorithm : map;
-        import std.uri : encodeComponent;
-
-        string url = buildUrl("/responses/" ~ request.responseId ~ "/input_items");
-        string sep = "?";
-        url ~= format("%slimit=%s", sep, request.limit);
-        sep = "&";
-        if (request.order.length)
-            url ~= format("%sorder=%s", sep, encodeComponent(request.order)), sep = "&";
-        if (request.after.length)
-            url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
-        if (request.before.length)
-            url ~= format("%sbefore=%s", sep, encodeComponent(request.before)), sep = "&";
-        if (request.include !is null && request.include.length) // Cast enum values to strings to ensure proper serialization into query parameters.
-            url ~= format("%sinclude=%s", sep,
-                request.include
-                    .map!(x => encodeComponent(cast(string) x))
-                    .joiner(",")
-                    .array);
-        return url;
-    }
-
-    private string buildGetResponseUrl(string responseId, string[] include) const @safe
-    {
-        import std.algorithm : map;
-        import std.conv : to;
-        import std.uri : encodeComponent;
-
-        string url = buildUrl("/responses/" ~ responseId);
-        if (include !is null && include.length)
-            url ~= "?include="
-                ~ to!string(
-                    include
-                        .map!(x => encodeComponent(cast(string) x))
-                        .joiner(",")
-                        .array);
-        return url;
-    }
-
     private string buildListAuditLogsUrl(in ListAuditLogsRequest request) const @safe
     {
         import std.format : format;
@@ -154,25 +112,6 @@ mixin template ClientHelpers()
             url ~= format("%slimit=%s", sep, request.limit), sep = "&";
         if (request.page.length)
             url ~= format("%spage=%s", sep, encodeComponent(request.page));
-        return url;
-    }
-
-    private string buildListFilesUrl(in ListFilesRequest request) const @safe
-    {
-        import std.format : format;
-        import std.uri : encodeComponent;
-
-        string url = buildUrl("/files");
-        string sep = "?";
-        if (request.purpose.length)
-            url ~= format("%spurpose=%s", sep, encodeComponent(request.purpose)), sep = "&";
-        if (request.limit)
-            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
-        if (request.order.length)
-            url ~= format("%sorder=%s", sep, encodeComponent(request.order)), sep = "&";
-        if (request.after.length)
-            url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
-        // 'before' parameter removed in API; no longer supported
         return url;
     }
 
@@ -297,65 +236,4 @@ mixin template ClientHelpers()
         }
     }
 
-    private void appendFileChunked(scope ref Appender!(ubyte[])
-
-        
-
-        body,
-        string boundary,
-        string name,
-        string filePath) @system
-    {
-        import std.path : baseName;
-
-        body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
-        body.put(cast(ubyte[])(
-                "Content-Disposition: form-data; name=\"" ~ name ~ "\"; filename=\"" ~ baseName(filePath) ~ "\"\r\n"));
-        body.put(cast(ubyte[])("Content-Type: application/octet-stream\r\n\r\n"));
-        auto file = File(filePath, "rb");
-        scope (exit)
-            file.close();
-        foreach (chunk; file.byChunk(8192))
-            body.put(chunk);
-        body.put(cast(ubyte[]) "\r\n");
-    }
-
-    private struct MultipartPart
-    {
-        string name;
-        string value;
-    }
-
-    private ubyte[] buildMultipartBody(scope ref HTTP http,
-        scope MultipartPart[] textParts,
-        scope MultipartPart[] fileParts) @system
-    {
-        import std.array : appender;
-        import std.conv : to;
-        import std.random : uniform;
-
-        auto boundary = "--------------------------" ~ to!string(uniform(0, int.max));
-        http.addRequestHeader("Content-Type",
-            "multipart/form-data; boundary=" ~ boundary);
-
-        auto body = appender!(ubyte[])();
-
-        foreach (fp; fileParts)
-            if (fp.value.length)
-                appendFileChunked(body, boundary, fp.name, fp.value);
-
-        foreach (tp; textParts)
-            if (tp.value.length)
-            {
-                body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
-                body.put(cast(ubyte[])("Content-Disposition: form-data; name=\"" ~ tp.name ~ "\"\r\n\r\n"));
-                body.put(cast(ubyte[]) tp.value);
-                body.put(cast(ubyte[]) "\r\n");
-            }
-
-        body.put(cast(ubyte[])("--" ~ boundary ~ "--\r\n"));
-        // dfmt off
-            return body.data;
-            // dfmt on
-    }
 }
