@@ -8,6 +8,30 @@
 ![GitHub stars](https://img.shields.io/github/stars/lempiji/openai-d.svg)
 
 This library provides unofficial D clients for [OpenAI API](https://platform.openai.com).
+## Overview
+Key capabilities are summarized below.
+
+
+## Installation
+
+Once `dmd` and `dub` are available, add this library to your project:
+
+```
+dub add openai-d
+```
+
+## Quick Start
+
+```d
+import openai;
+
+auto client = new OpenAIClient();
+auto res = client.chatCompletion(
+    chatCompletionRequest(openai.GPT4O, [userChatMessage("Hello!")]));
+writeln(res.choices[0].message.content);
+```
+
+See the [examples](examples) directory for full sample programs.
 
 ## Features
 
@@ -37,7 +61,7 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
 - [ ] [Fine-tunings](https://platform.openai.com/docs/api-reference/fine-tuning) (TODO)
 - [ ] [Graders](https://platform.openai.com/docs/api-reference/graders) (TODO)
 - [ ] [Batch](https://platform.openai.com/docs/api-reference/batch) (TODO)
- - [x] [Files](https://platform.openai.com/docs/api-reference/files) — upload, list, retrieve, delete, download
+- [x] [Files](https://platform.openai.com/docs/api-reference/files) — upload, list, retrieve, delete, download
 - [ ] [Uploads](https://platform.openai.com/docs/api-reference/uploads) (TODO)
 - [x] [Models](https://platform.openai.com/docs/api-reference/models)
 - [x] [Moderations](https://platform.openai.com/docs/api-reference/moderations)
@@ -57,10 +81,10 @@ This library provides unofficial D clients for [OpenAI API](https://platform.ope
   - [x] Usage
   - [x] Certificates
 
-__legacy__
+### Legacy
 - [x] Completions (Legacy)
 
-__deprecated__
+### Deprecated
 - Edits
   - Use chat API instead. See: https://platform.openai.com/docs/deprecations/edit-models-endpoint
 
@@ -70,19 +94,8 @@ __deprecated__
     - Not adopted because it is less convenient due to Windows' handling of system certificates. Version flag is required for support.
     - Adopting 'requests' is expected to lead to more efficient use of Fiber in vibe.d.
 
-# Usage
 
-## Installation
-
-Once `dmd` and `dub` are available, add this library to your project:
-
-```
-dub add openai-d
-```
-
-## OpenAIClient
-
-__Completion (Legacy)__
+### Completion (Legacy)
 
 ```d name=completion
 import std;
@@ -100,54 +113,8 @@ auto response = client.completion(message);
 writeln(response.choices[0].text.chomp());
 ```
 
-__Chat__
 
-```d name=chat
-import std;
-import openai;
-
-// Load API key from environment variable
-auto client = new OpenAIClient();
-
-// POST /chat/completions
-// You can use the new model constants such as `O4Mini` or `O3`.
-auto request = chatCompletionRequest(openai.O4Mini, [
-    systemChatMessage("You are a helpful assistant."),
-    userChatMessage("Hello!")
-], 16, 0); // sets `maxCompletionTokens`
-// Optional: control reasoning effort for o-series models
-request.reasoningEffort = "high";
-
-auto response = client.chatCompletion(request);
-
-writeln(response.choices[0].message.content);
-```
-
-For o-series models such as `O4Mini` or `O3`, use `maxCompletionTokens` instead
-of the deprecated `max_tokens` field when creating your requests.
-
-__Responses__
-
-```d name=responses
-import std;
-import openai;
-
-auto client = new OpenAIClient();
-auto req = createResponseRequest(openai.GPT4O, CreateResponseInput("Hello!"));
-auto res = client.createResponse(req);
-auto got = client.getResponse(res.id);
-auto items = client.listInputItems(listInputItemsRequest(res.id));
-client.deleteResponse(res.id);
-
-writeln(got.output[0].content);
-writeln(items.data.length);
-```
-
-See `examples/responses` for a complete example.  
-See `examples/responses_web_search` for a web search example.  
-See `examples/responses_code_interpreter` for a code interpreter example.
-
-__Embedding__
+### Embedding
 
 ```d name=embedding
 import std;
@@ -164,7 +131,7 @@ float[] embedding = response.data[0].embedding;
 writeln(embedding.length); // text-embedding-3-small -> 1536
 ```
 
-__Files__
+### Files
 
 ```d name=files
 import std.stdio;
@@ -184,10 +151,9 @@ write("copy.jsonl", content);
 client.deleteFile(uploaded.id);
 ```
 
-See `examples/files` for a complete example showing upload, retrieval, download,
-and deletion.
+See `examples/files` for the full example.
 
-__Moderation__
+### Moderation
 
 ```d name=moderation
 import std;
@@ -206,7 +172,7 @@ else
     writeln("Probably safe.");
 ```
 
-__Transcription__
+### Transcription
 
 ```d name=transcription
 import std;
@@ -222,9 +188,9 @@ auto response = client.transcription(request);
 writeln(response.text);
 ```
 
-See `examples/audio_transcription` for a complete example.
+See `examples/audio_transcription` for the full example.
 
-__Translation__
+### Translation
 
 ```d name=translation
 import std;
@@ -240,9 +206,9 @@ auto response = client.translation(request);
 writeln(response.text);
 ```
 
-See `examples/audio_translation` for a complete example.
+See `examples/audio_translation` for the full example.
 
-__Images__
+### Images
 
 ```d name=images
 import std;
@@ -258,9 +224,9 @@ auto response = client.imageGeneration(request);
 write("image.png", Base64.decode(response.data[0].b64Json));
 ```
 
-See `examples/images` for a complete example.
+See `examples/images` for the full example.
 
-__Administration__
+### Administration
 
 ```d name=admin_projects
 import std;
@@ -271,85 +237,13 @@ auto list = client.listProjects(listProjectsRequest(20));
 writeln(list.data.length);
 ```
 
-```d name=admin_invites
-import std;
-import openai;
-
-auto client = new OpenAIClient();
-auto list = client.listInvites(listInvitesRequest(20));
-writeln(list.data.length);
-```
-
-```d name=admin_users
-import std;
-import openai;
-
-auto client = new OpenAIClient();
-auto list = client.listUsers(listUsersRequest(20));
-writeln(list.data.length);
-```
-
-```d name=admin_audit_logs
-import std;
-import openai;
-
-auto client = new OpenAIClient();
-auto logs = client.listAuditLogs(listAuditLogsRequest(10));
-writeln(logs.data.length);
-```
-
-```d name=admin_usage
-import std;
-import openai;
-
-auto client = new OpenAIClient();
-auto req = listUsageRequest(0);
-req.limit = 3;
-auto usage = client.listUsageCompletions(req);
-writeln(usage.data.length);
-```
-
-```d name=admin_project_api_keys
-import std;
-import openai;
-
-auto client = new OpenAIClient();
-auto list = client.listProjectApiKeys("<project id>",
-    listProjectApiKeysRequest(20));
-writeln(list.data.length);
-```
-```d name=admin_project_service_accounts
-import std;
-import openai;
-
-auto client = new OpenAIClient();
-auto list = client.listProjectServiceAccounts("<project id>",
-    listProjectServiceAccountsRequest(20));
-writeln(list.data.length);
-```
-```d name=admin_project_rate_limits
-import std;
-import openai;
-
-auto client = new OpenAIClient();
-auto list = client.listProjectRateLimits("<project id>",
-    listProjectRateLimitsRequest(20));
-writeln(list.data.length);
-```
-
-Requires an admin API key. See `examples/administration`,
-`examples/administration_invites`,
-`examples/administration_project_api_keys`,
-`examples/administration_project_service_accounts`,
-`examples/administration_project_rate_limits`,
-`examples/administration_project_users`, and
-`examples/administration_users` for complete examples.
+Requires an admin API key. See `examples/administration*` for complete examples.
 
 
 
 ## OpenAIClientConfig
 
-__Environment variables__
+### Environment variables
 
 ```d name=config_env
 import std.process;
@@ -368,29 +262,6 @@ assert(config.organization == "<Your Organization>");
 assert(config.apiBase == "https://example.api.cognitive.microsoft.com");
 ```
 
-__Configuration file__
-
-```d name=config_file
-import std.file;
-import openai;
-
-write("config.json", `{"apiKey": "<Your API Key>", "organization": null}`);
-scope (exit) remove("config.json");
-
-auto config = OpenAIClientConfig.fromFile("config.json");
-
-assert(config.apiKey == "<Your API Key>");
-assert(config.organization is null);
-```
-
-__Constructor__
-
-```d name=config_direct
-import openai;
-
-auto config = new OpenAIClientConfig("<Your OpenAI API Key>");
-auto client = new OpenAIClient(config);
-```
 
 ## Development
 
