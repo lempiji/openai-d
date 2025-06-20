@@ -81,7 +81,8 @@ struct QueryParamsBuilder
     string value;
 }
 
-@system void appendFileChunked(scope ref Appender!(ubyte[]) 
+@system void appendFileChunked(scope ref Appender!(ubyte[])
+    
     body,
     string boundary,
     string name,

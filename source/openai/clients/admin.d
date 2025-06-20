@@ -121,30 +121,34 @@ class OpenAIAdminClient
         return b.finish();
     }
 
+    string buildListAdminApiKeysUrl(in ListAdminApiKeysRequest req) const @safe
+    {
+        auto b = QueryParamsBuilder(buildUrl("/organization/admin_api_keys"));
+        b.add("limit", req.limit);
+        b.add("after", req.after);
+        return b.finish();
+    }
+
+    string buildListProjectsUrl(in ListProjectsRequest req) const @safe
+    {
+        auto b = QueryParamsBuilder(buildUrl("/organization/projects"));
+        b.add("limit", req.limit);
+        b.add("after", req.after);
+        b.add("include_archived", req.includeArchived);
+        return b.finish();
+    }
+
 public:
     mixin ClientHelpers;
     /// List organization and project admin API keys.
     AdminApiKeyListResponse listAdminApiKeys(in ListAdminApiKeysRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        import std.format : format;
-        import std.uri : encodeComponent;
-
         auto http = HTTP();
         setupHttpByConfig(http);
         http.addRequestHeader("Accept", "application/json; charset=utf-8");
 
-        string url = buildUrl("/organization/admin_api_keys");
-        string sep = "?";
-        if (request.limit)
-        {
-            url ~= format("%slimit=%s", sep, request.limit);
-            sep = "&";
-        }
-        if (request.after.length)
-        {
-            url ~= format("%safter=%s", sep, encodeComponent(request.after));
-        }
+        string url = buildListAdminApiKeysUrl(request);
 
         auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
         auto result = content.deserializeJson!AdminApiKeyListResponse();
@@ -338,21 +342,11 @@ public:
     ProjectListResponse listProjects(in ListProjectsRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        import std.format : format;
-        import std.uri : encodeComponent;
-
         auto http = HTTP();
         setupHttpByConfig(http);
         http.addRequestHeader("Accept", "application/json; charset=utf-8");
 
-        string url = buildUrl("/organization/projects");
-        string sep = "?";
-        if (request.limit)
-            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
-        if (request.after.length)
-            url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
-        if (request.includeArchived)
-            url ~= format("%sinclude_archived=true", sep), sep = "&";
+        string url = buildListProjectsUrl(request);
 
         auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
         return content.deserializeJson!ProjectListResponse();
@@ -1199,4 +1193,97 @@ unittest
 
     assert(url.canFind("limit=3"));
     assert(url.canFind("after=foo%20bar"));
+}
+
+@("buildListAdminApiKeysUrl")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIAdminClient(cfg);
+
+    auto req = ListAdminApiKeysRequest();
+    auto url = client.buildListAdminApiKeysUrl(req);
+
+    assert(!url.canFind("limit="));
+    assert(!url.canFind("after="));
+
+    req.limit = 2;
+    url = client.buildListAdminApiKeysUrl(req);
+    assert(url.canFind("limit=2"));
+
+    req.limit = 0;
+    req.after = "foo";
+    url = client.buildListAdminApiKeysUrl(req);
+    assert(url.canFind("after=foo"));
+    assert(!url.canFind("limit="));
+}
+
+@("buildListAdminApiKeysUrl encodes query parameters")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIAdminClient(cfg);
+
+    auto req = ListAdminApiKeysRequest();
+    req.limit = 3;
+    req.after = "foo bar";
+    auto url = client.buildListAdminApiKeysUrl(req);
+
+    assert(url.canFind("limit=3"));
+    assert(url.canFind("after=foo%20bar"));
+}
+
+@("buildListProjectsUrl")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIAdminClient(cfg);
+
+    auto req = ListProjectsRequest();
+    auto url = client.buildListProjectsUrl(req);
+
+    assert(!url.canFind("limit="));
+    assert(!url.canFind("after="));
+    assert(!url.canFind("include_archived="));
+
+    req.limit = 2;
+    url = client.buildListProjectsUrl(req);
+    assert(url.canFind("limit=2"));
+
+    req.limit = 0;
+    req.after = "foo";
+    req.includeArchived = true;
+    url = client.buildListProjectsUrl(req);
+    assert(url.canFind("after=foo"));
+    assert(url.canFind("include_archived=true"));
+    assert(!url.canFind("limit="));
+}
+
+@("buildListProjectsUrl encodes query parameters")
+unittest
+{
+    import std.algorithm.searching : canFind;
+
+    auto cfg = new OpenAIClientConfig;
+    cfg.apiKey = "k";
+    auto client = new OpenAIAdminClient(cfg);
+
+    auto req = ListProjectsRequest();
+    req.limit = 3;
+    req.after = "foo bar";
+    req.includeArchived = true;
+    auto url = client.buildListProjectsUrl(req);
+
+    assert(url.canFind("limit=3"));
+    assert(url.canFind("after=foo%20bar"));
+    assert(url.canFind("include_archived=true"));
 }
