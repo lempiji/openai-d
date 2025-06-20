@@ -16,7 +16,7 @@ void main()
 
     // add the user to the project
     auto created = client.createProjectUser(project.id,
-        projectUserCreateRequest(userId, "member"));
+        projectUserCreateRequest(userId, ProjectUserRole.Member));
     writeln("created: ", created.email);
 
     // list users in the project
@@ -29,7 +29,7 @@ void main()
 
     // modify the user's role
     auto modified = client.modifyProjectUser(project.id, userId,
-        projectUserUpdateRequest("owner"));
+        projectUserUpdateRequest(ProjectUserRole.Owner));
     writeln("modified role: ", modified.role);
 
     // delete the user from the project

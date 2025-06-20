@@ -8,6 +8,13 @@ import mir.algebraic;
 
 @safe:
 
+@serdeEnumProxy!string enum InviteStatus : string
+{
+    Accepted = "accepted",
+    Expired = "expired",
+    Pending = "pending",
+}
+
 struct InviteProject
 {
     string id;
@@ -21,7 +28,7 @@ struct Invite
     string id;
     string email;
     string role;
-    string status;
+    InviteStatus status;
     @serdeKeys("invited_at") long invitedAt;
     @serdeKeys("expires_at") long expiresAt;
     @serdeOptional @serdeKeys("accepted_at") long acceptedAt;
