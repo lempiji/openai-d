@@ -17,7 +17,6 @@ import openai.audio;
 import openai.images;
 import openai.files;
 import openai.responses;
-import openai.administration;
 import openai.clients.helpers;
 import openai.clients.config;
 
