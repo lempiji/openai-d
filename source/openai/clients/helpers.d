@@ -61,7 +61,7 @@ struct QueryParamsBuilder
     /// Add a list of values when not empty. Each element is encoded.
     void add(T)(string key, T[] values)
     {
-        static assert(is(typeof(encodeComponent(to!string(values[0])))),
+        static assert(is(typeof(encodeComponent(to!string(T.init)))),
             "value type unsupported");
         if (values !is null && values.length)
         {
