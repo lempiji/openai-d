@@ -6,8 +6,6 @@ import std.algorithm : sort, canFind, filter, map;
 import std.string;
 import std.process;
 import core.stdc.stdlib : exit;
-import std.algorithm.searching : endsWith;
-
 void main(string[] args)
 {
     auto scriptDir = dirName(__FILE__).absolutePath;
