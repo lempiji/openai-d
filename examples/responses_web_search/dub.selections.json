@@ -5,6 +5,7 @@
 		"mir-core": "1.7.3",
 		"mir-cpuid": "1.2.11",
 		"mir-ion": "2.3.4",
-		"openai-d": {"path":"../.."}
+		"openai-d": {"path":"../.."},
+		"silly": "1.1.1"
 	}
 }

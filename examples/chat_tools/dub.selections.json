@@ -1,10 +1,11 @@
 {
 	"fileVersion": 1,
 	"versions": {
-		"mir-algorithm": "3.22.3",
-		"mir-core": "1.7.1",
+		"mir-algorithm": "3.22.4",
+		"mir-core": "1.7.3",
 		"mir-cpuid": "1.2.11",
 		"mir-ion": "2.3.4",
-		"openai-d": {"path":"../.."}
+		"openai-d": {"path":"../.."},
+		"silly": "1.1.1"
 	}
 }
