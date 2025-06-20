@@ -124,7 +124,7 @@
 
 ## 10. Reflection & Improvement
 
-After completing your tasks, the agent **must create** a new file in `.agents/reflections/` named `YYYY-MM-DD-hhmm-{task-summary}.md`. Start the file with the exact block found in `.agents/reflection-template.md`. The header must be in the format `### :book: Reflection for [YYYY-MM-DD HH:MM]` (note the required square brackets).
+After completing your tasks, the agent **must create** a new file in `.codex/reflections/` named `YYYY-MM-DD-hhmm-{task-summary}.md`. Start the file with the exact block found in `.codex/reflection-template.md`. The header must be in the format `### :book: Reflection for [YYYY-MM-DD HH:MM]` (note the required square brackets).
 
 ```
 ### :book: Reflection for [2025-06-13 14:28]
@@ -138,4 +138,4 @@ headers when modifying or archiving those files to maintain consistency.
 * Records are keyed by timestamp (to the minute). Use the current date and time as `YYYY-MM-DD HH:MM` in the template and file name.
 * Replace `{task-summary}` with a short hyphenated summary of the task.
 * When documenting pain points, include your environment (CI, local machine, OS, etc.) and specify which step or command was slow.
-* After your proposed improvement is implemented, move the reflection to `.agents/archive/`. See [`.agents/reflections/AGENTS.md`](.agents/reflections/AGENTS.md) for the full archiving workflow.
+* After your proposed improvement is implemented, move the reflection to `.codex/archive/`. See [`.codex/reflections/AGENTS.md`](.codex/reflections/AGENTS.md) for the full archiving workflow.
