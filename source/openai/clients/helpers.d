@@ -1,5 +1,8 @@
 module openai.clients.helpers;
 
+import std.array : Appender;
+import std.net.curl : HTTP;
+
 /**
     Helper struct for building query strings with optional parameters.
 */
@@ -70,6 +73,66 @@ struct QueryParamsBuilder
             _sep = "&";
         }
     }
+}
+
+@system struct MultipartPart
+{
+    string name;
+    string value;
+}
+
+@system void appendFileChunked(scope ref Appender!(ubyte[]) 
+    body,
+    string boundary,
+    string name,
+    string filePath)
+{
+    import std.path : baseName;
+    import std.stdio : File;
+
+    body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
+    body.put(cast(ubyte[])(
+            "Content-Disposition: form-data; name=\"" ~ name ~ "\"; filename=\"" ~ baseName(filePath) ~ "\"\r\n"));
+    body.put(cast(ubyte[])("Content-Type: application/octet-stream\r\n\r\n"));
+    auto file = File(filePath, "rb");
+    scope (exit)
+        file.close();
+    foreach (chunk; file.byChunk(8192))
+        body.put(chunk);
+    body.put(cast(ubyte[]) "\r\n");
+}
+
+@system ubyte[] buildMultipartBody(scope ref HTTP http,
+    scope MultipartPart[] textParts,
+    scope MultipartPart[] fileParts)
+{
+    import std.array : appender;
+    import std.conv : to;
+    import std.random : uniform;
+
+    auto boundary = "--------------------------" ~ to!string(uniform(0, int.max));
+    http.addRequestHeader("Content-Type",
+        "multipart/form-data; boundary=" ~ boundary);
+
+    auto body = appender!(ubyte[])();
+
+    foreach (fp; fileParts)
+        if (fp.value.length)
+            appendFileChunked(body, boundary, fp.name, fp.value);
+
+    foreach (tp; textParts)
+        if (tp.value.length)
+        {
+            body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
+            body.put(cast(ubyte[])("Content-Disposition: form-data; name=\"" ~ tp.name ~ "\"\r\n\r\n"));
+            body.put(cast(ubyte[]) tp.value);
+            body.put(cast(ubyte[]) "\r\n");
+        }
+
+    body.put(cast(ubyte[])("--" ~ boundary ~ "--\r\n"));
+    // dfmt off
+    return body.data;
+    // dfmt on
 }
 
 mixin template ClientHelpers()

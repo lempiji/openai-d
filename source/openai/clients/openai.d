@@ -6,8 +6,7 @@ module openai.clients.openai;
 import mir.deser.json;
 import mir.ser.json;
 import std.net.curl;
-import std.array : array, Appender;
-import std.stdio : File;
+import std.array : array;
 
 import openai.chat;
 import openai.completion;
@@ -89,68 +88,6 @@ class OpenAIClient
         b.add("after", request.after);
         // 'before' parameter removed in API; no longer supported
         return b.finish();
-    }
-
-    private void appendFileChunked(scope ref Appender!(ubyte[])
-
-        
-
-        body,
-        string boundary,
-        string name,
-        string filePath) @system
-    {
-        import std.path : baseName;
-
-        body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
-        body.put(cast(ubyte[])(
-                "Content-Disposition: form-data; name=\"" ~ name ~ "\"; filename=\"" ~ baseName(filePath) ~ "\"\r\n"));
-        body.put(cast(ubyte[])("Content-Type: application/octet-stream\r\n\r\n"));
-        auto file = File(filePath, "rb");
-        scope (exit)
-            file.close();
-        foreach (chunk; file.byChunk(8192))
-            body.put(chunk);
-        body.put(cast(ubyte[]) "\r\n");
-    }
-
-    private struct MultipartPart
-    {
-        string name;
-        string value;
-    }
-
-    private ubyte[] buildMultipartBody(scope ref HTTP http,
-        scope MultipartPart[] textParts,
-        scope MultipartPart[] fileParts) @system
-    {
-        import std.array : appender;
-        import std.conv : to;
-        import std.random : uniform;
-
-        auto boundary = "--------------------------" ~ to!string(uniform(0, int.max));
-        http.addRequestHeader("Content-Type",
-            "multipart/form-data; boundary=" ~ boundary);
-
-        auto body = appender!(ubyte[])();
-
-        foreach (fp; fileParts)
-            if (fp.value.length)
-                appendFileChunked(body, boundary, fp.name, fp.value);
-
-        foreach (tp; textParts)
-            if (tp.value.length)
-            {
-                body.put(cast(ubyte[])("--" ~ boundary ~ "\r\n"));
-                body.put(cast(ubyte[])("Content-Disposition: form-data; name=\"" ~ tp.name ~ "\"\r\n\r\n"));
-                body.put(cast(ubyte[]) tp.value);
-                body.put(cast(ubyte[]) "\r\n");
-            }
-
-        body.put(cast(ubyte[])("--" ~ boundary ~ "--\r\n"));
-        // dfmt off
-        return body.data;
-        // dfmt on
     }
 
     /// Retrieve the list of models available to the API key by
@@ -921,10 +858,10 @@ unittest
 {
     import std.file : write, remove, exists;
     import std.array : appender;
+    import helpers = openai.clients.helpers;
 
     auto cfg = new OpenAIClientConfig;
     cfg.apiKey = "k";
-    auto client = new OpenAIClient(cfg);
 
     auto tmp = "tmp_audio.txt";
     write(tmp, "hello");
@@ -933,7 +870,7 @@ unittest
             remove(tmp);
 
     auto body = appender!(ubyte[])();
-    client.appendFileChunked(body, "bnd", "file", tmp);
+    helpers.appendFileChunked(body, "bnd", "file", tmp);
 
     // Multipart body should contain file data with the exact filename
     auto expected = cast(ubyte[])(
@@ -949,10 +886,10 @@ unittest
 {
     import std.file : write, remove, exists;
     import std.algorithm.searching : canFind;
+    import helpers = openai.clients.helpers;
 
     auto cfg = new OpenAIClientConfig;
     cfg.apiKey = "k";
-    auto client = new OpenAIClient(cfg);
     auto http = HTTP();
 
     auto tmp = "tmp_multi.txt";
@@ -961,13 +898,13 @@ unittest
         if (exists(tmp))
             remove(tmp);
 
-    OpenAIClient.MultipartPart[] files = [OpenAIClient.MultipartPart("file", tmp)];
-    OpenAIClient.MultipartPart[] texts = [
-        OpenAIClient.MultipartPart("model", "m"),
-        OpenAIClient.MultipartPart("prompt", "p")
+    helpers.MultipartPart[] files = [helpers.MultipartPart("file", tmp)];
+    helpers.MultipartPart[] texts = [
+        helpers.MultipartPart("model", "m"),
+        helpers.MultipartPart("prompt", "p")
     ];
 
-    auto body = client.buildMultipartBody(http, texts, files);
+    auto body = helpers.buildMultipartBody(http, texts, files);
     auto s = cast(string)
     body;
     assert(s.canFind("filename=\"tmp_multi.txt\""));
