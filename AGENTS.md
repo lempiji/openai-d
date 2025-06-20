@@ -150,3 +150,21 @@ headers when modifying or archiving those files to maintain consistency.
   ```bash
   rdmd scripts/list_reflections.d
   ```
+
+## 11. Helper Scripts and Quick Experiments
+
+* Run project scripts with `rdmd`:
+
+  ```bash
+  rdmd scripts/build_examples.d core
+  ```
+
+  Replace `build_examples.d` with any helper in `scripts`.
+
+* For quick experiments, run a single D file directly:
+
+  ```bash
+  rdmd path/to/file.d
+  ```
+
+* A helper for syncing example dependency locks is planned.
