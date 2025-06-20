@@ -13,4 +13,3 @@
 
 #### :bulb: Proposed Improvement
   - Provide helper scripts for common document restructuring tasks
-  - …

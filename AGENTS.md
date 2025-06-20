@@ -139,7 +139,7 @@ After completing your tasks, the agent **must create** a new file in `.codex/ref
 Existing reflections before mid-2025 may omit these brackets. Update their
 headers when modifying or archiving those files to maintain consistency.
 
-> **One Bold Change rule**: every reflection must propose **exactly one** high-leverage improvement that could eliminate the biggest pain point next time.
+> **One Bold Change rule**: every reflection must propose **exactly one** high-leverage improvement that could eliminate the biggest pain point next time. The `Proposed Improvement` section must contain a single bullet with no placeholders.
 
 * Records are keyed by timestamp (to the minute). Use the current date and time as `YYYY-MM-DD HH:MM` in the template and file name.
 * Replace `{task-summary}` with a short hyphenated summary of the task.
