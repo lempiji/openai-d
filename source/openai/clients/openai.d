@@ -6,7 +6,6 @@ module openai.clients.openai;
 import mir.deser.json;
 import mir.ser.json;
 import std.net.curl;
-import std.algorithm.iteration : joiner;
 import std.array : array, Appender;
 import std.stdio : File;
 
@@ -65,63 +64,45 @@ class OpenAIClient
 
     private string buildListInputItemsUrl(in ListInputItemsRequest request) const @safe
     {
-        import std.format : format;
         import std.algorithm : map;
-        import std.uri : encodeComponent;
 
-        string url = buildUrl("/responses/" ~ request.responseId ~ "/input_items");
-        string sep = "?";
-        url ~= format("%slimit=%s", sep, request.limit);
-        sep = "&";
-        if (request.order.length)
-            url ~= format("%sorder=%s", sep, encodeComponent(request.order)), sep = "&";
-        if (request.after.length)
-            url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
-        if (request.before.length)
-            url ~= format("%sbefore=%s", sep, encodeComponent(request.before)), sep = "&";
+        auto b = QueryParamsBuilder(
+            buildUrl("/responses/" ~ request.responseId ~ "/input_items"));
+        b.add("limit", request.limit);
+        b.add("order", request.order);
+        b.add("after", request.after);
+        b.add("before", request.before);
         if (request.include !is null && request.include.length)
-            url ~= format("%sinclude=%s", sep,
-                request.include
-                    .map!(x => encodeComponent(cast(string) x))
-                    .joiner(",")
-                    .array);
-        return url;
+        {
+            import std.conv : to;
+
+            b.add("include",
+                request.include.map!(x => to!string(x)).array);
+        }
+        return b.finish();
     }
 
     private string buildGetResponseUrl(string responseId, string[] include) const @safe
     {
         import std.algorithm : map;
+        import std.array : array;
         import std.conv : to;
-        import std.uri : encodeComponent;
 
-        string url = buildUrl("/responses/" ~ responseId);
+        auto b = QueryParamsBuilder(buildUrl("/responses/" ~ responseId));
         if (include !is null && include.length)
-            url ~= "?include="
-                ~ to!string(
-                    include
-                        .map!(x => encodeComponent(cast(string) x))
-                        .joiner(",")
-                        .array);
-        return url;
+            b.add("include", include.map!(x => to!string(x)).array);
+        return b.finish();
     }
 
     private string buildListFilesUrl(in ListFilesRequest request) const @safe
     {
-        import std.format : format;
-        import std.uri : encodeComponent;
-
-        string url = buildUrl("/files");
-        string sep = "?";
-        if (request.purpose.length)
-            url ~= format("%spurpose=%s", sep, encodeComponent(request.purpose)), sep = "&";
-        if (request.limit)
-            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
-        if (request.order.length)
-            url ~= format("%sorder=%s", sep, encodeComponent(request.order)), sep = "&";
-        if (request.after.length)
-            url ~= format("%safter=%s", sep, encodeComponent(request.after)), sep = "&";
+        auto b = QueryParamsBuilder(buildUrl("/files"));
+        b.add("purpose", request.purpose);
+        b.add("limit", request.limit);
+        b.add("order", request.order);
+        b.add("after", request.after);
         // 'before' parameter removed in API; no longer supported
-        return url;
+        return b.finish();
     }
 
     private void appendFileChunked(scope ref Appender!(ubyte[])
