@@ -168,3 +168,20 @@ headers when modifying or archiving those files to maintain consistency.
   ```
 
 * A helper for syncing example dependency locks is planned.
+## 12. Updating Dependencies
+
+* To add or update a dependency to the latest release in one command:
+
+  ```bash
+  dub add <package>@*
+  ```
+
+* To upgrade every dependency across the repository:
+
+  ```bash
+  dub upgrade --sub-packages
+  ```
+
+  This refreshes `dub.selections.json` with the newest versions.
+
+* After upgrading, run the formatter, linter, tests, and coverage before committing.
