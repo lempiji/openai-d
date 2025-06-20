@@ -77,30 +77,30 @@
    1. If you’ve modified any example group (e.g. `chat`, `audio`, `administration`), build **core** plus those groups:
 
       ```bash
-      scripts/build_examples.sh core <modified-group>[ <another-group> …]
+       rdmd scripts/build_examples.d core <modified-group>[ <another-group> …]
       ```
 
       * Example: you fixed something in the administration examples
 
         ```bash
-        scripts/build_examples.sh core administration
+         rdmd scripts/build_examples.d core administration
         ```
    2. If you haven’t touched any example-specific code, just run **core** (always required):
 
       ```bash
-      scripts/build_examples.sh core
+       rdmd scripts/build_examples.d core
       ```
       * `core` intentionally skips directories containing underscores. Use the
         `all` mode to build them manually. For example, to build the
         `administration_invites` examples:
 
         ```bash
-        scripts/build_examples.sh all administration_invites
+         rdmd scripts/build_examples.d all administration_invites
         ```
    3. To mirror CI or prepare a full release, you can still build **all**:
 
       ```bash
-      scripts/build_examples.sh all
+       rdmd scripts/build_examples.d all
       ```
 5. If all checks pass, commit changes and open a pull request.
 
