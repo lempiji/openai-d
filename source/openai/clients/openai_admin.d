@@ -894,6 +894,32 @@ public:
     }
 }
 
+@("buildUrl helper")
+unittest
+{
+    import std.typecons : tuple;
+
+    void checkUrl(string desc, string path, string expected)
+    {
+        auto cfg = new OpenAIClientConfig;
+        cfg.apiKey = "k";
+        auto client = new OpenAIAdminClient(cfg);
+        assert(client.buildUrl(path) == expected, desc);
+    }
+
+    foreach (t; [
+        tuple("audit logs", "/organization/audit_logs",
+            "https://api.openai.com/v1/organization/audit_logs"),
+        tuple("usage", "/organization/usage/completions",
+            "https://api.openai.com/v1/organization/usage/completions"),
+        tuple("projects", "/organization/projects",
+            "https://api.openai.com/v1/organization/projects")
+    ])
+    {
+        checkUrl(t[0], t[1], t[2]);
+    }
+}
+
 @("buildListAuditLogsUrl encodes new query parameters")
 unittest
 {
