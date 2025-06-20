@@ -96,7 +96,12 @@ void main(string[] args)
         if (clean)
         {
             auto cleanPid = spawnProcess(["dub", "clean"], null, Config.none, workDir);
-            wait(cleanPid);
+            auto cleanStatus = wait(cleanPid);
+            if (cleanStatus != 0)
+            {
+                writeln("dub clean failed for " ~ dir);
+                exit(cleanStatus);
+            }
 
             string bin = buildPath(workDir, dir);
             if (exists(bin))
