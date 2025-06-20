@@ -8,6 +8,12 @@ import mir.algebraic;
 
 @safe:
 
+@serdeEnumProxy!string enum ProjectUserRole : string
+{
+    Owner = "owner",
+    Member = "member",
+}
+
 @serdeIgnoreUnexpectedKeys
 struct ProjectUser
 {
@@ -15,7 +21,7 @@ struct ProjectUser
     string id;
     string name;
     string email;
-    string role;
+    ProjectUserRole role;
     @serdeKeys("added_at") long addedAt;
 }
 
@@ -32,11 +38,11 @@ struct ProjectUserListResponse
 struct ProjectUserCreateRequest
 {
     @serdeKeys("user_id") string userId;
-    string role;
+    ProjectUserRole role;
 }
 
 /// Convenience constructor for `ProjectUserCreateRequest`.
-ProjectUserCreateRequest projectUserCreateRequest(string userId, string role)
+ProjectUserCreateRequest projectUserCreateRequest(string userId, ProjectUserRole role)
 {
     auto req = ProjectUserCreateRequest();
     req.userId = userId;
@@ -46,11 +52,11 @@ ProjectUserCreateRequest projectUserCreateRequest(string userId, string role)
 
 struct ProjectUserUpdateRequest
 {
-    string role;
+    ProjectUserRole role;
 }
 
 /// Convenience constructor for `ProjectUserUpdateRequest`.
-ProjectUserUpdateRequest projectUserUpdateRequest(string role)
+ProjectUserUpdateRequest projectUserUpdateRequest(ProjectUserRole role)
 {
     auto req = ProjectUserUpdateRequest();
     req.role = role;
@@ -96,11 +102,11 @@ struct UserDeleteResponse
 
 struct UserRoleUpdateRequest
 {
-    string role;
+    ProjectUserRole role;
 }
 
 /// Convenience constructor for `UserRoleUpdateRequest`.
-UserRoleUpdateRequest userRoleUpdateRequest(string role)
+UserRoleUpdateRequest userRoleUpdateRequest(ProjectUserRole role)
 {
     auto req = UserRoleUpdateRequest();
     req.role = role;
@@ -152,8 +158,8 @@ unittest
 
     auto req = listUsersRequest(10);
     assert(serializeJson(req) == `{"limit":10}`);
-    auto role = userRoleUpdateRequest("admin");
-    assert(serializeJson(role) == `{"role":"admin"}`);
+    auto role = userRoleUpdateRequest(ProjectUserRole.Owner);
+    assert(serializeJson(role) == `{"role":"owner"}`);
 }
 
 unittest
@@ -174,8 +180,8 @@ unittest
 
     auto lreq = listProjectUsersRequest(5);
     assert(serializeJson(lreq) == `{"limit":5}`);
-    auto creq = projectUserCreateRequest("user_abc", "member");
+    auto creq = projectUserCreateRequest("user_abc", ProjectUserRole.Member);
     assert(serializeJson(creq) == `{"user_id":"user_abc","role":"member"}`);
-    auto ureq = projectUserUpdateRequest("owner");
+    auto ureq = projectUserUpdateRequest(ProjectUserRole.Owner);
     assert(serializeJson(ureq) == `{"role":"owner"}`);
 }
