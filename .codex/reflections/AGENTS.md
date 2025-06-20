@@ -4,8 +4,7 @@ To keep the `reflections` directory tidy, archive a reflection once its improvem
 
 1. Review the reflection and locate the **Proposed Improvement**.
 2. Verify through commit history or existing features that the improvement was made.
-3. Move the file to `.codex/archive/` using `git mv`.
-4. Optionally append a short note in `.codex/archive/REFLECTION_HISTORY.md` describing the archive.
-5. Commit the move (and note) with message `docs: add reflection archiving workflow`.
+3. Run `rdmd scripts/archive_reflection.d <file>` to move the file to `.codex/archive/` and record a brief entry in `.codex/archive/REFLECTION_HISTORY.md`.
+4. Commit the move (and note) with message `docs: add reflection archiving workflow`.
 
 Each reflection's `Proposed Improvement` section must contain exactly one bullet describing the improvement. Remove any placeholder bullets before committing.

@@ -144,7 +144,7 @@ headers when modifying or archiving those files to maintain consistency.
 * Records are keyed by timestamp (to the minute). Use the current date and time as `YYYY-MM-DD HH:MM` in the template and file name.
 * Replace `{task-summary}` with a short hyphenated summary of the task.
 * When documenting pain points, include your environment (CI, local machine, OS, etc.) and specify which step or command was slow.
-* After your proposed improvement is implemented, move the reflection to `.codex/archive/`. See [`.codex/reflections/AGENTS.md`](.codex/reflections/AGENTS.md) for the full archiving workflow.
+* After your proposed improvement is implemented, run `rdmd scripts/archive_reflection.d <file>` to move the reflection to `.codex/archive/` and log the archive. See [`.codex/reflections/AGENTS.md`](.codex/reflections/AGENTS.md) for the full workflow.
 * Review all outstanding improvements:
 
   ```bash
