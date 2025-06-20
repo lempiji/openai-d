@@ -68,8 +68,15 @@ struct QueryParamsBuilder
             "value type unsupported");
         if (values !is null && values.length)
         {
-            _url ~= format("%s%s=%s", _sep, key,
-                values.map!(v => encodeComponent(to!string(v))).joiner(",").array);
+            _url ~= _sep ~ key ~ "=";
+            bool first = true;
+            foreach (value; values)
+            {
+                if (!first)
+                    _url ~= ",";
+                _url ~= encodeComponent(to!string(value));
+                first = false;
+            }
             _sep = "&";
         }
     }
