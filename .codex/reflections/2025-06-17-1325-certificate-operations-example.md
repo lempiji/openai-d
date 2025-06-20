@@ -13,4 +13,3 @@
 
 #### :bulb: Proposed Improvement
 - Adjust build script to include specified groups even if they contain underscores
-- …

@@ -13,4 +13,3 @@
 
 #### :bulb: Proposed Improvement
   - Provide a make target to clean example build artifacts automatically
-  - …

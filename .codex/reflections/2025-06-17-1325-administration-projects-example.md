@@ -13,5 +13,4 @@
 
 #### :bulb: Proposed Improvement
   - Document how to build underscore examples to avoid confusion
-  - …
 

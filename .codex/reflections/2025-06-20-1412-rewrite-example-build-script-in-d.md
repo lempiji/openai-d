@@ -13,4 +13,3 @@
 
 #### :bulb: Proposed Improvement
   - Cache dub dependencies for examples to speed up iterative builds
-  - …

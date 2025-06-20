@@ -13,4 +13,3 @@
 
 #### :bulb: Proposed Improvement
   - Provide a lightweight script to print constructed URLs for debugging without running full tests
-  - …

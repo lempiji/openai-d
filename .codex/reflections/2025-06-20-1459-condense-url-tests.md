@@ -13,4 +13,3 @@
 
 #### :bulb: Proposed Improvement
   - Add a verbose flag or summary output to the example build script so successes are more obvious.
-  - …

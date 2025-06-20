@@ -13,4 +13,3 @@
 
 #### :bulb: Proposed Improvement
   - Provide helper scripts to automatically run formatter, linter and tests together
-  - …
