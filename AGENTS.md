@@ -100,9 +100,15 @@
    3. To mirror CI or prepare a full release, you can still build **all**:
 
       ```bash
-       rdmd scripts/build_examples.d all
+      rdmd scripts/build_examples.d all
       ```
-5. If all checks pass, commit changes and open a pull request.
+   4. To remove `dub.selections.json` and build artifacts after compiling, pass
+      the `--clean` flag:
+
+      ```bash
+       rdmd scripts/build_examples.d core <group> --clean
+      ```
+   5. If all checks pass, commit changes and open a pull request.
 
 ## 8. CI/CD & PR Guidelines
 
