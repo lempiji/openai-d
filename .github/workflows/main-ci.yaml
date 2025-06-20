@@ -61,11 +61,11 @@ jobs:
           compiler: ${{ matrix.dlang }}
       - name: Ensure DUB cache directory exists
         shell: pwsh
-        run: New-Item -ItemType Directory -Path "$env:APPDATA\dub\packages" -Force
+        run: New-Item -ItemType Directory -Path "$env:USERPROFILE/.dub/packages" -Force
       - name: Cache Dub packages
         uses: actions/cache@v3
         with:
-          path: ${{ env.APPDATA }}\dub\packages
+          path: ${{ env.USERPROFILE }}/.dub/packages
           key: dub-${{ runner.os }}-${{ matrix.dlang }}-${{ hashFiles('dub.selections.json') }}
           restore-keys: dub-${{ runner.os }}-${{ matrix.dlang }}-
       - name: Check formatting
