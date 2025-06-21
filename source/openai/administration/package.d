@@ -1,6 +1,6 @@
 module openai.administration;
 
-public import openai.administration.api_keys;
+public import openai.administration.admin_api_key;
 public import openai.administration.projects;
 public import openai.administration.project_api_keys;
 public import openai.administration.project_service_accounts;

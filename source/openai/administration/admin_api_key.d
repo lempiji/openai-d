@@ -1,4 +1,4 @@
-module openai.administration.api_keys;
+module openai.administration.admin_api_key;
 
 import mir.serde;
 import mir.serde : serdeEnumProxy;
