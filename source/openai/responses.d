@@ -8,7 +8,6 @@ module openai.responses;
 import mir.algebraic;
 import mir.serde;
 import mir.string_map;
-import std.typecons : Nullable;
 
 import openai.common;
 import openai.chat : ChatMessageContent, ChatUserMessageContentItem,

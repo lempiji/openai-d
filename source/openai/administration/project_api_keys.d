@@ -3,7 +3,6 @@ module openai.administration.project_api_keys;
 import mir.serde;
 import mir.serde : serdeEnumProxy;
 import mir.string_map;
-import std.typecons : Nullable;
 import mir.algebraic;
 
 public import openai.administration.api_keys : OwnerInfo;

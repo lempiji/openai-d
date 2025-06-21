@@ -3,7 +3,6 @@ module openai.administration.users;
 import mir.serde;
 import mir.serde : serdeEnumProxy;
 import mir.string_map;
-import std.typecons : Nullable;
 import mir.algebraic;
 
 @safe:
