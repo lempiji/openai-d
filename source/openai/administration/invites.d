@@ -125,8 +125,8 @@ unittest
     assert(list.data[0].email == "user@example.com");
     assert(list.data[0].role == "owner");
     assert(list.data[0].status == InviteStatus.Pending);
-    assert(list.data[0].createdAt == 1750481517);
-    assert(list.data[0].expiresAt == 1751086317);
+    assert(list.data[0].createdAt == 1_750_481_517);
+    assert(list.data[0].expiresAt == 1_751_086_317);
     assert(list.data[0].acceptedAt.isNull);
     assert(list.data[0].projects.length == 0);
     assert(list.firstId == "invite-id");
