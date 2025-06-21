@@ -121,11 +121,15 @@
 
 ```
 /
-├─ .github/     # GitHub Actions workflows
-├─ source/      # Library source code
-├─ examples/    # Sample usage code
-├─ dub.json     # Dub package definitions
-└─ AGENTS.md    # This document
+├─ .github/   # GitHub Actions workflows and templates
+├─ .codex/    # Reflection records and archive
+├─ docs/      # Additional design notes
+├─ examples/  # Sample usage grouped by feature
+├─ scripts/   # Helper build and test tools
+├─ source/    # Library source code
+├─ dub.json   # Dub package configuration
+├─ README.md  # Project overview
+└─ AGENTS.md  # Development guide
 ```
 
 ## 10. Reflection & Improvement
