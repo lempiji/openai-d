@@ -44,6 +44,14 @@ ListProjectRateLimitsRequest listProjectRateLimitsRequest(uint limit)
     return req;
 }
 
+/// ditto
+ListProjectRateLimitsRequest listProjectRateLimitsRequest(uint limit, string after)
+{
+    auto req = listProjectRateLimitsRequest(limit);
+    req.after = after;
+    return req;
+}
+
 struct CreateProjectRateLimitRequest
 {
     @serdeKeys("max_requests_per_1_minute") long maxRequestsPer1Minute;
@@ -121,6 +129,8 @@ unittest
 
     auto lreq = listProjectRateLimitsRequest(5);
     assert(serializeJson(lreq) == `{"limit":5}`);
+    auto lafter = listProjectRateLimitsRequest(5, "last");
+    assert(serializeJson(lafter) == `{"limit":5,"after":"last"}`);
 
     auto creq = createProjectRateLimitRequest(1, 2, 3, 4, 5, 6);
     assert(serializeJson(creq) == `{"max_requests_per_1_minute":1,"max_tokens_per_1_minute":2,"max_images_per_1_minute":3,"max_audio_megabytes_per_1_minute":4,"max_requests_per_1_day":5,"batch_1_day_max_input_tokens":6}`);

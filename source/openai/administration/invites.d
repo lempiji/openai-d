@@ -66,6 +66,14 @@ ListInvitesRequest listInvitesRequest(uint limit)
     return req;
 }
 
+/// ditto
+ListInvitesRequest listInvitesRequest(uint limit, string after)
+{
+    auto req = listInvitesRequest(limit);
+    req.after = after;
+    return req;
+}
+
 struct InviteRequest
 {
     string email;
@@ -94,6 +102,14 @@ unittest
 
     auto req = inviteRequest("user@example.com", "owner");
     assert(serializeJson(req) == `{"email":"user@example.com","role":"owner"}`);
+}
+
+unittest
+{
+    import mir.ser.json : serializeJson;
+
+    auto req = listInvitesRequest(5, "next");
+    assert(serializeJson(req) == `{"limit":5,"after":"next"}`);
 }
 
 unittest

@@ -59,6 +59,14 @@ ListAdminApiKeysRequest listAdminApiKeysRequest(uint limit)
     return req;
 }
 
+/// ditto
+ListAdminApiKeysRequest listAdminApiKeysRequest(uint limit, string after)
+{
+    auto req = listAdminApiKeysRequest(limit);
+    req.after = after;
+    return req;
+}
+
 struct CreateAdminApiKeyRequest
 {
     string name;
@@ -96,6 +104,14 @@ unittest
 
     auto req = createAdminApiKeyRequest("main-key");
     assert(serializeJson(req) == `{"name":"main-key"}`);
+}
+
+unittest
+{
+    import mir.ser.json : serializeJson;
+
+    auto req = listAdminApiKeysRequest(5, "k1");
+    assert(serializeJson(req) == `{"after":"k1","limit":5}`);
 }
 
 unittest
