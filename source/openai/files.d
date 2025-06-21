@@ -6,7 +6,7 @@ Standards: https://platform.openai.com/docs/api-reference/files
 module openai.files;
 
 import mir.serde;
-import std.typecons : Nullable;
+import mir.algebraic;
 
 @safe:
 
