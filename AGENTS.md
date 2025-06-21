@@ -121,11 +121,20 @@
 
 ```
 /
-├─ .github/     # GitHub Actions workflows
-├─ source/      # Library source code
-├─ examples/    # Sample usage code
-├─ dub.json     # Dub package definitions
-└─ AGENTS.md    # This document
+├─ .github/                # Issue templates and CI workflows
+│  └─ workflows/           # YAML files for GitHub Actions
+├─ .codex/                 # Reflection templates and logs
+│  ├─ reflections/         # Active reflections
+│  └─ archive/             # Archived reflections and history
+├─ docs/                   # Design docs and API snippets
+├─ source/                 # Library source code
+├─ examples/               # Sample usage code
+├─ scripts/                # Helper and build scripts
+├─ dub.json                # Dub package definition
+├─ dub.selections.json     # Locked dependency versions
+├─ dscanner.ini            # Linter configuration
+├─ README.md               # Project overview
+└─ AGENTS.md               # This document
 ```
 
 ## 10. Reflection & Improvement
