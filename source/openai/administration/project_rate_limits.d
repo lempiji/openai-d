@@ -7,16 +7,17 @@ import mir.algebraic;
 
 @safe:
 
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("object", "project.rate_limit")
 struct ProjectRateLimit
 {
-    string object;
     string id;
-    @serdeKeys("max_requests_per_1_minute") long maxRequestsPer1Minute;
-    @serdeKeys("max_tokens_per_1_minute") long maxTokensPer1Minute;
-    @serdeKeys("max_images_per_1_minute") long maxImagesPer1Minute;
-    @serdeKeys("max_audio_megabytes_per_1_minute") long maxAudioMegabytesPer1Minute;
-    @serdeKeys("max_requests_per_1_day") long maxRequestsPer1Day;
-    @serdeKeys("batch_1_day_max_input_tokens") long batch1DayMaxInputTokens;
+    @serdeOptional @serdeKeys("max_requests_per_1_minute") long maxRequestsPer1Minute;
+    @serdeOptional @serdeKeys("max_requests_per_1_day") long maxRequestsPer1Day;
+    @serdeOptional @serdeKeys("max_tokens_per_1_minute") long maxTokensPer1Minute;
+    @serdeOptional @serdeKeys("max_tokens_per_1_day") long maxTokensPer1Day;
+    @serdeOptional @serdeKeys("max_images_per_1_minute") long maxImagesPer1Minute;
+    @serdeOptional @serdeKeys("batch_1_day_max_input_tokens") long batch1DayMaxInputTokens;
 }
 
 @serdeIgnoreUnexpectedKeys
@@ -72,7 +73,7 @@ CreateProjectRateLimitRequest createProjectRateLimitRequest(
     return req;
 }
 
-struct UpdateProjectRateLimitRequest
+struct ModifyProjectRateLimitRequest
 {
     @serdeOptional @serdeIgnoreDefault
     @serdeKeys("max_requests_per_1_minute") long maxRequestsPer1Minute;
@@ -88,8 +89,8 @@ struct UpdateProjectRateLimitRequest
     @serdeKeys("batch_1_day_max_input_tokens") long batch1DayMaxInputTokens;
 }
 
-/// Convenience constructor for `UpdateProjectRateLimitRequest`.
-UpdateProjectRateLimitRequest updateProjectRateLimitRequest(
+/// Convenience constructor for `ModifyProjectRateLimitRequest`.
+ModifyProjectRateLimitRequest modifyProjectRateLimitRequest(
     long maxRequestsPer1Minute,
     long maxTokensPer1Minute,
     long maxImagesPer1Minute,
@@ -97,7 +98,7 @@ UpdateProjectRateLimitRequest updateProjectRateLimitRequest(
     long maxRequestsPer1Day,
     long batch1DayMaxInputTokens)
 {
-    auto req = UpdateProjectRateLimitRequest();
+    auto req = ModifyProjectRateLimitRequest();
     req.maxRequestsPer1Minute = maxRequestsPer1Minute;
     req.maxTokensPer1Minute = maxTokensPer1Minute;
     req.maxImagesPer1Minute = maxImagesPer1Minute;
@@ -105,14 +106,6 @@ UpdateProjectRateLimitRequest updateProjectRateLimitRequest(
     req.maxRequestsPer1Day = maxRequestsPer1Day;
     req.batch1DayMaxInputTokens = batch1DayMaxInputTokens;
     return req;
-}
-
-@serdeIgnoreUnexpectedKeys
-struct DeleteProjectRateLimitResponse
-{
-    string object;
-    string id;
-    bool deleted;
 }
 
 unittest
@@ -126,17 +119,12 @@ unittest
     assert(list.data.length == 1);
     assert(list.data[0].id == "rl_abc");
 
-    enum delExample =
-        `{"object":"organization.project.rate_limit.deleted","id":"rl_abc","deleted":true}`;
-    auto del = deserializeJson!DeleteProjectRateLimitResponse(delExample);
-    assert(del.deleted);
-
     auto lreq = listProjectRateLimitsRequest(5);
     assert(serializeJson(lreq) == `{"limit":5}`);
 
     auto creq = createProjectRateLimitRequest(1, 2, 3, 4, 5, 6);
     assert(serializeJson(creq) == `{"max_requests_per_1_minute":1,"max_tokens_per_1_minute":2,"max_images_per_1_minute":3,"max_audio_megabytes_per_1_minute":4,"max_requests_per_1_day":5,"batch_1_day_max_input_tokens":6}`);
 
-    auto ureq = updateProjectRateLimitRequest(1, 2, 3, 4, 5, 6);
+    auto ureq = modifyProjectRateLimitRequest(1, 2, 3, 4, 5, 6);
     assert(serializeJson(ureq) == `{"max_requests_per_1_minute":1,"max_tokens_per_1_minute":2,"max_images_per_1_minute":3,"max_audio_megabytes_per_1_minute":4,"max_requests_per_1_day":5,"batch_1_day_max_input_tokens":6}`);
 }

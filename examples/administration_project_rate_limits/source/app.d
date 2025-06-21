@@ -1,36 +1,34 @@
-import std.stdio;
+import std;
 import openai;
 
 void main()
 {
     auto client = new OpenAIAdminClient();
 
-    // create a project for the rate limit
-    auto project = client.createProject(projectCreateRequest("example"));
-
-    // create a project rate limit
-    auto limit = client.createProjectRateLimit(project.id,
-        createProjectRateLimitRequest(60, 1_000, 5, 100, 1_000, 5_000));
+    // Fetch the list of projects
+    auto projects = client.listProjects(listProjectsRequest(20));
+    auto targetProject = projects.data.filter!(p => p.name == "Example Project").front;
+    auto projectId = targetProject.id;
+    writeln("project: ", targetProject);
 
     // list project rate limits
-    auto list = client.listProjectRateLimits(project.id,
-        listProjectRateLimitsRequest(20));
+    auto list = client.listProjectRateLimits(projectId,
+        listProjectRateLimitsRequest(100));
     writeln("limits: ", list.data.length);
 
-    // retrieve the created rate limit
-    auto retrieved = client.retrieveProjectRateLimit(limit.id);
-    writeln("retrieved: ", retrieved.id);
-
     // modify the rate limit
-    auto modified = client.modifyProjectRateLimit(limit.id,
-        updateProjectRateLimitRequest(120, 2_000, 10, 200, 2_000, 10_000));
-    writeln("modified: ", modified.maxRequestsPer1Minute);
-
-    // delete the rate limit
-    auto deleted = client.deleteProjectRateLimit(limit.id);
-    writeln("deleted: ", deleted.deleted);
-
-    // archive the project
-    auto archived = client.archiveProject(project.id);
-    writeln("archived: ", archived.status);
+    /+
+        60% of the default rate limit
+        "max_requests_per_1_minute": 300,
+        "max_tokens_per_1_minute": 18000,
+        "max_images_per_1_minute": 30000,
+        "batch_1_day_max_input_tokens": 54000
+    +/
+    ModifyProjectRateLimitRequest req;
+    req.maxRequestsPer1Minute = 300;
+    req.maxTokensPer1Minute = 18_000;
+    req.maxImagesPer1Minute = 30_000;
+    req.batch1DayMaxInputTokens = 54_000;
+    auto modified = client.modifyProjectRateLimit(projectId, "rl-gpt-4o", req);
+    writeln("modified: ", modified);
 }

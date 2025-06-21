@@ -11,7 +11,8 @@ void main()
     auto list = client.listAdminApiKeys(listAdminApiKeysRequest(20));
     auto deleted = client.deleteAdminApiKey(created.id);
 
-    writeln(got.name);
-    writeln(list.data.length);
-    writeln(deleted.deleted);
+    writeln(created);
+    writeln(got);
+    writeln(list.data);
+    writeln(deleted);
 }

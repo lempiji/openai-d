@@ -45,28 +45,28 @@ ListProjectsRequest listProjectsRequest(uint limit, bool includeArchived = false
     return req;
 }
 
-struct ProjectCreateRequest
+struct CreateProjectRequest
 {
     string name;
 }
 
-/// Convenience constructor for `ProjectCreateRequest`.
-ProjectCreateRequest projectCreateRequest(string name)
+/// Convenience constructor for `CreateProjectRequest`.
+CreateProjectRequest createProjectRequest(string name)
 {
-    auto req = ProjectCreateRequest();
+    auto req = CreateProjectRequest();
     req.name = name;
     return req;
 }
 
-struct ProjectUpdateRequest
+struct ModifyProjectRequest
 {
     string name;
 }
 
-/// Convenience constructor for `ProjectUpdateRequest`.
-ProjectUpdateRequest projectUpdateRequest(string name)
+/// Convenience constructor for `ModifyProjectRequest`.
+ModifyProjectRequest modifyProjectRequest(string name)
 {
-    auto req = ProjectUpdateRequest();
+    auto req = ModifyProjectRequest();
     req.name = name;
     return req;
 }
@@ -76,11 +76,11 @@ unittest
     import mir.deser.json : deserializeJson;
     import mir.ser.json : serializeJson;
 
-    ProjectCreateRequest req;
+    CreateProjectRequest req;
     req.name = "proj";
     auto js = serializeJson(req);
     assert(js == `{"name":"proj"}`);
-    auto back = deserializeJson!ProjectCreateRequest(js);
+    auto back = deserializeJson!CreateProjectRequest(js);
     assert(back.name == "proj");
 }
 

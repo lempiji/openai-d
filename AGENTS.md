@@ -121,8 +121,8 @@
 
 ```
 /
-├─ .github/   # GitHub Actions workflows and templates
 ├─ .codex/    # Reflection records and archive
+├─ .github/   # GitHub Actions workflows and templates
 ├─ docs/      # Additional design notes
 ├─ examples/  # Sample usage grouped by feature
 ├─ scripts/   # Helper build and test tools
@@ -172,6 +172,7 @@ headers when modifying or archiving those files to maintain consistency.
   ```
 
 * A helper for syncing example dependency locks is planned.
+
 ## 12. Updating Dependencies
 
 * To add or update a dependency to the latest release in one command:
@@ -196,4 +197,12 @@ headers when modifying or archiving those files to maintain consistency.
 * Build examples with `rdmd scripts/build_examples.d core <group> --clean` to remove artifacts automatically. The script recognizes directories with underscores when provided explicitly.
 * Prefer `QueryParamsBuilder` (in `openai.clients.helpers`) for constructing URLs with optional query parameters.
 * Keep relevant OpenAPI spec snippets under `docs/` for quick reference.
-* Reflection files must use bracketed timestamps and a single bullet under **Proposed Improvement**.
+* Unify request/response struct and function naming conventions across modules (e.g., CreateXxxRequest, ModifyXxxRequest).
+* Prefer `@serdeOptional` and `mir.algebraic.Nullable` for fields that may be omitted or null in API responses.
+* Apply `@serdeIgnoreUnexpectedKeys` and `@serdeOptional` to make deserialization resilient to future API changes.
+* When building URLs with array query parameters, use the correct bracketed syntax (e.g., `event_types[]`).
+* Always use REST endpoints that include the relevant parent resource (e.g., projectId) for nested resources.
+* Add debug output for API failures to aid troubleshooting, like `debug scope(failure) { ... }`.
+* Write unittests using real-world API response samples to ensure robust deserialization.
+* Update example code to reflect realistic usage patterns, such as searching for existing resources instead of always creating new ones.
+* Remove outdated or redundant example files to keep the examples directory clean and relevant.
