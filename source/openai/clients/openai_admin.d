@@ -37,26 +37,11 @@ class OpenAIAdminClient
     string buildListAuditLogsUrl(in ListAuditLogsRequest request) const @safe
     {
         auto b = QueryParamsBuilder(buildUrl("/organization/audit_logs"));
-        foreach (eventType; request.eventTypes)
-        {
-            b.add("event_types[]", eventType);
-        }
-        foreach (projectId; request.projectIds)
-        {
-            b.add("project_ids[]", projectId);
-        }
-        foreach (actorId; request.actorIds)
-        {
-            b.add("actor_ids[]", actorId);
-        }
-        foreach (actorEmail; request.actorEmails)
-        {
-            b.add("actor_emails[]", actorEmail);
-        }
-        foreach (resourceId; request.resourceIds)
-        {
-            b.add("resource_ids[]", resourceId);
-        }
+        b.add("event_types[]", request.eventTypes);
+        b.add("project_ids[]", request.projectIds);
+        b.add("actor_ids[]", request.actorIds);
+        b.add("actor_emails[]", request.actorEmails);
+        b.add("resource_ids[]", request.resourceIds);
         b.add("effective_at[gt]", request.effectiveAt.gt);
         b.add("effective_at[gte]", request.effectiveAt.gte);
         b.add("effective_at[lt]", request.effectiveAt.lt);
