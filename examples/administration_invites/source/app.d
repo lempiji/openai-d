@@ -11,7 +11,7 @@ void main()
     writeln(list.data.length);
 
     // Create an invite
-    auto created = client.createInvite(inviteRequest("user@example.com", "owner"));
+    auto created = client.createInvite(inviteRequest("user@example.com", "reader"));
     writeln(created.email);
 
     // Delete the invite

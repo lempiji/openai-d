@@ -79,7 +79,7 @@ See the [examples](examples) directory for full sample programs.
   - [x] Project rate limits
   - [x] Audit logs
   - [x] Usage
-  - [x] Certificates
+  - [ ] Certificates (Beta WIP)
 
 ### Legacy
 - [x] Completions (Legacy)

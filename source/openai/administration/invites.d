@@ -21,16 +21,16 @@ struct InviteProject
 }
 
 @serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("object", "organization.invite")
 struct Invite
 {
-    string object;
     string id;
     string email;
     string role;
-    InviteStatus status;
-    @serdeKeys("invited_at") long invitedAt;
+    @serdeOptional @serdeKeys("created_at") long createdAt;
     @serdeKeys("expires_at") long expiresAt;
-    @serdeOptional @serdeKeys("accepted_at") long acceptedAt;
+    @serdeOptional @serdeKeys("accepted_at") Nullable!long acceptedAt;
+    InviteStatus status;
     @serdeOptional @serdeIgnoreDefault InviteProject[] projects;
 }
 
@@ -39,8 +39,8 @@ struct InviteListResponse
 {
     string object;
     Invite[] data;
-    @serdeKeys("first_id") string firstId;
-    @serdeKeys("last_id") string lastId;
+    @serdeOptional @serdeKeys("first_id") string firstId;
+    @serdeOptional @serdeKeys("last_id") string lastId;
     @serdeKeys("has_more") bool hasMore;
 }
 
@@ -94,4 +94,42 @@ unittest
 
     auto req = inviteRequest("user@example.com", "owner");
     assert(serializeJson(req) == `{"email":"user@example.com","role":"owner"}`);
+}
+
+unittest
+{
+    enum json = `{
+  "object": "list",
+  "data": [
+    {
+      "object": "organization.invite",
+      "id": "invite-id",
+      "email": "user@example.com",
+      "role": "owner",
+      "created_at": 1750481517,
+      "expires_at": 1751086317,
+      "accepted_at": null,
+      "status": "pending",
+      "projects": []
+    }
+  ],
+  "first_id": "invite-id",
+  "last_id": "invite-id",
+  "has_more": false
+}`;
+    import mir.deser.json : deserializeJson;
+
+    auto list = deserializeJson!InviteListResponse(json);
+    assert(list.data.length == 1);
+    assert(list.data[0].id == "invite-id");
+    assert(list.data[0].email == "user@example.com");
+    assert(list.data[0].role == "owner");
+    assert(list.data[0].status == InviteStatus.Pending);
+    assert(list.data[0].createdAt == 1750481517);
+    assert(list.data[0].expiresAt == 1751086317);
+    assert(list.data[0].acceptedAt.isNull);
+    assert(list.data[0].projects.length == 0);
+    assert(list.firstId == "invite-id");
+    assert(list.lastId == "invite-id");
+    assert(!list.hasMore);
 }

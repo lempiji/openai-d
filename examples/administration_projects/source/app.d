@@ -6,7 +6,7 @@ void main()
     auto client = new OpenAIAdminClient();
 
     // create a project
-    auto project = client.createProject(projectCreateRequest("example"));
+    auto project = client.createProject(createProjectRequest("example"));
 
     // list projects
     auto list = client.listProjects(listProjectsRequest(20));
@@ -17,7 +17,7 @@ void main()
     writeln("retrieved: ", retrieved.name);
 
     // modify the project
-    auto modified = client.modifyProject(project.id, projectUpdateRequest("example-updated"));
+    auto modified = client.modifyProject(project.id, modifyProjectRequest("example-updated"));
     writeln("modified: ", modified.name);
 
     // archive the project

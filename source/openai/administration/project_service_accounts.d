@@ -26,21 +26,21 @@ struct ProjectServiceAccountApiKey
     string id;
 }
 
-struct ProjectServiceAccountCreateRequest
+struct CreateProjectServiceAccountRequest
 {
     string name;
 }
 
-/// Convenience constructor for `ProjectServiceAccountCreateRequest`.
-ProjectServiceAccountCreateRequest projectServiceAccountCreateRequest(string name)
+/// Convenience constructor for `CreateProjectServiceAccountRequest`.
+CreateProjectServiceAccountRequest createProjectServiceAccountRequest(string name)
 {
-    auto req = ProjectServiceAccountCreateRequest();
+    auto req = CreateProjectServiceAccountRequest();
     req.name = name;
     return req;
 }
 
 @serdeIgnoreUnexpectedKeys
-struct ProjectServiceAccountCreateResponse
+struct CreateProjectServiceAccountResponse
 {
     string object;
     string id;
@@ -95,7 +95,7 @@ unittest
 
     enum createExample =
         `{"object":"organization.project.service_account","id":"svc_acct_abc","name":"Production App","role":"member","created_at":1711471533,"api_key":{"object":"organization.project.service_account.api_key","value":"sk-abcdefghijklmnop123","name":"Secret Key","created_at":1711471533,"id":"key_abc"}}`;
-    auto create = deserializeJson!ProjectServiceAccountCreateResponse(createExample);
+    auto create = deserializeJson!CreateProjectServiceAccountResponse(createExample);
     assert(create.apiKey.id == "key_abc");
 
     enum delExample =
@@ -105,6 +105,6 @@ unittest
 
     auto lreq = listProjectServiceAccountsRequest(5);
     assert(serializeJson(lreq) == `{"limit":5}`);
-    auto creq = projectServiceAccountCreateRequest("My SA");
+    auto creq = createProjectServiceAccountRequest("My SA");
     assert(serializeJson(creq) == `{"name":"My SA"}`);
 }

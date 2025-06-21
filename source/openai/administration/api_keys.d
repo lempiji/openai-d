@@ -11,22 +11,26 @@ import mir.algebraic;
 
 // Data structures
 @serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("object", "organization.user")
 struct OwnerInfo
 {
     string type;
-    string id;
+    @serdeOptional string id;
     @serdeOptional string name;
+    @serdeOptional string email;
+    @serdeOptional @serdeKeys("created_at") Nullable!long createdAt;
+    @serdeOptional string role;
 }
 
 @serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("object", "organization.admin_api_key")
 struct AdminApiKey
 {
-    string object;
     string id;
     string name;
     @serdeKeys("redacted_value") string redactedValue;
     @serdeKeys("created_at") long createdAt;
-    @serdeKeys("last_used_at") long lastUsedAt;
+    @serdeOptional @serdeKeys("last_used_at") Nullable!long lastUsedAt;
     @serdeOptional OwnerInfo owner;
     @serdeOptional string value;
 }
@@ -92,4 +96,33 @@ unittest
 
     auto req = createAdminApiKeyRequest("main-key");
     assert(serializeJson(req) == `{"name":"main-key"}`);
+}
+
+unittest
+{
+    enum json = `{
+  "object": "organization.admin_api_key",
+  "id": "key_adminapikey_1a",
+  "name": "Example Key",
+  "redacted_value": "sk-admin*************************************************************************************************************************s1MA",
+  "created_at": 1750481917,
+  "last_used_at": null,
+  "owner": {
+    "type": "user",
+    "object": "organization.user",
+    "id": "user-some-id-here",
+    "name": "user name",
+    "created_at": 1615456045,
+    "role": "owner"
+  },
+  "value": "sk-admin-o_4n-z_xxxxuyyyyLzzzzz-Uopoiweraijg_itsdengerfieldbutsafe"
+}`;
+    import mir.deser.json : deserializeJson;
+
+    auto key = deserializeJson!AdminApiKey(json);
+    assert(key.id == "key_adminapikey_1a");
+    assert(key.name == "Example Key");
+    assert(key.redactedValue.length > 0);
+    assert(key.value.length > 0);
+    assert(key.owner.id == "user-some-id-here");
 }

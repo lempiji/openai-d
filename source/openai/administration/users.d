@@ -34,36 +34,36 @@ struct ProjectUserListResponse
     @serdeKeys("has_more") bool hasMore;
 }
 
-struct ProjectUserCreateRequest
+struct CreateProjectUserRequest
 {
     @serdeKeys("user_id") string userId;
     ProjectUserRole role;
 }
 
-/// Convenience constructor for `ProjectUserCreateRequest`.
-ProjectUserCreateRequest projectUserCreateRequest(string userId, ProjectUserRole role)
+/// Convenience constructor for `CreateProjectUserRequest`.
+CreateProjectUserRequest createProjectUserRequest(string userId, ProjectUserRole role)
 {
-    auto req = ProjectUserCreateRequest();
+    auto req = CreateProjectUserRequest();
     req.userId = userId;
     req.role = role;
     return req;
 }
 
-struct ProjectUserUpdateRequest
+struct UpdateProjectUserRequest
 {
     ProjectUserRole role;
 }
 
-/// Convenience constructor for `ProjectUserUpdateRequest`.
-ProjectUserUpdateRequest projectUserUpdateRequest(ProjectUserRole role)
+/// Convenience constructor for `UpdateProjectUserRequest`.
+UpdateProjectUserRequest updateProjectUserRequest(ProjectUserRole role)
 {
-    auto req = ProjectUserUpdateRequest();
+    auto req = UpdateProjectUserRequest();
     req.role = role;
     return req;
 }
 
 @serdeIgnoreUnexpectedKeys
-struct ProjectUserDeleteResponse
+struct DeleteProjectUserResponse
 {
     string object;
     string id;
@@ -99,15 +99,15 @@ struct UserDeleteResponse
     bool deleted;
 }
 
-struct UserRoleUpdateRequest
+struct UpdateUserRoleRequest
 {
     ProjectUserRole role;
 }
 
-/// Convenience constructor for `UserRoleUpdateRequest`.
-UserRoleUpdateRequest userRoleUpdateRequest(ProjectUserRole role)
+/// Convenience constructor for `UpdateUserRoleRequest`.
+UpdateUserRoleRequest updateUserRoleRequest(ProjectUserRole role)
 {
-    auto req = UserRoleUpdateRequest();
+    auto req = UpdateUserRoleRequest();
     req.role = role;
     return req;
 }
@@ -157,7 +157,7 @@ unittest
 
     auto req = listUsersRequest(10);
     assert(serializeJson(req) == `{"limit":10}`);
-    auto role = userRoleUpdateRequest(ProjectUserRole.Owner);
+    auto role = updateUserRoleRequest(ProjectUserRole.Owner);
     assert(serializeJson(role) == `{"role":"owner"}`);
 }
 
@@ -174,13 +174,13 @@ unittest
 
     enum delExample =
         `{"object":"organization.project.user.deleted","id":"user_abc","deleted":true}`;
-    auto del = deserializeJson!ProjectUserDeleteResponse(delExample);
+    auto del = deserializeJson!DeleteProjectUserResponse(delExample);
     assert(del.deleted);
 
     auto lreq = listProjectUsersRequest(5);
     assert(serializeJson(lreq) == `{"limit":5}`);
-    auto creq = projectUserCreateRequest("user_abc", ProjectUserRole.Member);
+    auto creq = createProjectUserRequest("user_abc", ProjectUserRole.Member);
     assert(serializeJson(creq) == `{"user_id":"user_abc","role":"member"}`);
-    auto ureq = projectUserUpdateRequest(ProjectUserRole.Owner);
+    auto ureq = updateProjectUserRequest(ProjectUserRole.Owner);
     assert(serializeJson(ureq) == `{"role":"owner"}`);
 }
