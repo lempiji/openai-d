@@ -68,18 +68,48 @@ struct QueryParamsBuilder
             "value type unsupported");
         if (values !is null && values.length)
         {
-            _url ~= _sep ~ key ~ "=";
-            bool first = true;
-            foreach (value; values)
+            import std.string : endsWith;
+
+            if (key.endsWith("[]"))
             {
-                if (!first)
-                    _url ~= ",";
-                _url ~= encodeComponent(to!string(value));
-                first = false;
+                foreach (value; values)
+                {
+                    _url ~= format("%s%s=%s", _sep, key,
+                        encodeComponent(to!string(value)));
+                    _sep = "&";
+                }
             }
-            _sep = "&";
+            else
+            {
+                _url ~= _sep ~ key ~ "=";
+                bool first = true;
+                foreach (value; values)
+                {
+                    if (!first)
+                        _url ~= ",";
+                    _url ~= encodeComponent(to!string(value));
+                    first = false;
+                }
+                _sep = "&";
+            }
         }
     }
+}
+
+@("QueryParamsBuilder array comma-separated")
+unittest
+{
+    auto b = QueryParamsBuilder("https://example.com");
+    b.add("ids", ["foo bar", "baz"]);
+    assert(b.finish() == "https://example.com?ids=foo%20bar,baz");
+}
+
+@("QueryParamsBuilder array bracketed")
+unittest
+{
+    auto b = QueryParamsBuilder("https://example.com");
+    b.add("ids[]", ["foo bar", "baz"]);
+    assert(b.finish() == "https://example.com?ids[]=foo%20bar&ids[]=baz");
 }
 
 @system struct MultipartPart

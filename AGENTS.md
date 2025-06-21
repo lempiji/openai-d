@@ -201,6 +201,7 @@ headers when modifying or archiving those files to maintain consistency.
 * Prefer `@serdeOptional` and `mir.algebraic.Nullable` for fields that may be omitted or null in API responses.
 * Apply `@serdeIgnoreUnexpectedKeys` and `@serdeOptional` to make deserialization resilient to future API changes.
 * When building URLs with array query parameters, use the correct bracketed syntax (e.g., `event_types[]`).
+* QueryParamsBuilder emits comma-separated values by default; append `[]` to the key to expand array elements individually.
 * Always use REST endpoints that include the relevant parent resource (e.g., projectId) for nested resources.
 * Add debug output for API failures to aid troubleshooting, like `debug scope(failure) { ... }`.
 * Write unittests using real-world API response samples to ensure robust deserialization.
