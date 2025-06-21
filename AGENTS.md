@@ -185,3 +185,11 @@ headers when modifying or archiving those files to maintain consistency.
   This refreshes `dub.selections.json` with the newest versions.
 
 * After upgrading, run the formatter, linter, tests, and coverage before committing.
+
+## 13. Code-Base Insights
+
+* Cache `dfmt` and `dscanner` binaries locally to avoid repeated downloads when running the formatter or linter.
+* Build examples with `rdmd scripts/build_examples.d core <group> --clean` to remove artifacts automatically. The script recognizes directories with underscores when provided explicitly.
+* Prefer `QueryParamsBuilder` (in `openai.clients.helpers`) for constructing URLs with optional query parameters.
+* Keep relevant OpenAPI spec snippets under `docs/` for quick reference.
+* Reflection files must use bracketed timestamps and a single bullet under **Proposed Improvement**.
