@@ -8,3 +8,4 @@ To keep the `reflections` directory tidy, archive a reflection once its improvem
 4. Commit the move (and note) with message `docs: add reflection archiving workflow`.
 
 Each reflection's `Proposed Improvement` section must contain exactly one bullet describing the improvement. Remove any placeholder bullets before committing.
+Include notes on the `Learning & Insights` and `Reference Info` sections before archiving a reflection.

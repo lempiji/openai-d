@@ -145,6 +145,9 @@ headers when modifying or archiving those files to maintain consistency.
 
 > **One Bold Change rule**: every reflection must propose **exactly one** high-leverage improvement that could eliminate the biggest pain point next time. The `Proposed Improvement` section must contain a single bullet with no placeholders.
 
+* Fill out the **Learning & Insights** section with lessons from mistakes and how you resolved them.
+* Provide a **Reference Info** section summarizing helpful code samples or trusted external resources for future tasks.
+
 * Records are keyed by timestamp (to the minute). Use the current date and time as `YYYY-MM-DD HH:MM` in the template and file name.
 * Replace `{task-summary}` with a short hyphenated summary of the task.
 * When documenting pain points, include your environment (CI, local machine, OS, etc.) and specify which step or command was slow.
