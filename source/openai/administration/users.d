@@ -132,11 +132,27 @@ ListProjectUsersRequest listProjectUsersRequest(uint limit)
     return req;
 }
 
+/// ditto
+ListProjectUsersRequest listProjectUsersRequest(uint limit, string after)
+{
+    auto req = listProjectUsersRequest(limit);
+    req.after = after;
+    return req;
+}
+
 /// Convenience constructor for `ListUsersRequest`.
 ListUsersRequest listUsersRequest(uint limit)
 {
     auto req = ListUsersRequest();
     req.limit = limit;
+    return req;
+}
+
+/// ditto
+ListUsersRequest listUsersRequest(uint limit, string after)
+{
+    auto req = listUsersRequest(limit);
+    req.after = after;
     return req;
 }
 
@@ -157,6 +173,8 @@ unittest
 
     auto req = listUsersRequest(10);
     assert(serializeJson(req) == `{"limit":10}`);
+    auto reqA = listUsersRequest(10, "id_a");
+    assert(serializeJson(reqA) == `{"limit":10,"after":"id_a"}`);
     auto role = updateUserRoleRequest(ProjectUserRole.Owner);
     assert(serializeJson(role) == `{"role":"owner"}`);
 }
@@ -179,6 +197,8 @@ unittest
 
     auto lreq = listProjectUsersRequest(5);
     assert(serializeJson(lreq) == `{"limit":5}`);
+    auto lreqAfter = listProjectUsersRequest(5, "next");
+    assert(serializeJson(lreqAfter) == `{"limit":5,"after":"next"}`);
     auto creq = createProjectUserRequest("user_abc", ProjectUserRole.Member);
     assert(serializeJson(creq) == `{"user_id":"user_abc","role":"member"}`);
     auto ureq = updateProjectUserRequest(ProjectUserRole.Owner);

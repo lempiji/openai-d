@@ -82,6 +82,14 @@ ListProjectServiceAccountsRequest listProjectServiceAccountsRequest(uint limit)
     return req;
 }
 
+/// ditto
+ListProjectServiceAccountsRequest listProjectServiceAccountsRequest(uint limit, string after)
+{
+    auto req = listProjectServiceAccountsRequest(limit);
+    req.after = after;
+    return req;
+}
+
 unittest
 {
     import mir.deser.json : deserializeJson;
@@ -105,6 +113,8 @@ unittest
 
     auto lreq = listProjectServiceAccountsRequest(5);
     assert(serializeJson(lreq) == `{"limit":5}`);
+    auto lafter = listProjectServiceAccountsRequest(5, "id_1");
+    assert(serializeJson(lafter) == `{"limit":5,"after":"id_1"}`);
     auto creq = createProjectServiceAccountRequest("My SA");
     assert(serializeJson(creq) == `{"name":"My SA"}`);
 }

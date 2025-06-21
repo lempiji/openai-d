@@ -505,6 +505,24 @@ ListInputItemsRequest listInputItemsRequest(string responseId)
     return req;
 }
 
+/// ditto
+ListInputItemsRequest listInputItemsRequest(
+    string responseId,
+    size_t limit = ListInputItemsRequest.init.limit,
+    string order = ListInputItemsRequest.init.order,
+    string after = null,
+    string before = null,
+    Includable[] include = null)
+{
+    auto req = listInputItemsRequest(responseId);
+    req.limit = limit;
+    req.order = order;
+    req.after = after;
+    req.before = before;
+    req.include = include;
+    return req;
+}
+
 // -----------------------------------------------------------------------------
 // Response objects
 // -----------------------------------------------------------------------------
@@ -606,6 +624,14 @@ unittest
 
     auto req = createResponseRequest("gpt-4.1", CreateResponseInput("Hello"));
     assert(serializeJson(req) == `{"input":"Hello","model":"gpt-4.1"}`);
+}
+
+unittest
+{
+    import mir.ser.json : serializeJson;
+
+    auto req = listInputItemsRequest("resp1", 10, "desc", "a", "b");
+    assert(serializeJson(req) == `{"responseId":"resp1","limit":10,"order":"desc","after":"a","before":"b"}`);
 }
 
 unittest

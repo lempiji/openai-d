@@ -61,6 +61,21 @@ ListFilesRequest listFilesRequest()
     return ListFilesRequest();
 }
 
+/// ditto
+ListFilesRequest listFilesRequest(
+    string purpose,
+    size_t limit = ListFilesRequest.init.limit,
+    string order = ListFilesRequest.init.order,
+    string after = null)
+{
+    auto req = listFilesRequest();
+    req.purpose = purpose;
+    req.limit = limit;
+    req.order = order;
+    req.after = after;
+    return req;
+}
+
 /// Convenience constructor for `FileUploadRequest`.
 FileUploadRequest fileUploadRequest(string file, string purpose)
 {
@@ -116,6 +131,14 @@ unittest
 
     auto req = fileUploadRequest("input.jsonl", FilePurpose.FineTune);
     assert(serializeJson(req) == `{"file":"input.jsonl","purpose":"fine-tune"}`);
+}
+
+unittest
+{
+    import mir.ser.json : serializeJson;
+
+    auto req = listFilesRequest("assistants", 5, "asc", "f1");
+    assert(serializeJson(req) == `{"purpose":"assistants","limit":5,"order":"asc","after":"f1"}`);
 }
 
 unittest

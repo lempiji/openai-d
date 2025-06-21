@@ -45,6 +45,14 @@ ListProjectsRequest listProjectsRequest(uint limit, bool includeArchived = false
     return req;
 }
 
+/// ditto
+ListProjectsRequest listProjectsRequest(uint limit, bool includeArchived, string after)
+{
+    auto req = listProjectsRequest(limit, includeArchived);
+    req.after = after;
+    return req;
+}
+
 struct CreateProjectRequest
 {
     string name;
@@ -90,4 +98,12 @@ unittest
 
     auto req = listProjectsRequest(10, true);
     assert(serializeJson(req) == `{"limit":10,"include_archived":true}`);
+}
+
+unittest
+{
+    import mir.ser.json : serializeJson;
+
+    auto req = listProjectsRequest(10, false, "x");
+    assert(serializeJson(req) == `{"limit":10,"after":"x"}`);
 }
