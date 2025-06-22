@@ -51,7 +51,7 @@ class OpenAIClient
         import std.algorithm : map;
 
         auto b = QueryParamsBuilder(
-            buildUrl("/responses/" ~ request.responseId ~ "/input_items"));
+            "/responses/" ~ request.responseId ~ "/input_items");
         b.add("limit", request.limit);
         b.add("order", request.order);
         b.add("after", request.after);
@@ -72,7 +72,7 @@ class OpenAIClient
         import std.array : array;
         import std.conv : to;
 
-        auto b = QueryParamsBuilder(buildUrl("/responses/" ~ responseId));
+        auto b = QueryParamsBuilder("/responses/" ~ responseId);
         if (include !is null && include.length)
             b.add("include", include.map!(x => to!string(x)).array);
         return b.finish();
@@ -80,7 +80,7 @@ class OpenAIClient
 
     private string buildListFilesUrl(in ListFilesRequest request) const @safe
     {
-        auto b = QueryParamsBuilder(buildUrl("/files"));
+        auto b = QueryParamsBuilder("/files");
         b.add("purpose", request.purpose);
         b.add("limit", request.limit);
         b.add("order", request.order);
@@ -95,13 +95,7 @@ class OpenAIClient
     in (config.apiKey != null && config.apiKey.length > 0)
     do
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/models"), http);
-        auto result = content.deserializeJson!ModelsResponse();
-        return result;
+        return getJson!ModelsResponse("/models");
     }
 
     /// Call the `/completions` endpoint.
@@ -111,35 +105,7 @@ class OpenAIClient
     in (request.model.length > 0)
     do
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto requestJson = serializeJson(request);
-        debug scope (failure)
-        {
-            import std.stdio;
-
-            writeln("----------");
-            writeln("# completion requestJson");
-            writeln(requestJson);
-            writeln("----------");
-        }
-        auto content = cast(char[]) post!ubyte(buildUrl("/completions"), requestJson, http);
-
-        debug scope (failure)
-        {
-            import std.stdio;
-
-            writeln("-----------");
-            writeln("# completion responseContent");
-            writeln(content);
-            writeln("-----------");
-        }
-
-        auto result = content.deserializeJson!CompletionResponse();
-        return result;
+        return postJson!CompletionResponse("/completions", request);
     }
 
     /// Call the `/chat/completions` endpoint.
@@ -148,34 +114,7 @@ class OpenAIClient
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.model.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto requestJson = serializeJson(request);
-        debug scope (failure)
-        {
-            import std.stdio;
-
-            writeln("----------");
-            writeln("# chatCompletion requestJson");
-            writeln(requestJson);
-            writeln("----------");
-        }
-        auto content = cast(char[]) post!ubyte(buildUrl("/chat/completions"), requestJson, http);
-
-        debug scope (failure)
-        {
-            import std.stdio;
-
-            writeln("-----------");
-            writeln("# chatCompletion responseContent");
-            writeln(content);
-            writeln("-----------");
-        }
-        auto result = content.deserializeJson!ChatCompletionResponse();
-        return result;
+        return postJson!ChatCompletionResponse("/chat/completions", request);
     }
 
     /// Request vector embeddings via the `/embeddings` endpoint.
@@ -184,16 +123,7 @@ class OpenAIClient
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.model.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto requestJson = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(buildUrl("/embeddings"), requestJson, http);
-
-        auto result = content.deserializeJson!EmbeddingResponse();
-        return result;
+        return postJson!EmbeddingResponse("/embeddings", request);
     }
 
     /// Perform content classification using `/moderations`.
@@ -202,19 +132,7 @@ class OpenAIClient
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.input.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto requestJson = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(buildUrl("/moderations"), requestJson, http);
-
-        // import std.stdio;
-        // writeln(content);
-
-        auto result = content.deserializeJson!ModerationResponse();
-        return result;
+        return postJson!ModerationResponse("/moderations", request);
     }
 
     /// Convert text to speech using `/audio/speech`.
@@ -225,10 +143,7 @@ class OpenAIClient
     in (request.input.length > 0)
     in (request.voice.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/octet-stream");
-        http.addRequestHeader("Content-Type", "application/json");
+        auto http = makeHttp("application/octet-stream", "application/json");
 
         auto requestJson = serializeJson(request);
         auto content = post!ubyte(buildUrl("/audio/speech"), requestJson, http);
@@ -244,9 +159,7 @@ class OpenAIClient
     {
         import std.conv : to;
 
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        auto http = makeHttp("application/json; charset=utf-8");
 
         MultipartPart[] files = [MultipartPart("file", request.file)];
         MultipartPart[] texts;
@@ -291,9 +204,7 @@ class OpenAIClient
     {
         import std.conv : to;
 
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        auto http = makeHttp("application/json; charset=utf-8");
 
         MultipartPart[] files = [MultipartPart("file", request.file)];
         MultipartPart[] texts;
@@ -318,16 +229,7 @@ class OpenAIClient
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.prompt.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto requestJson = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(buildUrl("/images/generations"), requestJson, http);
-
-        auto result = content.deserializeJson!ImageResponse();
-        return result;
+        return postJson!ImageResponse("/images/generations", request);
     }
 
     /// Edit an image via `/images/edits`.
@@ -338,9 +240,7 @@ class OpenAIClient
     {
         import std.conv : to;
 
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        auto http = makeHttp("application/json; charset=utf-8");
 
         MultipartPart[] files = [MultipartPart("image", request.image)];
         if (request.mask.length)
@@ -373,9 +273,7 @@ class OpenAIClient
     {
         import std.conv : to;
 
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        auto http = makeHttp("application/json; charset=utf-8");
 
         MultipartPart[] files = [MultipartPart("image", request.image)];
         MultipartPart[] texts;
@@ -402,14 +300,7 @@ class OpenAIClient
     FileListResponse listFiles(in ListFilesRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListFilesUrl(request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        return content.deserializeJson!FileListResponse();
+        return getJson!FileListResponse(buildListFilesUrl(request));
     }
 
     /// Upload a file.
@@ -418,9 +309,7 @@ class OpenAIClient
     in (request.file.length > 0)
     in (request.purpose.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
+        auto http = makeHttp("application/json; charset=utf-8");
 
         MultipartPart[] files = [MultipartPart("file", request.file)];
         MultipartPart[] texts = [MultipartPart("purpose", request.purpose)];
@@ -436,12 +325,7 @@ class OpenAIClient
     in (config.apiKey != null && config.apiKey.length > 0)
     in (fileId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/files/" ~ fileId), http);
-        return content.deserializeJson!FileObject();
+        return getJson!FileObject("/files/" ~ fileId);
     }
 
     /// Delete a file.
@@ -449,17 +333,7 @@ class OpenAIClient
     in (config.apiKey != null && config.apiKey.length > 0)
     in (fileId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        import std.array : appender;
-
-        auto buf = appender!(char[])();
-        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
-        del(buildUrl("/files/" ~ fileId), http);
-        auto content = buf.data;
-        return content.deserializeJson!DeleteFileResponse();
+        return deleteJson!DeleteFileResponse("/files/" ~ fileId);
     }
 
     /// Download the file content.
@@ -467,9 +341,7 @@ class OpenAIClient
     in (config.apiKey != null && config.apiKey.length > 0)
     in (fileId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/octet-stream");
+        auto http = makeHttp("application/octet-stream");
 
         auto content = get!(HTTP, ubyte)(buildUrl("/files/" ~ fileId ~ "/content"), http);
         return cast(ubyte[]) content;
@@ -480,34 +352,7 @@ class OpenAIClient
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.model.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto requestJson = serializeJson(request);
-        debug scope (failure)
-        {
-            import std.stdio;
-
-            writeln("----------");
-            writeln("# createResponse requestJson");
-            writeln(requestJson);
-            writeln("----------");
-        }
-        auto content = cast(char[]) post!ubyte(buildUrl("/responses"), requestJson, http);
-        debug scope (failure)
-        {
-            import std.stdio;
-
-            writeln("-----------");
-            writeln("# createResponse responseContent");
-            writeln(content);
-            writeln("-----------");
-        }
-
-        auto result = content.deserializeJson!ResponsesResponse();
-        return result;
+        return postJson!ResponsesResponse("/responses", request);
     }
 
     ///
@@ -515,15 +360,7 @@ class OpenAIClient
     in (config.apiKey != null && config.apiKey.length > 0)
     in (responseId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildGetResponseUrl(responseId, include);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        auto result = content.deserializeJson!ResponsesResponse();
-        return result;
+        return getJson!ResponsesResponse(buildGetResponseUrl(responseId, include));
     }
 
     ///
@@ -531,11 +368,7 @@ class OpenAIClient
     in (config.apiKey != null && config.apiKey.length > 0)
     in (responseId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        del(buildUrl("/responses/" ~ responseId), http);
+        deleteJson!string("/responses/" ~ responseId);
     }
 
     ///
@@ -543,15 +376,7 @@ class OpenAIClient
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.responseId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListInputItemsUrl(request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        auto result = content.deserializeJson!ResponsesItemListResponse();
-        return result;
+        return getJson!ResponsesItemListResponse(buildListInputItemsUrl(request));
     }
 
     @("buildUrl variations")
