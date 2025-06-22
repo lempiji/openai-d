@@ -25,7 +25,7 @@ dub add openai-d
 ```d
 import openai;
 
-auto client = new OpenAIAdminClient();
+auto client = new OpenAIClient();
 auto res = client.chatCompletion(
     chatCompletionRequest(openai.GPT4O, [userChatMessage("Hello!")]));
 writeln(res.choices[0].message.content);
