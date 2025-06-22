@@ -21,7 +21,7 @@ jobs:
       - name: Cache Dub packages
         uses: actions/cache@v3
         with:
-          path: ~/.dub
+          path: ~/.dub/packages
           key: dub-${{ runner.os }}-${{ matrix.dlang }}-${{ hashFiles('dub.selections.json') }}
           restore-keys: dub-${{ runner.os }}-${{ matrix.dlang }}-
       - name: Check formatting
@@ -62,7 +62,7 @@ jobs:
       - name: Cache Dub packages
         uses: actions/cache@v3
         with:
-          path: ~\AppData\Local\dub
+          path: ~\AppData\Local\dub\packages
           key: dub-${{ runner.os }}-${{ matrix.dlang }}-${{ hashFiles('dub.selections.json') }}
           restore-keys: dub-${{ runner.os }}-${{ matrix.dlang }}-
       - name: Check formatting
