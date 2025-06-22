@@ -36,7 +36,7 @@ struct AdminApiKey
 }
 
 @serdeIgnoreUnexpectedKeys
-struct AdminApiKeyListResponse
+struct ListAdminApiKeyResponse
 {
     string object;
     AdminApiKey[] data;
@@ -93,7 +93,7 @@ unittest
     import mir.deser.json : deserializeJson;
 
     enum json = "{\"object\":\"list\",\"data\":[{\"object\":\"organization.admin_api_key\",\"id\":\"key_abc\",\"name\":\"Main Admin Key\",\"redacted_value\":\"sk-admin...def\",\"created_at\":1,\"last_used_at\":2}] ,\"first_id\":\"key_abc\",\"last_id\":\"key_abc\",\"has_more\":false}";
-    auto list = deserializeJson!AdminApiKeyListResponse(json);
+    auto list = deserializeJson!ListAdminApiKeyResponse(json);
     assert(list.data.length == 1);
     assert(list.data[0].id == "key_abc");
 }

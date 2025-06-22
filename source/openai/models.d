@@ -186,7 +186,7 @@ struct Model
 }
 
 ///
-struct ModelsResponse
+struct ListModelResponse
 {
     ///
     Model[] data;
@@ -199,7 +199,7 @@ unittest
     import mir.deser.json;
 
     const json = `{"object":"list","data":[{"id":"gpt-3.5-turbo","created":0,"object":"model","owned_by":"openai"}]}`;
-    auto response = deserializeJson!ModelsResponse(json);
+    auto response = deserializeJson!ListModelResponse(json);
 
     assert(response.object == "list");
     assert(response.data.length == 1);

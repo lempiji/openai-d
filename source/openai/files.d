@@ -41,7 +41,7 @@ enum FilePurpose : string
 // Requests
 // -----------------------------------------------------------------------------
 
-struct FileUploadRequest
+struct UploadFileRequest
 {
     string file;
     string purpose;
@@ -76,10 +76,10 @@ ListFilesRequest listFilesRequest(
     return req;
 }
 
-/// Convenience constructor for `FileUploadRequest`.
-FileUploadRequest fileUploadRequest(string file, string purpose)
+/// Convenience constructor for `UploadFileRequest`.
+UploadFileRequest uploadFileRequest(string file, string purpose)
 {
-    auto req = FileUploadRequest();
+    auto req = UploadFileRequest();
     req.file = file;
     req.purpose = purpose;
     return req;
@@ -104,7 +104,7 @@ struct FileObject
 }
 
 @serdeIgnoreUnexpectedKeys
-struct FileListResponse
+struct ListFileResponse
 {
     string object;
     FileObject[] data;
@@ -129,7 +129,7 @@ unittest
 {
     import mir.ser.json : serializeJson;
 
-    auto req = fileUploadRequest("input.jsonl", FilePurpose.FineTune);
+    auto req = uploadFileRequest("input.jsonl", FilePurpose.FineTune);
     assert(serializeJson(req) == `{"file":"input.jsonl","purpose":"fine-tune"}`);
 }
 
@@ -160,7 +160,7 @@ unittest
     import mir.deser.json : deserializeJson;
 
     enum json = `{"object":"list","data":[{"id":"file-1","object":"file","bytes":1,"created_at":1,"filename":"f.txt","purpose":"assistants","status":"processed"}],"first_id":"file-1","last_id":"file-1","has_more":false}`;
-    auto list = deserializeJson!FileListResponse(json);
+    auto list = deserializeJson!ListFileResponse(json);
     assert(list.data.length == 1);
     assert(list.firstId == "file-1");
     assert(!list.hasMore);

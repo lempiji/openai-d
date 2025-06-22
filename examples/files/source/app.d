@@ -6,7 +6,7 @@ import openai;
 void main()
 {
     auto client = new OpenAIClient();
-    auto req = fileUploadRequest("input.jsonl", FilePurpose.FineTune);
+    auto req = uploadFileRequest("input.jsonl", FilePurpose.FineTune);
     auto uploaded = client.uploadFile(req);
 
     auto list = client.listFiles(listFilesRequest());

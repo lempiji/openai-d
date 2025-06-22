@@ -144,7 +144,7 @@ struct UsageTimeBucket
 }
 
 @serdeIgnoreUnexpectedKeys
-struct UsageResponse
+struct ListUsageResponse
 {
     string object;
     UsageTimeBucket[] data;
@@ -162,7 +162,7 @@ struct CostsTimeBucket
 }
 
 @serdeIgnoreUnexpectedKeys
-struct CostsResponse
+struct ListCostsResponse
 {
     string object;
     CostsTimeBucket[] data;
@@ -257,7 +257,7 @@ unittest
     import mir.deser.json : deserializeJson;
 
     enum example = `{"object":"page","data":[{"object":"bucket","start_time":1730419200,"end_time":1730505600,"results":[{"object":"organization.usage.audio_speeches.result","characters":45,"num_model_requests":1,"project_id":null,"user_id":null,"api_key_id":null,"model":null}]}],"has_more":false,"next_page":null}`;
-    auto res = deserializeJson!UsageResponse(example);
+    auto res = deserializeJson!ListUsageResponse(example);
     assert(res.data.length == 1);
     assert(res.data[0].results.length == 1);
     assert(res.data[0].results[0].get!UsageAudioSpeechesResult().characters == 45);
@@ -268,7 +268,7 @@ unittest
     import mir.deser.json : deserializeJson;
 
     enum example = `{"object":"page","data":[{"object":"bucket","start_time":1730419200,"end_time":1730505600,"results":[{"object":"organization.costs.result","amount":{"value":0.06,"currency":"usd"},"line_item":null,"project_id":null}]}],"has_more":false,"next_page":null}`;
-    auto res = deserializeJson!CostsResponse(example);
+    auto res = deserializeJson!ListCostsResponse(example);
     assert(res.data[0].results[0].amount.value == 0.06);
 }
 
@@ -295,7 +295,7 @@ unittest
 }`;
     import mir.deser.json : deserializeJson;
 
-    auto res = deserializeJson!UsageResponse(json);
+    auto res = deserializeJson!ListUsageResponse(json);
     assert(res.data.length == 2);
     assert(res.data[0].startTime == 1_750_420_300);
     assert(res.data[0].endTime == 1_750_464_000);
@@ -342,7 +342,7 @@ unittest
 }`;
     import mir.deser.json : deserializeJson;
 
-    auto res = deserializeJson!UsageResponse(json);
+    auto res = deserializeJson!ListUsageResponse(json);
     assert(res.data.length == 2);
     assert(res.data[0].startTime == 1_750_420_976);
     assert(res.data[0].endTime == 1_750_464_000);

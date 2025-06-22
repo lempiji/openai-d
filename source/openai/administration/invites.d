@@ -35,7 +35,7 @@ struct Invite
 }
 
 @serdeIgnoreUnexpectedKeys
-struct InviteListResponse
+struct ListInviteResponse
 {
     string object;
     Invite[] data;
@@ -45,7 +45,7 @@ struct InviteListResponse
 }
 
 @serdeIgnoreUnexpectedKeys
-struct InviteDeleteResponse
+struct DeleteInviteResponse
 {
     string object;
     string id;
@@ -96,7 +96,7 @@ unittest
     import mir.ser.json : serializeJson;
 
     enum example = `{"object":"list","data":[{"object":"organization.invite","id":"invite-abc","email":"user@example.com","role":"owner","status":"accepted","invited_at":1,"expires_at":2,"accepted_at":3}],"first_id":"invite-abc","last_id":"invite-abc","has_more":false}`;
-    auto list = deserializeJson!InviteListResponse(example);
+    auto list = deserializeJson!ListInviteResponse(example);
     assert(list.data.length == 1);
     assert(list.data[0].id == "invite-abc");
 
@@ -135,7 +135,7 @@ unittest
 }`;
     import mir.deser.json : deserializeJson;
 
-    auto list = deserializeJson!InviteListResponse(json);
+    auto list = deserializeJson!ListInviteResponse(json);
     assert(list.data.length == 1);
     assert(list.data[0].id == "invite-id");
     assert(list.data[0].email == "user@example.com");

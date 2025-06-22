@@ -55,7 +55,7 @@ struct ProjectApiKey
 }
 
 @serdeIgnoreUnexpectedKeys
-struct ProjectApiKeyListResponse
+struct ListProjectApiKeyResponse
 {
     string object;
     ProjectApiKey[] data;
@@ -109,7 +109,7 @@ unittest
 
     enum example =
         `{"object":"list","data":[{"object":"organization.project.api_key","id":"key_abc","name":"Key","redacted_value":"sk-abc","created_at":1,"last_used_at":2,"owner":{"type":"user","id":"user_abc","name":"Owner"}}],"first_id":"key_abc","last_id":"key_abc","has_more":false}`;
-    auto list = deserializeJson!ProjectApiKeyListResponse(example);
+    auto list = deserializeJson!ListProjectApiKeyResponse(example);
     assert(list.data.length == 1);
     assert(list.data[0].id == "key_abc");
 }
@@ -198,7 +198,7 @@ unittest
 
     import mir.deser.json : deserializeJson;
 
-    auto list = deserializeJson!ProjectApiKeyListResponse(json);
+    auto list = deserializeJson!ListProjectApiKeyResponse(json);
     assert(list.data.length == 4);
     assert(list.data[0].id == "key_key1");
     assert(list.data[1].id == "key_key2");

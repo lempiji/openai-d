@@ -155,10 +155,10 @@ private:
 
 public:
     /// List organization and project admin API keys.
-    AdminApiKeyListResponse listAdminApiKeys(in ListAdminApiKeysRequest request) @system
+    ListAdminApiKeyResponse listAdminApiKeys(in ListAdminApiKeysRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!AdminApiKeyListResponse(buildListAdminApiKeysUrl(request));
+        return getJson!ListAdminApiKeyResponse(buildListAdminApiKeysUrl(request));
     }
 
     /// Create an admin API key.
@@ -185,10 +185,10 @@ public:
     }
 
     /// List invites for the organization.
-    InviteListResponse listInvites(in ListInvitesRequest request) @system
+    ListInviteResponse listInvites(in ListInvitesRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!InviteListResponse(buildListInvitesUrl(request));
+        return getJson!ListInviteResponse(buildListInvitesUrl(request));
     }
 
     /// Create an invite.
@@ -207,18 +207,18 @@ public:
     }
 
     /// Delete an invite.
-    InviteDeleteResponse deleteInvite(string inviteId) @system
+    DeleteInviteResponse deleteInvite(string inviteId) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (inviteId.length > 0)
     {
-        return deleteJson!InviteDeleteResponse("/organization/invites/" ~ inviteId);
+        return deleteJson!DeleteInviteResponse("/organization/invites/" ~ inviteId);
     }
 
     /// List users.
-    UserListResponse listUsers(in ListUsersRequest request) @system
+    ListUserResponse listUsers(in ListUsersRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!UserListResponse(buildListUsersUrl(request));
+        return getJson!ListUserResponse(buildListUsersUrl(request));
     }
 
     /// Retrieve a user by ID.
@@ -238,11 +238,11 @@ public:
     }
 
     /// Delete a user.
-    UserDeleteResponse deleteUser(string userId) @system
+    DeleteUserResponse deleteUser(string userId) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (userId.length > 0)
     {
-        return deleteJson!UserDeleteResponse("/organization/users/" ~ userId);
+        return deleteJson!DeleteUserResponse("/organization/users/" ~ userId);
     }
 
     /// List audit logs for the organization.
@@ -253,10 +253,10 @@ public:
     }
 
     /// List projects.
-    ProjectListResponse listProjects(in ListProjectsRequest request) @system
+    ListProjectResponse listProjects(in ListProjectsRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!ProjectListResponse(buildListProjectsUrl(request));
+        return getJson!ListProjectResponse(buildListProjectsUrl(request));
     }
 
     /// Create a project.
@@ -291,11 +291,11 @@ public:
     }
 
     /// List users in a project.
-    ProjectUserListResponse listProjectUsers(string projectId, in ListProjectUsersRequest request) @system
+    ListProjectUserResponse listProjectUsers(string projectId, in ListProjectUsersRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        return getJson!ProjectUserListResponse(buildListProjectUsersUrl(projectId, request));
+        return getJson!ListProjectUserResponse(buildListProjectUsersUrl(projectId, request));
     }
 
     /// Add a user to a project.
@@ -334,11 +334,11 @@ public:
     }
 
     /// List service accounts for a project.
-    ProjectServiceAccountListResponse listProjectServiceAccounts(string projectId, in ListProjectServiceAccountsRequest request) @system
+    ListProjectServiceAccountResponse listProjectServiceAccounts(string projectId, in ListProjectServiceAccountsRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        return getJson!ProjectServiceAccountListResponse(buildListProjectServiceAccountsUrl(projectId, request));
+        return getJson!ListProjectServiceAccountResponse(buildListProjectServiceAccountsUrl(projectId, request));
     }
 
     /// Create a project service account.
@@ -361,21 +361,21 @@ public:
     }
 
     /// Delete a project service account.
-    ProjectServiceAccountDeleteResponse deleteProjectServiceAccount(string projectId, string serviceAccountId) @system
+    DeleteProjectServiceAccountResponse deleteProjectServiceAccount(string projectId, string serviceAccountId) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     in (serviceAccountId.length > 0)
     {
-        return deleteJson!ProjectServiceAccountDeleteResponse(
+        return deleteJson!DeleteProjectServiceAccountResponse(
             "/organization/projects/" ~ projectId ~ "/service_accounts/" ~ serviceAccountId);
     }
 
     /// List API keys for a project.
-    ProjectApiKeyListResponse listProjectApiKeys(string projectId, in ListProjectApiKeysRequest request) @system
+    ListProjectApiKeyResponse listProjectApiKeys(string projectId, in ListProjectApiKeysRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        return getJson!ProjectApiKeyListResponse(buildListProjectApiKeysUrl(projectId, request));
+        return getJson!ListProjectApiKeyResponse(buildListProjectApiKeysUrl(projectId, request));
     }
 
     /// Retrieve a project API key by ID.
@@ -395,11 +395,11 @@ public:
     }
 
     /// List rate limits for a project.
-    ProjectRateLimitListResponse listProjectRateLimits(string projectId, in ListProjectRateLimitsRequest request) @system
+    ListProjectRateLimitResponse listProjectRateLimits(string projectId, in ListProjectRateLimitsRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        return getJson!ProjectRateLimitListResponse(
+        return getJson!ListProjectRateLimitResponse(
             buildListProjectRateLimitsUrl(projectId, request));
     }
 
@@ -449,66 +449,66 @@ public:
     }
 
     /// List cost reports for the organization.
-    CostsResponse listCosts(in ListCostsRequest request) @system
+    ListCostsResponse listCosts(in ListCostsRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!CostsResponse(buildListCostsUrl(request));
+        return getJson!ListCostsResponse(buildListCostsUrl(request));
     }
 
     /// List usage reports for a specific type.
-    UsageResponse listUsageCompletions(in ListUsageRequest request) @system
+    ListUsageResponse listUsageCompletions(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!UsageResponse(buildListUsageUrl("completions", request));
+        return getJson!ListUsageResponse(buildListUsageUrl("completions", request));
     }
 
     ///
-    UsageResponse listUsageEmbeddings(in ListUsageRequest request) @system
+    ListUsageResponse listUsageEmbeddings(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!UsageResponse(buildListUsageUrl("embeddings", request));
+        return getJson!ListUsageResponse(buildListUsageUrl("embeddings", request));
     }
 
     ///
-    UsageResponse listUsageImages(in ListUsageRequest request) @system
+    ListUsageResponse listUsageImages(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!UsageResponse(buildListUsageUrl("images", request));
+        return getJson!ListUsageResponse(buildListUsageUrl("images", request));
     }
 
     ///
-    UsageResponse listUsageModerations(in ListUsageRequest request) @system
+    ListUsageResponse listUsageModerations(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!UsageResponse(buildListUsageUrl("moderations", request));
+        return getJson!ListUsageResponse(buildListUsageUrl("moderations", request));
     }
 
     ///
-    UsageResponse listUsageAudioSpeeches(in ListUsageRequest request) @system
+    ListUsageResponse listUsageAudioSpeeches(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!UsageResponse(buildListUsageUrl("audio_speeches", request));
+        return getJson!ListUsageResponse(buildListUsageUrl("audio_speeches", request));
     }
 
     ///
-    UsageResponse listUsageAudioTranscriptions(in ListUsageRequest request) @system
+    ListUsageResponse listUsageAudioTranscriptions(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!UsageResponse(buildListUsageUrl("audio_transcriptions", request));
+        return getJson!ListUsageResponse(buildListUsageUrl("audio_transcriptions", request));
     }
 
     ///
-    UsageResponse listUsageVectorStores(in ListUsageRequest request) @system
+    ListUsageResponse listUsageVectorStores(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!UsageResponse(buildListUsageUrl("vector_stores", request));
+        return getJson!ListUsageResponse(buildListUsageUrl("vector_stores", request));
     }
 
     ///
-    UsageResponse listUsageCodeInterpreterSessions(in ListUsageRequest request) @system
+    ListUsageResponse listUsageCodeInterpreterSessions(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!UsageResponse(buildListUsageUrl("code_interpreter_sessions", request));
+        return getJson!ListUsageResponse(buildListUsageUrl("code_interpreter_sessions", request));
     }
 }
 
