@@ -17,9 +17,12 @@ void main()
     writeln("keys: ", list.data);
 
     // retrieve the created key
-    auto retrieved = client.retrieveProjectApiKey(projectId, list.data[0].id);
-    writeln("retrieved: ", retrieved);
-    assert(retrieved.id == list.data[0].id);
+    if (list.data.length > 0)
+    {
+        auto retrieved = client.retrieveProjectApiKey(projectId, list.data[0].id);
+        writeln("retrieved: ", retrieved);
+        assert(retrieved.id == list.data[0].id);
+    }
 
     // delete the API key
     const timeThreshold = Clock.currTime().roll!"years"(-1);

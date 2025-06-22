@@ -13,7 +13,7 @@ import openai.clients.config : OpenAIClientConfig;
 
 import openai.clients.helpers; // for ClientHelpers mixin
 
-struct EmptyRequest
+private struct EmptyRequest
 {
 }
 
@@ -38,6 +38,7 @@ class OpenAIAdminClient
         enforce(!this.config.isAzure, "Administration API is not supported on Azure");
     }
 
+private:
     string buildListAuditLogsUrl(in ListAuditLogsRequest request) const @safe
     {
         auto b = QueryParamsBuilder("/organization/audit_logs");
@@ -142,8 +143,17 @@ class OpenAIAdminClient
         return b.finish();
     }
 
-public:
+    string buildListProjectApiKeysUrl(string projectId, in ListProjectApiKeysRequest request) const @safe
+    {
+        auto b = QueryParamsBuilder("/organization/projects/" ~ projectId ~ "/api_keys");
+        b.add("limit", request.limit);
+        b.add("after", request.after);
+        return b.finish();
+    }
+
     mixin ClientHelpers;
+
+public:
     /// List organization and project admin API keys.
     AdminApiKeyListResponse listAdminApiKeys(in ListAdminApiKeysRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
@@ -328,8 +338,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        return getJson!ProjectServiceAccountListResponse(
-            buildListProjectServiceAccountsUrl(projectId, request));
+        return getJson!ProjectServiceAccountListResponse(buildListProjectServiceAccountsUrl(projectId, request));
     }
 
     /// Create a project service account.
@@ -338,8 +347,7 @@ public:
     in (projectId.length > 0)
     {
         return postJson!CreateProjectServiceAccountResponse(
-            "/organization/projects/" ~ projectId ~ "/service_accounts",
-            request);
+            "/organization/projects/" ~ projectId ~ "/service_accounts", request);
     }
 
     /// Retrieve a project service account by ID.
@@ -367,10 +375,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        auto b = QueryParamsBuilder("/organization/projects/" ~ projectId ~ "/api_keys");
-        b.add("limit", request.limit);
-        b.add("after", request.after);
-        return getJson!ProjectApiKeyListResponse(b.finish());
+        return getJson!ProjectApiKeyListResponse(buildListProjectApiKeysUrl(projectId, request));
     }
 
     /// Retrieve a project API key by ID.
@@ -378,8 +383,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (keyId.length > 0)
     {
-        return getJson!ProjectApiKey(
-            "/organization/projects/" ~ projectId ~ "/api_keys/" ~ keyId);
+        return getJson!ProjectApiKey("/organization/projects/" ~ projectId ~ "/api_keys/" ~ keyId);
     }
 
     /// Delete a project API key.
@@ -387,8 +391,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (keyId.length > 0)
     {
-        return deleteJson!DeleteProjectApiKeyResponse(
-            "/organization/projects/" ~ projectId ~ "/api_keys/" ~ keyId);
+        return deleteJson!DeleteProjectApiKeyResponse("/organization/projects/" ~ projectId ~ "/api_keys/" ~ keyId);
     }
 
     /// List rate limits for a project.
@@ -405,9 +408,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        return postJson!ProjectRateLimit(
-            "/organization/projects/" ~ projectId ~ "/rate_limits",
-            request);
+        return postJson!ProjectRateLimit("/organization/projects/" ~ projectId ~ "/rate_limits", request);
     }
 
     /// Modify a project rate limit.
@@ -415,9 +416,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (limitId.length > 0)
     {
-        return postJson!ProjectRateLimit(
-            "/organization/projects/" ~ projectId ~ "/rate_limits/" ~ limitId,
-            request);
+        return postJson!ProjectRateLimit("/organization/projects/" ~ projectId ~ "/rate_limits/" ~ limitId, request);
     }
 
     /// List organization certificates.
@@ -431,16 +430,14 @@ public:
     ListCertificatesResponse activateCertificates(in ToggleCertificatesRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return postJson!ListCertificatesResponse(
-            "/organization/certificates/activate", request);
+        return postJson!ListCertificatesResponse("/organization/certificates/activate", request);
     }
 
     /// Deactivate organization certificates.
     ListCertificatesResponse deactivateCertificates(in ToggleCertificatesRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return postJson!ListCertificatesResponse(
-            "/organization/certificates/deactivate", request);
+        return postJson!ListCertificatesResponse("/organization/certificates/deactivate", request);
     }
 
     /// Modify a certificate.
@@ -448,15 +445,14 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (certificateId.length > 0)
     {
-        return postJson!Certificate(
-            "/organization/certificates/" ~ certificateId, request);
+        return postJson!Certificate("/organization/certificates/" ~ certificateId, request);
     }
 
     /// List cost reports for the organization.
-    UsageResponse listCosts(in ListCostsRequest request) @system
+    CostsResponse listCosts(in ListCostsRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!UsageResponse(buildListCostsUrl(request));
+        return getJson!CostsResponse(buildListCostsUrl(request));
     }
 
     /// List usage reports for a specific type.
@@ -555,8 +551,7 @@ unittest
     AuditLogTimeRange range;
     range.gt = 10;
     range.lte = 20;
-    auto auditReq = listAuditLogsRequest(5, null, null, null,
-        ["a@example.com"], ["res id"], range);
+    auto auditReq = listAuditLogsRequest(5, null, null, null, ["a@example.com"], ["res id"], range);
 
     auto usageReq = listUsageRequest(1);
     usageReq.bucketWidth = "day";
@@ -648,6 +643,16 @@ unittest
     projectsEnc.after = "foo bar";
     projectsEnc.includeArchived = true;
 
+    ListProjectApiKeysRequest projectApiKeysLimit;
+    projectApiKeysLimit.limit = 2;
+
+    ListProjectApiKeysRequest projectApiKeysAfter;
+    projectApiKeysAfter.after = "foo";
+
+    ListProjectApiKeysRequest projectApiKeysEnc;
+    projectApiKeysEnc.limit = 3;
+    projectApiKeysEnc.after = "foo bar";
+
     foreach (t; [
         tuple("audit logs encoded", () => client.buildListAuditLogsUrl(auditReq),
             [
@@ -716,7 +721,16 @@ unittest
             () => client.buildListProjectsUrl(projectsAfter),
             ["after=foo", "include_archived=true"]),
         tuple("projects encoded", () => client.buildListProjectsUrl(projectsEnc),
-            ["limit=3", "after=foo%20bar", "include_archived=true"])
+            ["limit=3", "after=foo%20bar", "include_archived=true"]),
+        tuple("project api keys limit",
+            () => client.buildListProjectApiKeysUrl("p", projectApiKeysLimit),
+            ["limit=2"]),
+        tuple("project api keys after",
+            () => client.buildListProjectApiKeysUrl("p", projectApiKeysAfter),
+            ["after=foo"]),
+        tuple("project api keys encoded",
+            () => client.buildListProjectApiKeysUrl("p", projectApiKeysEnc),
+            ["limit=3", "after=foo%20bar"])
     ])
     {
         auto url = t[1]();

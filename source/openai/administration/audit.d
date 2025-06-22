@@ -398,6 +398,7 @@ struct AuditLogRecordApiKeyCreated
     AuditLogActor actor;
     @serdeOptional @serdeKeys("api_key.created") AuditLogApiKeyCreated apiKeyCreated;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "api_key.updated")
 struct AuditLogRecordApiKeyUpdated
@@ -408,6 +409,7 @@ struct AuditLogRecordApiKeyUpdated
     AuditLogActor actor;
     @serdeOptional @serdeKeys("api_key.updated") AuditLogApiKeyUpdated apiKeyUpdated;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "api_key.deleted")
 struct AuditLogRecordApiKeyDeleted
@@ -418,6 +420,7 @@ struct AuditLogRecordApiKeyDeleted
     AuditLogActor actor;
     @serdeOptional @serdeKeys("api_key.deleted") AuditLogApiKeyDeleted apiKeyDeleted;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "checkpoint_permission.created")
 struct AuditLogRecordCheckpointPermissionCreated
@@ -428,6 +431,7 @@ struct AuditLogRecordCheckpointPermissionCreated
     AuditLogActor actor;
     @serdeOptional @serdeKeys("checkpoint_permission.created") AuditLogCheckpointPermissionCreated checkpointPermissionCreated;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "checkpoint_permission.deleted")
 struct AuditLogRecordCheckpointPermissionDeleted
@@ -438,6 +442,7 @@ struct AuditLogRecordCheckpointPermissionDeleted
     AuditLogActor actor;
     @serdeOptional @serdeKeys("checkpoint_permission.deleted") AuditLogCheckpointPermissionDeleted checkpointPermissionDeleted;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "invite.sent")
 struct AuditLogRecordInviteSent
@@ -448,6 +453,7 @@ struct AuditLogRecordInviteSent
     AuditLogActor actor;
     @serdeOptional @serdeKeys("invite.sent") AuditLogInviteSent inviteSent;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "invite.accepted")
 struct AuditLogRecordInviteAccepted
@@ -458,6 +464,7 @@ struct AuditLogRecordInviteAccepted
     AuditLogActor actor;
     @serdeOptional @serdeKeys("invite.accepted") AuditLogInviteAccepted inviteAccepted;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "invite.deleted")
 struct AuditLogRecordInviteDeleted
@@ -468,6 +475,7 @@ struct AuditLogRecordInviteDeleted
     AuditLogActor actor;
     @serdeOptional @serdeKeys("invite.deleted") AuditLogInviteDeleted inviteDeleted;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "login.succeeded")
 struct AuditLogRecordLoginSucceeded
@@ -478,6 +486,7 @@ struct AuditLogRecordLoginSucceeded
     AuditLogActor actor;
     @serdeOptional @serdeKeys("login.succeeded") AuditLogLoginSucceeded loginSucceeded;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "login.failed")
 struct AuditLogRecordLoginFailed
@@ -488,6 +497,7 @@ struct AuditLogRecordLoginFailed
     AuditLogActor actor;
     @serdeOptional @serdeKeys("login.failed") AuditLogLoginFailed loginFailed;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "logout.succeeded")
 struct AuditLogRecordLogoutSucceeded
@@ -498,6 +508,7 @@ struct AuditLogRecordLogoutSucceeded
     AuditLogActor actor;
     @serdeOptional @serdeKeys("logout.succeeded") AuditLogLogoutSucceeded logoutSucceeded;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "logout.failed")
 struct AuditLogRecordLogoutFailed
@@ -508,6 +519,7 @@ struct AuditLogRecordLogoutFailed
     AuditLogActor actor;
     @serdeOptional @serdeKeys("logout.failed") AuditLogLogoutFailed logoutFailed;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "organization.updated")
 struct AuditLogRecordOrganizationUpdated
@@ -518,6 +530,7 @@ struct AuditLogRecordOrganizationUpdated
     AuditLogActor actor;
     @serdeOptional @serdeKeys("organization.updated") AuditLogOrganizationUpdated organizationUpdated;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "project.created")
 struct AuditLogRecordProjectCreated
@@ -528,6 +541,7 @@ struct AuditLogRecordProjectCreated
     AuditLogActor actor;
     @serdeOptional @serdeKeys("project.created") AuditLogProjectCreated projectCreated;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "project.updated")
 struct AuditLogRecordProjectUpdated
@@ -538,6 +552,7 @@ struct AuditLogRecordProjectUpdated
     AuditLogActor actor;
     @serdeOptional @serdeKeys("project.updated") AuditLogProjectUpdated projectUpdated;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "project.archived")
 struct AuditLogRecordProjectArchived
@@ -548,6 +563,7 @@ struct AuditLogRecordProjectArchived
     AuditLogActor actor;
     @serdeOptional @serdeKeys("project.archived") AuditLogProjectArchived projectArchived;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "service_account.created")
 struct AuditLogRecordServiceAccountCreated
@@ -558,6 +574,7 @@ struct AuditLogRecordServiceAccountCreated
     AuditLogActor actor;
     @serdeOptional @serdeKeys("service_account.created") AuditLogServiceAccountCreated serviceAccountCreated;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "service_account.updated")
 struct AuditLogRecordServiceAccountUpdated
@@ -568,6 +585,7 @@ struct AuditLogRecordServiceAccountUpdated
     AuditLogActor actor;
     @serdeOptional @serdeKeys("service_account.updated") AuditLogServiceAccountUpdated serviceAccountUpdated;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "service_account.deleted")
 struct AuditLogRecordServiceAccountDeleted
@@ -578,6 +596,7 @@ struct AuditLogRecordServiceAccountDeleted
     AuditLogActor actor;
     @serdeOptional @serdeKeys("service_account.deleted") AuditLogServiceAccountDeleted serviceAccountDeleted;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "rate_limit.updated")
 struct AuditLogRecordRateLimitUpdated
@@ -588,6 +607,7 @@ struct AuditLogRecordRateLimitUpdated
     AuditLogActor actor;
     @serdeOptional @serdeKeys("rate_limit.updated") AuditLogRateLimitUpdated rateLimitUpdated;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "rate_limit.deleted")
 struct AuditLogRecordRateLimitDeleted
@@ -598,6 +618,7 @@ struct AuditLogRecordRateLimitDeleted
     AuditLogActor actor;
     @serdeOptional @serdeKeys("rate_limit.deleted") AuditLogRateLimitDeleted rateLimitDeleted;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "user.added")
 struct AuditLogRecordUserAdded
@@ -608,6 +629,7 @@ struct AuditLogRecordUserAdded
     AuditLogActor actor;
     @serdeOptional @serdeKeys("user.added") AuditLogUserAdded userAdded;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "user.updated")
 struct AuditLogRecordUserUpdated
@@ -618,6 +640,7 @@ struct AuditLogRecordUserUpdated
     AuditLogActor actor;
     @serdeOptional @serdeKeys("user.updated") AuditLogUserUpdated userUpdated;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "user.deleted")
 struct AuditLogRecordUserDeleted
@@ -628,6 +651,7 @@ struct AuditLogRecordUserDeleted
     AuditLogActor actor;
     @serdeOptional @serdeKeys("user.deleted") AuditLogUserDeleted userDeleted;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "certificate.created")
 struct AuditLogRecordCertificateCreated
@@ -638,6 +662,7 @@ struct AuditLogRecordCertificateCreated
     AuditLogActor actor;
     @serdeOptional @serdeKeys("certificate.created") AuditLogCertificateCreated certificateCreated;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "certificate.updated")
 struct AuditLogRecordCertificateUpdated
@@ -648,6 +673,7 @@ struct AuditLogRecordCertificateUpdated
     AuditLogActor actor;
     @serdeOptional @serdeKeys("certificate.updated") AuditLogCertificateUpdated certificateUpdated;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "certificate.deleted")
 struct AuditLogRecordCertificateDeleted
@@ -658,6 +684,7 @@ struct AuditLogRecordCertificateDeleted
     AuditLogActor actor;
     @serdeOptional @serdeKeys("certificate.deleted") AuditLogCertificateDeleted certificateDeleted;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "certificates.activated")
 struct AuditLogRecordCertificatesActivated
@@ -668,6 +695,7 @@ struct AuditLogRecordCertificatesActivated
     AuditLogActor actor;
     @serdeOptional @serdeKeys("certificates.activated") AuditLogCertificatesActivated certificatesActivated;
 }
+
 @serdeIgnoreUnexpectedKeys
 @serdeDiscriminatedField("type", "certificates.deactivated")
 struct AuditLogRecordCertificatesDeactivated
