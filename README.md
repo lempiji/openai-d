@@ -139,7 +139,7 @@ import std.file : write;
 import openai;
 
 auto client = new OpenAIClient();
-auto up = fileUploadRequest("input.jsonl", FilePurpose.FineTune);
+auto up = uploadFileRequest("input.jsonl", FilePurpose.FineTune);
 auto uploaded = client.uploadFile(up);
 
 auto retrieved = client.retrieveFile(uploaded.id);

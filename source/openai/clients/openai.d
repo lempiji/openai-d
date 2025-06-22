@@ -91,11 +91,11 @@ class OpenAIClient
 
     /// Retrieve the list of models available to the API key by
     /// issuing a GET request to `/models`.
-    ModelsResponse listModels() @system
+    ListModelResponse listModels() @system
     in (config.apiKey != null && config.apiKey.length > 0)
     do
     {
-        return getJson!ModelsResponse("/models");
+        return getJson!ListModelResponse("/models");
     }
 
     /// Call the `/completions` endpoint.
@@ -297,14 +297,14 @@ class OpenAIClient
     }
 
     /// List uploaded files.
-    FileListResponse listFiles(in ListFilesRequest request) @system
+    ListFileResponse listFiles(in ListFilesRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        return getJson!FileListResponse(buildListFilesUrl(request));
+        return getJson!ListFileResponse(buildListFilesUrl(request));
     }
 
     /// Upload a file.
-    FileObject uploadFile(in FileUploadRequest request) @system
+    FileObject uploadFile(in UploadFileRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.file.length > 0)
     in (request.purpose.length > 0)
@@ -372,11 +372,11 @@ class OpenAIClient
     }
 
     ///
-    ResponsesItemListResponse listInputItems(in ListInputItemsRequest request) @system
+    ListResponsesItemResponse listInputItems(in ListInputItemsRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     in (request.responseId.length > 0)
     {
-        return getJson!ResponsesItemListResponse(buildListInputItemsUrl(request));
+        return getJson!ListResponsesItemResponse(buildListInputItemsUrl(request));
     }
 
     @("buildUrl variations")

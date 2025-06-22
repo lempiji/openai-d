@@ -599,7 +599,7 @@ struct ResponsesResponse
 }
 
 @serdeIgnoreUnexpectedKeys
-struct ResponsesItemListResponse
+struct ListResponsesItemResponse
 {
     /// Resource type.
     string object;
@@ -640,7 +640,7 @@ unittest
 
     enum json = "{\"object\":\"list\",\"data\":[],\"first_id\":null,\"last_id\":null,\"has_more\":false}";
 
-    auto list = deserializeJson!ResponsesItemListResponse(json);
+    auto list = deserializeJson!ListResponsesItemResponse(json);
     assert(!list.hasMore);
 }
 
@@ -869,7 +869,7 @@ unittest
   "has_more": false,
   "last_id": "msg_202020202020202020202020202020202020202020202020"
 }`;
-    auto list = deserializeJson!ResponsesItemListResponse(json);
+    auto list = deserializeJson!ListResponsesItemResponse(json);
     assert(list.data.length == 1);
     assert(list.data[0].content[0].get!ResponsesInputTextContent().text == "Hello!");
     assert(!list.hasMore);

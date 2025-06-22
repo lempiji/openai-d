@@ -25,7 +25,7 @@ struct ProjectUser
 }
 
 @serdeIgnoreUnexpectedKeys
-struct ProjectUserListResponse
+struct ListProjectUserResponse
 {
     string object;
     ProjectUser[] data;
@@ -82,7 +82,7 @@ struct User
 }
 
 @serdeIgnoreUnexpectedKeys
-struct UserListResponse
+struct ListUserResponse
 {
     string object;
     User[] data;
@@ -92,7 +92,7 @@ struct UserListResponse
 }
 
 @serdeIgnoreUnexpectedKeys
-struct UserDeleteResponse
+struct DeleteUserResponse
 {
     string object;
     string id;
@@ -162,7 +162,7 @@ unittest
 
     enum example =
         `{"object":"list","data":[{"object":"organization.user","id":"user-1","name":"Alice","email":"a@example.com","role":"owner","added_at":1}],"first_id":"user-1","last_id":"user-1","has_more":false}`;
-    auto list = deserializeJson!UserListResponse(example);
+    auto list = deserializeJson!ListUserResponse(example);
     assert(list.data.length == 1);
     assert(list.data[0].name == "Alice");
 }
@@ -186,7 +186,7 @@ unittest
 
     enum listExample =
         `{"object":"list","data":[{"object":"organization.project.user","id":"user_abc","name":"First Last","email":"user@example.com","role":"owner","added_at":1}],"first_id":"user_abc","last_id":"user_abc","has_more":false}`;
-    auto list = deserializeJson!ProjectUserListResponse(listExample);
+    auto list = deserializeJson!ListProjectUserResponse(listExample);
     assert(list.data.length == 1);
     assert(list.data[0].email == "user@example.com");
 

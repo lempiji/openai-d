@@ -51,7 +51,7 @@ struct CreateProjectServiceAccountResponse
 }
 
 @serdeIgnoreUnexpectedKeys
-struct ProjectServiceAccountDeleteResponse
+struct DeleteProjectServiceAccountResponse
 {
     string object;
     string id;
@@ -59,7 +59,7 @@ struct ProjectServiceAccountDeleteResponse
 }
 
 @serdeIgnoreUnexpectedKeys
-struct ProjectServiceAccountListResponse
+struct ListProjectServiceAccountResponse
 {
     string object;
     ProjectServiceAccount[] data;
@@ -97,7 +97,7 @@ unittest
 
     enum listExample =
         `{"object":"list","data":[{"object":"organization.project.service_account","id":"svc_acct_abc","name":"Service Account","role":"owner","created_at":1711471533}],"first_id":"svc_acct_abc","last_id":"svc_acct_xyz","has_more":false}`;
-    auto list = deserializeJson!ProjectServiceAccountListResponse(listExample);
+    auto list = deserializeJson!ListProjectServiceAccountResponse(listExample);
     assert(list.data.length == 1);
     assert(list.data[0].name == "Service Account");
 
@@ -108,7 +108,7 @@ unittest
 
     enum delExample =
         `{"object":"organization.project.service_account.deleted","id":"svc_acct_abc","deleted":true}`;
-    auto del = deserializeJson!ProjectServiceAccountDeleteResponse(delExample);
+    auto del = deserializeJson!DeleteProjectServiceAccountResponse(delExample);
     assert(del.deleted);
 
     auto lreq = listProjectServiceAccountsRequest(5);

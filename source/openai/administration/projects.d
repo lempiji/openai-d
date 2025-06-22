@@ -19,7 +19,7 @@ struct Project
 }
 
 @serdeIgnoreUnexpectedKeys
-struct ProjectListResponse
+struct ListProjectResponse
 {
     string object;
     Project[] data;
