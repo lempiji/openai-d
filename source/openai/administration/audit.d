@@ -389,43 +389,327 @@ enum AuditLogEventType
 }
 
 @serdeIgnoreUnexpectedKeys
-struct AuditLog
+@serdeDiscriminatedField("type", "api_key.created")
+struct AuditLogRecordApiKeyCreated
 {
     string id;
-    string type;
     @serdeKeys("effective_at") long effectiveAt;
     @serdeOptional AuditLogProject project;
     AuditLogActor actor;
     @serdeOptional @serdeKeys("api_key.created") AuditLogApiKeyCreated apiKeyCreated;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "api_key.updated")
+struct AuditLogRecordApiKeyUpdated
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("api_key.updated") AuditLogApiKeyUpdated apiKeyUpdated;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "api_key.deleted")
+struct AuditLogRecordApiKeyDeleted
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("api_key.deleted") AuditLogApiKeyDeleted apiKeyDeleted;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "checkpoint_permission.created")
+struct AuditLogRecordCheckpointPermissionCreated
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("checkpoint_permission.created") AuditLogCheckpointPermissionCreated checkpointPermissionCreated;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "checkpoint_permission.deleted")
+struct AuditLogRecordCheckpointPermissionDeleted
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("checkpoint_permission.deleted") AuditLogCheckpointPermissionDeleted checkpointPermissionDeleted;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "invite.sent")
+struct AuditLogRecordInviteSent
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("invite.sent") AuditLogInviteSent inviteSent;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "invite.accepted")
+struct AuditLogRecordInviteAccepted
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("invite.accepted") AuditLogInviteAccepted inviteAccepted;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "invite.deleted")
+struct AuditLogRecordInviteDeleted
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("invite.deleted") AuditLogInviteDeleted inviteDeleted;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "login.succeeded")
+struct AuditLogRecordLoginSucceeded
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("login.succeeded") AuditLogLoginSucceeded loginSucceeded;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "login.failed")
+struct AuditLogRecordLoginFailed
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("login.failed") AuditLogLoginFailed loginFailed;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "logout.succeeded")
+struct AuditLogRecordLogoutSucceeded
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("logout.succeeded") AuditLogLogoutSucceeded logoutSucceeded;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "logout.failed")
+struct AuditLogRecordLogoutFailed
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("logout.failed") AuditLogLogoutFailed logoutFailed;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "organization.updated")
+struct AuditLogRecordOrganizationUpdated
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("organization.updated") AuditLogOrganizationUpdated organizationUpdated;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "project.created")
+struct AuditLogRecordProjectCreated
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("project.created") AuditLogProjectCreated projectCreated;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "project.updated")
+struct AuditLogRecordProjectUpdated
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("project.updated") AuditLogProjectUpdated projectUpdated;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "project.archived")
+struct AuditLogRecordProjectArchived
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("project.archived") AuditLogProjectArchived projectArchived;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "service_account.created")
+struct AuditLogRecordServiceAccountCreated
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("service_account.created") AuditLogServiceAccountCreated serviceAccountCreated;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "service_account.updated")
+struct AuditLogRecordServiceAccountUpdated
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("service_account.updated") AuditLogServiceAccountUpdated serviceAccountUpdated;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "service_account.deleted")
+struct AuditLogRecordServiceAccountDeleted
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("service_account.deleted") AuditLogServiceAccountDeleted serviceAccountDeleted;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "rate_limit.updated")
+struct AuditLogRecordRateLimitUpdated
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("rate_limit.updated") AuditLogRateLimitUpdated rateLimitUpdated;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "rate_limit.deleted")
+struct AuditLogRecordRateLimitDeleted
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("rate_limit.deleted") AuditLogRateLimitDeleted rateLimitDeleted;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "user.added")
+struct AuditLogRecordUserAdded
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("user.added") AuditLogUserAdded userAdded;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "user.updated")
+struct AuditLogRecordUserUpdated
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("user.updated") AuditLogUserUpdated userUpdated;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "user.deleted")
+struct AuditLogRecordUserDeleted
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("user.deleted") AuditLogUserDeleted userDeleted;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "certificate.created")
+struct AuditLogRecordCertificateCreated
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("certificate.created") AuditLogCertificateCreated certificateCreated;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "certificate.updated")
+struct AuditLogRecordCertificateUpdated
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("certificate.updated") AuditLogCertificateUpdated certificateUpdated;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "certificate.deleted")
+struct AuditLogRecordCertificateDeleted
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("certificate.deleted") AuditLogCertificateDeleted certificateDeleted;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "certificates.activated")
+struct AuditLogRecordCertificatesActivated
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("certificates.activated") AuditLogCertificatesActivated certificatesActivated;
+}
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "certificates.deactivated")
+struct AuditLogRecordCertificatesDeactivated
+{
+    string id;
+    @serdeKeys("effective_at") long effectiveAt;
+    @serdeOptional AuditLogProject project;
+    AuditLogActor actor;
     @serdeOptional @serdeKeys("certificates.deactivated") AuditLogCertificatesDeactivated certificatesDeactivated;
 }
+
+alias AuditLog = Algebraic!(
+    AuditLogRecordApiKeyCreated,
+    AuditLogRecordApiKeyUpdated,
+    AuditLogRecordApiKeyDeleted,
+    AuditLogRecordCheckpointPermissionCreated,
+    AuditLogRecordCheckpointPermissionDeleted,
+    AuditLogRecordInviteSent,
+    AuditLogRecordInviteAccepted,
+    AuditLogRecordInviteDeleted,
+    AuditLogRecordLoginSucceeded,
+    AuditLogRecordLoginFailed,
+    AuditLogRecordLogoutSucceeded,
+    AuditLogRecordLogoutFailed,
+    AuditLogRecordOrganizationUpdated,
+    AuditLogRecordProjectCreated,
+    AuditLogRecordProjectUpdated,
+    AuditLogRecordProjectArchived,
+    AuditLogRecordServiceAccountCreated,
+    AuditLogRecordServiceAccountUpdated,
+    AuditLogRecordServiceAccountDeleted,
+    AuditLogRecordRateLimitUpdated,
+    AuditLogRecordRateLimitDeleted,
+    AuditLogRecordUserAdded,
+    AuditLogRecordUserUpdated,
+    AuditLogRecordUserDeleted,
+    AuditLogRecordCertificateCreated,
+    AuditLogRecordCertificateUpdated,
+    AuditLogRecordCertificateDeleted,
+    AuditLogRecordCertificatesActivated,
+    AuditLogRecordCertificatesDeactivated
+);
 
 @serdeIgnoreUnexpectedKeys
 struct ListAuditLogsResponse
@@ -504,11 +788,11 @@ unittest
     enum example = `{"id":"req_xxx_20240101","type":"api_key.created","effective_at":1720804090,"actor":{"type":"session","session":{"user":{"id":"user-xxx","email":"user@example.com"},"ip_address":"127.0.0.1","user_agent":"Mozilla/5.0"}},"api_key.created":{"id":"key_xxxx","data":{"scopes":["resource.operation"]}}}`;
     auto log = deserializeJson!AuditLog(example);
     assert(log.id == "req_xxx_20240101");
-    assert(log.type == AuditLogEventType.ApiKeyCreated);
     assert(log.actor.type == AuditLogActorType.Session);
     assert(log.actor.session.ipAddress == "127.0.0.1");
-    assert(log.apiKeyCreated.id == "key_xxxx");
-    assert(log.apiKeyCreated.data.scopes[0] == "resource.operation");
+    assert(log._is!AuditLogRecordApiKeyCreated);
+    assert(log.get!AuditLogRecordApiKeyCreated.apiKeyCreated.id == "key_xxxx");
+    assert(log.get!AuditLogRecordApiKeyCreated.apiKeyCreated.data.scopes[0] == "resource.operation");
 }
 
 unittest
@@ -518,9 +802,9 @@ unittest
     enum exampleCert =
         `{"id":"req_cert","type":"certificate.created","effective_at":1,"actor":{"type":"session","session":{"user":{"id":"user-cert","email":"cert@example.com"},"ip_address":"127.0.0.1"}},"certificate.created":{"id":"cert-abc","name":"my-cert"}}`;
     auto log = deserializeJson!AuditLog(exampleCert);
-    assert(log.type == AuditLogEventType.CertificateCreated);
-    assert(log.certificateCreated.id == "cert-abc");
-    assert(log.certificateCreated.name == "my-cert");
+    assert(log._is!AuditLogRecordCertificateCreated);
+    assert(log.get!AuditLogRecordCertificateCreated.certificateCreated.id == "cert-abc");
+    assert(log.get!AuditLogRecordCertificateCreated.certificateCreated.name == "my-cert");
 }
 
 unittest
