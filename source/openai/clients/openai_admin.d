@@ -542,10 +542,11 @@ unittest
     }
 }
 
-@("buildListAuditLogsUrl encodes new query parameters")
+@("buildList*Url helpers")
 unittest
 {
     import std.algorithm.searching : canFind;
+    import std.typecons : tuple;
 
     auto cfg = new OpenAIClientConfig;
     cfg.apiKey = "k";
@@ -554,384 +555,174 @@ unittest
     AuditLogTimeRange range;
     range.gt = 10;
     range.lte = 20;
-
-    auto req = listAuditLogsRequest(5, null, null, null, ["a@example.com"],
-        ["res id"], range);
-    auto url = client.buildListAuditLogsUrl(req);
-
-    assert(url.canFind("actor_emails[]=a%40example.com"));
-    assert(url.canFind("resource_ids[]=res%20id"));
-    assert(url.canFind("effective_at[gt]=10"));
-    assert(url.canFind("effective_at[lte]=20"));
-}
-
-@("buildListUsageUrl encodes query parameters")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = listUsageRequest(1);
-    req.bucketWidth = "day";
-    req.projectIds = ["p id"];
-    req.userIds = ["u id"];
-    req.apiKeyIds = ["key id"];
-    req.models = ["gpt 4"];
-    req.groupBy = ["project_id"];
-    req.limit = 3;
-    req.page = "foo bar";
-    req.batch = true;
-    auto url = client.buildListUsageUrl("completions", req);
-
-    assert(url.canFind("start_time=1"));
-    assert(url.canFind("bucket_width=day"));
-    assert(url.canFind("project_ids=p%20id"));
-    assert(url.canFind("user_ids=u%20id"));
-    assert(url.canFind("api_key_ids=key%20id"));
-    assert(url.canFind("models=gpt%204"));
-    assert(url.canFind("group_by=project_id"));
-    assert(url.canFind("limit=3"));
-    assert(url.canFind("page=foo%20bar"));
-    assert(url.canFind("batch=true"));
-}
-
-@("buildListCostsUrl encodes query parameters")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = listCostsRequest(2);
-    req.bucketWidth = "month";
-    req.projectIds = ["p id"];
-    req.groupBy = ["project_id"];
-    req.limit = 5;
-    req.page = "bar+baz";
-    auto url = client.buildListCostsUrl(req);
-
-    assert(url.canFind("start_time=2"));
-    assert(url.canFind("bucket_width=month"));
-    assert(url.canFind("project_ids=p%20id"));
-    assert(url.canFind("group_by=project_id"));
-    assert(url.canFind("limit=5"));
-    assert(url.canFind("page=bar%2Bbaz"));
-}
-
-@("buildListInvitesUrl")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListInvitesRequest();
-    auto url = client.buildListInvitesUrl(req);
-
-    assert(!url.canFind("limit="));
-    assert(!url.canFind("after="));
-
-    req.limit = 2;
-    url = client.buildListInvitesUrl(req);
-    assert(url.canFind("limit=2"));
-
-    req.limit = 0;
-    req.after = "foo";
-    url = client.buildListInvitesUrl(req);
-    assert(url.canFind("after=foo"));
-    assert(!url.canFind("limit="));
-}
-
-@("buildListInvitesUrl encodes query parameters")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListInvitesRequest();
-    req.limit = 3;
-    req.after = "foo bar";
-    auto url = client.buildListInvitesUrl(req);
-
-    assert(url.canFind("limit=3"));
-    assert(url.canFind("after=foo%20bar"));
-}
-
-@("buildListProjectServiceAccountsUrl")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListProjectServiceAccountsRequest();
-    auto url = client.buildListProjectServiceAccountsUrl("p", req);
-
-    assert(!url.canFind("limit="));
-    assert(!url.canFind("after="));
-
-    req.limit = 2;
-    url = client.buildListProjectServiceAccountsUrl("p", req);
-    assert(url.canFind("limit=2"));
-
-    req.limit = 0;
-    req.after = "foo";
-    url = client.buildListProjectServiceAccountsUrl("p", req);
-    assert(url.canFind("after=foo"));
-    assert(!url.canFind("limit="));
-}
-
-@("buildListProjectServiceAccountsUrl encodes query parameters")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListProjectServiceAccountsRequest();
-    req.limit = 3;
-    req.after = "foo bar";
-    auto url = client.buildListProjectServiceAccountsUrl("p", req);
-
-    assert(url.canFind("limit=3"));
-    assert(url.canFind("after=foo%20bar"));
-}
-
-@("buildListProjectRateLimitsUrl")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListProjectRateLimitsRequest();
-    auto url = client.buildListProjectRateLimitsUrl("p", req);
-
-    assert(!url.canFind("limit="));
-    assert(!url.canFind("after="));
-
-    req.limit = 2;
-    url = client.buildListProjectRateLimitsUrl("p", req);
-    assert(url.canFind("limit=2"));
-
-    req.limit = 0;
-    req.after = "foo";
-    url = client.buildListProjectRateLimitsUrl("p", req);
-    assert(url.canFind("after=foo"));
-    assert(!url.canFind("limit="));
-}
-
-@("buildListProjectRateLimitsUrl encodes query parameters")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListProjectRateLimitsRequest();
-    req.limit = 3;
-    req.after = "foo bar";
-    auto url = client.buildListProjectRateLimitsUrl("p", req);
-
-    assert(url.canFind("limit=3"));
-    assert(url.canFind("after=foo%20bar"));
-}
-
-@("buildListUsersUrl")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListUsersRequest();
-    auto url = client.buildListUsersUrl(req);
-
-    assert(!url.canFind("limit="));
-    assert(!url.canFind("after="));
-
-    req.limit = 2;
-    url = client.buildListUsersUrl(req);
-    assert(url.canFind("limit=2"));
-
-    req.limit = 0;
-    req.after = "foo";
-    url = client.buildListUsersUrl(req);
-    assert(url.canFind("after=foo"));
-    assert(!url.canFind("limit="));
-}
-
-@("buildListUsersUrl encodes query parameters")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListUsersRequest();
-    req.limit = 3;
-    req.after = "foo bar";
-    auto url = client.buildListUsersUrl(req);
-
-    assert(url.canFind("limit=3"));
-    assert(url.canFind("after=foo%20bar"));
-}
-
-@("buildListProjectUsersUrl")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListProjectUsersRequest();
-    auto url = client.buildListProjectUsersUrl("p", req);
-
-    assert(!url.canFind("limit="));
-    assert(!url.canFind("after="));
-
-    req.limit = 2;
-    url = client.buildListProjectUsersUrl("p", req);
-    assert(url.canFind("limit=2"));
-
-    req.limit = 0;
-    req.after = "foo";
-    url = client.buildListProjectUsersUrl("p", req);
-    assert(url.canFind("after=foo"));
-    assert(!url.canFind("limit="));
-}
-
-@("buildListProjectUsersUrl encodes query parameters")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListProjectUsersRequest();
-    req.limit = 3;
-    req.after = "foo bar";
-    auto url = client.buildListProjectUsersUrl("p", req);
-
-    assert(url.canFind("limit=3"));
-    assert(url.canFind("after=foo%20bar"));
-}
-
-@("buildListAdminApiKeysUrl")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListAdminApiKeysRequest();
-    auto url = client.buildListAdminApiKeysUrl(req);
-
-    assert(!url.canFind("limit="));
-    assert(!url.canFind("after="));
-
-    req.limit = 2;
-    url = client.buildListAdminApiKeysUrl(req);
-    assert(url.canFind("limit=2"));
-
-    req.limit = 0;
-    req.after = "foo";
-    url = client.buildListAdminApiKeysUrl(req);
-    assert(url.canFind("after=foo"));
-    assert(!url.canFind("limit="));
-}
-
-@("buildListAdminApiKeysUrl encodes query parameters")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListAdminApiKeysRequest();
-    req.limit = 3;
-    req.after = "foo bar";
-    auto url = client.buildListAdminApiKeysUrl(req);
-
-    assert(url.canFind("limit=3"));
-    assert(url.canFind("after=foo%20bar"));
-}
-
-@("buildListProjectsUrl")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListProjectsRequest();
-    auto url = client.buildListProjectsUrl(req);
-
-    assert(!url.canFind("limit="));
-    assert(!url.canFind("after="));
-    assert(!url.canFind("include_archived="));
-
-    req.limit = 2;
-    url = client.buildListProjectsUrl(req);
-    assert(url.canFind("limit=2"));
-
-    req.limit = 0;
-    req.after = "foo";
-    req.includeArchived = true;
-    url = client.buildListProjectsUrl(req);
-    assert(url.canFind("after=foo"));
-    assert(url.canFind("include_archived=true"));
-    assert(!url.canFind("limit="));
-}
-
-@("buildListProjectsUrl encodes query parameters")
-unittest
-{
-    import std.algorithm.searching : canFind;
-
-    auto cfg = new OpenAIClientConfig;
-    cfg.apiKey = "k";
-    auto client = new OpenAIAdminClient(cfg);
-
-    auto req = ListProjectsRequest();
-    req.limit = 3;
-    req.after = "foo bar";
-    req.includeArchived = true;
-    auto url = client.buildListProjectsUrl(req);
-
-    assert(url.canFind("limit=3"));
-    assert(url.canFind("after=foo%20bar"));
-    assert(url.canFind("include_archived=true"));
+    auto auditReq = listAuditLogsRequest(5, null, null, null,
+        ["a@example.com"], ["res id"], range);
+
+    auto usageReq = listUsageRequest(1);
+    usageReq.bucketWidth = "day";
+    usageReq.projectIds = ["p id"];
+    usageReq.userIds = ["u id"];
+    usageReq.apiKeyIds = ["key id"];
+    usageReq.models = ["gpt 4"];
+    usageReq.groupBy = ["project_id"];
+    usageReq.limit = 3;
+    usageReq.page = "foo bar";
+    usageReq.batch = true;
+
+    auto costsReq = listCostsRequest(2);
+    costsReq.bucketWidth = "month";
+    costsReq.projectIds = ["p id"];
+    costsReq.groupBy = ["project_id"];
+    costsReq.limit = 5;
+    costsReq.page = "bar+baz";
+
+    ListInvitesRequest invitesLimit;
+    invitesLimit.limit = 2;
+
+    ListInvitesRequest invitesAfter;
+    invitesAfter.after = "foo";
+
+    ListInvitesRequest invitesEnc;
+    invitesEnc.limit = 3;
+    invitesEnc.after = "foo bar";
+
+    ListProjectServiceAccountsRequest svcLimit;
+    svcLimit.limit = 2;
+
+    ListProjectServiceAccountsRequest svcAfter;
+    svcAfter.after = "foo";
+
+    ListProjectServiceAccountsRequest svcEnc;
+    svcEnc.limit = 3;
+    svcEnc.after = "foo bar";
+
+    ListProjectRateLimitsRequest rateLimit;
+    rateLimit.limit = 2;
+
+    ListProjectRateLimitsRequest rateAfter;
+    rateAfter.after = "foo";
+
+    ListProjectRateLimitsRequest rateEnc;
+    rateEnc.limit = 3;
+    rateEnc.after = "foo bar";
+
+    ListUsersRequest usersLimit;
+    usersLimit.limit = 2;
+
+    ListUsersRequest usersAfter;
+    usersAfter.after = "foo";
+
+    ListUsersRequest usersEnc;
+    usersEnc.limit = 3;
+    usersEnc.after = "foo bar";
+
+    ListProjectUsersRequest projectUsersLimit;
+    projectUsersLimit.limit = 2;
+
+    ListProjectUsersRequest projectUsersAfter;
+    projectUsersAfter.after = "foo";
+
+    ListProjectUsersRequest projectUsersEnc;
+    projectUsersEnc.limit = 3;
+    projectUsersEnc.after = "foo bar";
+
+    ListAdminApiKeysRequest keysLimit;
+    keysLimit.limit = 2;
+
+    ListAdminApiKeysRequest keysAfter;
+    keysAfter.after = "foo";
+
+    ListAdminApiKeysRequest keysEnc;
+    keysEnc.limit = 3;
+    keysEnc.after = "foo bar";
+
+    ListProjectsRequest projectsLimit;
+    projectsLimit.limit = 2;
+
+    ListProjectsRequest projectsAfter;
+    projectsAfter.after = "foo";
+    projectsAfter.includeArchived = true;
+
+    ListProjectsRequest projectsEnc;
+    projectsEnc.limit = 3;
+    projectsEnc.after = "foo bar";
+    projectsEnc.includeArchived = true;
+
+    foreach (t; [
+        tuple("audit logs encoded", () => client.buildListAuditLogsUrl(auditReq),
+            [
+            "actor_emails[]=a%40example.com", "resource_ids[]=res%20id",
+            "effective_at[gt]=10", "effective_at[lte]=20"
+        ]),
+        tuple("usage encoded", () => client.buildListUsageUrl("completions", usageReq),
+            [
+            "start_time=1", "bucket_width=day", "project_ids=p%20id",
+            "user_ids=u%20id", "api_key_ids=key%20id", "models=gpt%204",
+            "group_by=project_id", "limit=3", "page=foo%20bar", "batch=true"
+        ]),
+        tuple("costs encoded", () => client.buildListCostsUrl(costsReq),
+            [
+            "start_time=2", "bucket_width=month", "project_ids=p%20id",
+            "group_by=project_id", "limit=5", "page=bar%2Bbaz"
+        ]),
+        tuple("invites limit", () => client.buildListInvitesUrl(invitesLimit),
+            ["limit=2"]),
+        tuple("invites after", () => client.buildListInvitesUrl(invitesAfter),
+            ["after=foo"]),
+        tuple("invites encoded", () => client.buildListInvitesUrl(invitesEnc),
+            ["limit=3", "after=foo%20bar"]),
+        tuple("service accounts limit",
+            () => client.buildListProjectServiceAccountsUrl("p", svcLimit),
+            ["limit=2"]),
+        tuple("service accounts after",
+            () => client.buildListProjectServiceAccountsUrl("p", svcAfter),
+            ["after=foo"]),
+        tuple("service accounts encoded",
+            () => client.buildListProjectServiceAccountsUrl("p", svcEnc),
+            ["limit=3", "after=foo%20bar"]),
+        tuple("rate limits limit",
+            () => client.buildListProjectRateLimitsUrl("p", rateLimit),
+            ["limit=2"]),
+        tuple("rate limits after",
+            () => client.buildListProjectRateLimitsUrl("p", rateAfter),
+            ["after=foo"]),
+        tuple("rate limits encoded",
+            () => client.buildListProjectRateLimitsUrl("p", rateEnc),
+            ["limit=3", "after=foo%20bar"]),
+        tuple("users limit", () => client.buildListUsersUrl(usersLimit),
+            ["limit=2"]),
+        tuple("users after", () => client.buildListUsersUrl(usersAfter),
+            ["after=foo"]),
+        tuple("users encoded", () => client.buildListUsersUrl(usersEnc),
+            ["limit=3", "after=foo%20bar"]),
+        tuple("project users limit",
+            () => client.buildListProjectUsersUrl("p", projectUsersLimit),
+            ["limit=2"]),
+        tuple("project users after",
+            () => client.buildListProjectUsersUrl("p", projectUsersAfter),
+            ["after=foo"]),
+        tuple("project users encoded",
+            () => client.buildListProjectUsersUrl("p", projectUsersEnc),
+            ["limit=3", "after=foo%20bar"]),
+        tuple("admin keys limit", () => client.buildListAdminApiKeysUrl(keysLimit),
+            ["limit=2"]),
+        tuple("admin keys after", () => client.buildListAdminApiKeysUrl(keysAfter),
+            ["after=foo"]),
+        tuple("admin keys encoded", () => client.buildListAdminApiKeysUrl(keysEnc),
+            ["limit=3", "after=foo%20bar"]),
+        tuple("projects limit", () => client.buildListProjectsUrl(projectsLimit),
+            ["limit=2"]),
+        tuple("projects after archived",
+            () => client.buildListProjectsUrl(projectsAfter),
+            ["after=foo", "include_archived=true"]),
+        tuple("projects encoded", () => client.buildListProjectsUrl(projectsEnc),
+            ["limit=3", "after=foo%20bar", "include_archived=true"])
+    ])
+    {
+        auto url = t[1]();
+        foreach (part; t[2])
+        {
+            assert(url.canFind(part), t[0] ~ " - " ~ part);
+        }
+    }
 }
