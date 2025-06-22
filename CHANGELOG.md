@@ -4,6 +4,8 @@
 ### Added
 - Added `OpenAIAdminClient` with comprehensive administration modules (projects, API keys, invites, users, service accounts, rate limits, certificates, audit logs, usage).
 - Introduced `Responses` and `Images` API implementations.
+- Added `Audio` API with speech, transcription, and translation support.
+- Implemented `Files` API and lifecycle example program.
 - Implemented `QueryParamsBuilder` helper for assembling query strings.
 - Added `validate` method and environment-based creation in `OpenAIClientConfig`.
 - Numerous example programs demonstrating new features.
