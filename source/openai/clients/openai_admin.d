@@ -649,18 +649,18 @@ unittest
     projectsEnc.includeArchived = true;
 
     foreach (t; [
-        tuple("audit logs", () => client.buildListAuditLogsUrl(auditReq),
+        tuple("audit logs encoded", () => client.buildListAuditLogsUrl(auditReq),
             [
             "actor_emails[]=a%40example.com", "resource_ids[]=res%20id",
             "effective_at[gt]=10", "effective_at[lte]=20"
         ]),
-        tuple("usage", () => client.buildListUsageUrl("completions", usageReq),
+        tuple("usage encoded", () => client.buildListUsageUrl("completions", usageReq),
             [
             "start_time=1", "bucket_width=day", "project_ids=p%20id",
             "user_ids=u%20id", "api_key_ids=key%20id", "models=gpt%204",
             "group_by=project_id", "limit=3", "page=foo%20bar", "batch=true"
         ]),
-        tuple("costs", () => client.buildListCostsUrl(costsReq),
+        tuple("costs encoded", () => client.buildListCostsUrl(costsReq),
             [
             "start_time=2", "bucket_width=month", "project_ids=p%20id",
             "group_by=project_id", "limit=5", "page=bar%2Bbaz"
@@ -712,7 +712,7 @@ unittest
             ["limit=3", "after=foo%20bar"]),
         tuple("projects limit", () => client.buildListProjectsUrl(projectsLimit),
             ["limit=2"]),
-        tuple("projects after+archived",
+        tuple("projects after archived",
             () => client.buildListProjectsUrl(projectsAfter),
             ["after=foo", "include_archived=true"]),
         tuple("projects encoded", () => client.buildListProjectsUrl(projectsEnc),
