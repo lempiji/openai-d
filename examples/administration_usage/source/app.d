@@ -6,21 +6,43 @@ void main()
 {
     auto client = new OpenAIAdminClient();
 
-    auto costReq = listCostsRequest(Clock.currTime() - 1.days, 3);
+    auto costReq = listCostsRequest(Clock.currTime() - 1.days, 20);
     auto costs = client.listCosts(costReq);
-    writeln(costs.data);
 
-    auto usageReq = listUsageRequest(Clock.currTime() - 1.days, 3);
+    const totalCost = costs.data
+        .map!"a.results"()
+        .joiner()
+        .fold!"a + b.amount.value"(0.0);
+    writeln("Total cost: ", totalCost);
 
-    auto completions = client.listUsageCompletions(usageReq);
-    writeln(completions.data);
+    auto usageReq = listUsageRequest(Clock.currTime() - 1.days, 20);
 
-    auto embeddings = client.listUsageEmbeddings(usageReq);
-    writeln(embeddings.data);
+    auto usageCompletions = client.listUsageCompletions(usageReq)
+        .data
+        .map!"a.results"()
+        .joiner()
+        .map!(a => a.get!UsageCompletionsResult);
 
-    auto audios = client.listUsageAudioSpeeches(usageReq);
-    writeln(audios.data);
+    auto usageEmbeddings = client.listUsageEmbeddings(usageReq)
+        .data
+        .map!"a.results"()
+        .joiner()
+        .map!(a => a.get!UsageEmbeddingsResult);
 
-    auto images = client.listUsageImages(usageReq);
-    writeln(images.data);
+    auto usageAudioSpeeches = client.listUsageAudioSpeeches(usageReq)
+        .data
+        .map!"a.results"()
+        .joiner()
+        .map!(a => a.get!UsageAudioSpeechesResult);
+
+    auto usageImages = client.listUsageImages(usageReq)
+        .data
+        .map!"a.results"()
+        .joiner()
+        .map!(a => a.get!UsageImagesResult);
+
+    writeln("Completions:     ", usageCompletions);
+    writeln("Embeddings:      ", usageEmbeddings);
+    writeln("Audios(speeches): ", usageAudioSpeeches);
+    writeln("Images:          ", usageImages);
 }

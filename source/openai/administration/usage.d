@@ -131,8 +131,7 @@ alias UsageResult = Algebraic!(
     UsageAudioSpeechesResult,
     UsageAudioTranscriptionsResult,
     UsageVectorStoresResult,
-    UsageCodeInterpreterSessionsResult,
-    CostsResult
+    UsageCodeInterpreterSessionsResult
 );
 
 @serdeIgnoreUnexpectedKeys
@@ -149,6 +148,24 @@ struct UsageResponse
 {
     string object;
     UsageTimeBucket[] data;
+    @serdeKeys("has_more") bool hasMore;
+    @serdeKeys("next_page") Nullable!string nextPage;
+}
+
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("object", "bucket")
+struct CostsTimeBucket
+{
+    @serdeKeys("start_time") long startTime;
+    @serdeKeys("end_time") long endTime;
+    @serdeOptional @serdeKeys("results") CostsResult[] results;
+}
+
+@serdeIgnoreUnexpectedKeys
+struct CostsResponse
+{
+    string object;
+    CostsTimeBucket[] data;
     @serdeKeys("has_more") bool hasMore;
     @serdeKeys("next_page") Nullable!string nextPage;
 }
@@ -251,8 +268,8 @@ unittest
     import mir.deser.json : deserializeJson;
 
     enum example = `{"object":"page","data":[{"object":"bucket","start_time":1730419200,"end_time":1730505600,"results":[{"object":"organization.costs.result","amount":{"value":0.06,"currency":"usd"},"line_item":null,"project_id":null}]}],"has_more":false,"next_page":null}`;
-    auto res = deserializeJson!UsageResponse(example);
-    assert(res.data[0].results[0].get!CostsResult().amount.value == 0.06);
+    auto res = deserializeJson!CostsResponse(example);
+    assert(res.data[0].results[0].amount.value == 0.06);
 }
 
 unittest
