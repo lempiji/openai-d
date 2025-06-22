@@ -13,6 +13,10 @@ import openai.clients.config : OpenAIClientConfig;
 
 import openai.clients.helpers; // for ClientHelpers mixin
 
+struct EmptyRequest
+{
+}
+
 @safe:
 
 class OpenAIAdminClient
@@ -36,7 +40,7 @@ class OpenAIAdminClient
 
     string buildListAuditLogsUrl(in ListAuditLogsRequest request) const @safe
     {
-        auto b = QueryParamsBuilder(buildUrl("/organization/audit_logs"));
+        auto b = QueryParamsBuilder("/organization/audit_logs");
         b.add("event_types[]", request.eventTypes);
         b.add("project_ids[]", request.projectIds);
         b.add("actor_ids[]", request.actorIds);
@@ -53,7 +57,7 @@ class OpenAIAdminClient
 
     string buildListUsageUrl(string type, in ListUsageRequest request) const @safe
     {
-        auto b = QueryParamsBuilder(buildUrl("/organization/usage/" ~ type));
+        auto b = QueryParamsBuilder("/organization/usage/" ~ type);
         b.add("start_time", request.startTime);
         b.add("end_time", request.endTime);
         b.add("bucket_width", request.bucketWidth);
@@ -70,7 +74,7 @@ class OpenAIAdminClient
 
     string buildListCostsUrl(in ListCostsRequest request) const @safe
     {
-        auto b = QueryParamsBuilder(buildUrl("/organization/costs"));
+        auto b = QueryParamsBuilder("/organization/costs");
         b.add("start_time", request.startTime);
         b.add("end_time", request.endTime);
         b.add("bucket_width", request.bucketWidth);
@@ -83,7 +87,7 @@ class OpenAIAdminClient
 
     string buildListInvitesUrl(in ListInvitesRequest request) const @safe
     {
-        auto b = QueryParamsBuilder(buildUrl("/organization/invites"));
+        auto b = QueryParamsBuilder("/organization/invites");
         b.add("limit", request.limit);
         b.add("after", request.after);
         return b.finish();
@@ -91,7 +95,7 @@ class OpenAIAdminClient
 
     string buildListUsersUrl(in ListUsersRequest request) const @safe
     {
-        auto b = QueryParamsBuilder(buildUrl("/organization/users"));
+        auto b = QueryParamsBuilder("/organization/users");
         b.add("limit", request.limit);
         b.add("after", request.after);
         return b.finish();
@@ -99,7 +103,7 @@ class OpenAIAdminClient
 
     string buildListProjectUsersUrl(string projectId, in ListProjectUsersRequest request) const @safe
     {
-        auto b = QueryParamsBuilder(buildUrl("/organization/projects/" ~ projectId ~ "/users"));
+        auto b = QueryParamsBuilder("/organization/projects/" ~ projectId ~ "/users");
         b.add("limit", request.limit);
         b.add("after", request.after);
         return b.finish();
@@ -107,7 +111,7 @@ class OpenAIAdminClient
 
     string buildListProjectServiceAccountsUrl(string projectId, in ListProjectServiceAccountsRequest request) const @safe
     {
-        auto b = QueryParamsBuilder(buildUrl("/organization/projects/" ~ projectId ~ "/service_accounts"));
+        auto b = QueryParamsBuilder("/organization/projects/" ~ projectId ~ "/service_accounts");
         b.add("limit", request.limit);
         b.add("after", request.after);
         return b.finish();
@@ -115,7 +119,7 @@ class OpenAIAdminClient
 
     string buildListProjectRateLimitsUrl(string projectId, in ListProjectRateLimitsRequest request) const @safe
     {
-        auto b = QueryParamsBuilder(buildUrl("/organization/projects/" ~ projectId ~ "/rate_limits"));
+        auto b = QueryParamsBuilder("/organization/projects/" ~ projectId ~ "/rate_limits");
         b.add("limit", request.limit);
         b.add("after", request.after);
         return b.finish();
@@ -123,7 +127,7 @@ class OpenAIAdminClient
 
     string buildListAdminApiKeysUrl(in ListAdminApiKeysRequest req) const @safe
     {
-        auto b = QueryParamsBuilder(buildUrl("/organization/admin_api_keys"));
+        auto b = QueryParamsBuilder("/organization/admin_api_keys");
         b.add("limit", req.limit);
         b.add("after", req.after);
         return b.finish();
@@ -131,7 +135,7 @@ class OpenAIAdminClient
 
     string buildListProjectsUrl(in ListProjectsRequest req) const @safe
     {
-        auto b = QueryParamsBuilder(buildUrl("/organization/projects"));
+        auto b = QueryParamsBuilder("/organization/projects");
         b.add("limit", req.limit);
         b.add("after", req.after);
         b.add("include_archived", req.includeArchived);
@@ -144,35 +148,14 @@ public:
     AdminApiKeyListResponse listAdminApiKeys(in ListAdminApiKeysRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListAdminApiKeysUrl(request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        auto result = content.deserializeJson!AdminApiKeyListResponse();
-        return result;
+        return getJson!AdminApiKeyListResponse(buildListAdminApiKeysUrl(request));
     }
 
     /// Create an admin API key.
     AdminApiKey createAdminApiKey(in CreateAdminApiKeyRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto body = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(buildUrl("/organization/admin_api_keys"), body, http);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Failed to create admin API key. Response: ", content);
-        }
-        return content.deserializeJson!AdminApiKey();
+        return postJson!AdminApiKey("/organization/admin_api_keys", request);
     }
 
     /// Retrieve an admin API key by ID.
@@ -180,18 +163,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (keyId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/organization/admin_api_keys/" ~ keyId), http);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Failed to retrieve admin API key. Response: ", content);
-        }
-        return content.deserializeJson!AdminApiKey();
+        return getJson!AdminApiKey("/organization/admin_api_keys/" ~ keyId);
     }
 
     /// Delete an admin API key.
@@ -199,69 +171,21 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (keyId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        import std.array : appender;
-
-        auto buf = appender!(char[])();
-        http.url = buildUrl("/organization/admin_api_keys/" ~ keyId);
-        http.method = HTTP.Method.del;
-        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
-        http.perform();
-        auto content = buf.data;
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Failed to delete admin API key. Response: ", content);
-        }
-        if (content.length == 0)
-        {
-            return DeleteAdminApiKeyResponse.init; // Return an empty response if no content
-        }
-        return content.deserializeJson!DeleteAdminApiKeyResponse();
+        return deleteJson!DeleteAdminApiKeyResponse("/organization/admin_api_keys/" ~ keyId);
     }
 
     /// List invites for the organization.
     InviteListResponse listInvites(in ListInvitesRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListInvitesUrl(request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Failed to list invites. Response: ", content);
-        }
-        return content.deserializeJson!InviteListResponse();
+        return getJson!InviteListResponse(buildListInvitesUrl(request));
     }
 
     /// Create an invite.
     Invite createInvite(in InviteRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto body = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(buildUrl("/organization/invites"), body, http);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Failed to create invite. Response: ", content);
-        }
-        return content.deserializeJson!Invite();
+        return postJson!Invite("/organization/invites", request);
     }
 
     /// Retrieve an invite by ID.
@@ -269,12 +193,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (inviteId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/organization/invites/" ~ inviteId), http);
-        return content.deserializeJson!Invite();
+        return getJson!Invite("/organization/invites/" ~ inviteId);
     }
 
     /// Delete an invite.
@@ -282,33 +201,14 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (inviteId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        import std.array : appender;
-
-        auto buf = appender!(char[])();
-        http.url = buildUrl("/organization/invites/" ~ inviteId);
-        http.method = HTTP.Method.del;
-        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
-        http.perform();
-        auto content = buf.data;
-        return content.deserializeJson!InviteDeleteResponse();
+        return deleteJson!InviteDeleteResponse("/organization/invites/" ~ inviteId);
     }
 
     /// List users.
     UserListResponse listUsers(in ListUsersRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListUsersUrl(request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        return content.deserializeJson!UserListResponse();
+        return getJson!UserListResponse(buildListUsersUrl(request));
     }
 
     /// Retrieve a user by ID.
@@ -316,12 +216,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (userId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/organization/users/" ~ userId), http);
-        return content.deserializeJson!User();
+        return getJson!User("/organization/users/" ~ userId);
     }
 
     /// Modify a user.
@@ -329,14 +224,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (userId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto body = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(buildUrl("/organization/users/" ~ userId), body, http);
-        return content.deserializeJson!User();
+        return postJson!User("/organization/users/" ~ userId, request);
     }
 
     /// Delete a user.
@@ -344,78 +232,28 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (userId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        import std.array : appender;
-
-        auto buf = appender!(char[])();
-        http.url = buildUrl("/organization/users/" ~ userId);
-        http.method = HTTP.Method.del;
-        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
-        http.perform();
-        auto content = buf.data;
-        return content.deserializeJson!UserDeleteResponse();
+        return deleteJson!UserDeleteResponse("/organization/users/" ~ userId);
     }
 
     /// List audit logs for the organization.
     ListAuditLogsResponse listAuditLogs(in ListAuditLogsRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        import std.format : format;
-        import std.algorithm : map;
-        import std.conv : to;
-        import std.uri : encodeComponent;
-
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListAuditLogsUrl(request);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Audit logs URL: ", url);
-        }
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Failed to list audit logs. Response: ", content);
-        }
-        return content.deserializeJson!ListAuditLogsResponse();
+        return getJson!ListAuditLogsResponse(buildListAuditLogsUrl(request));
     }
 
     /// List projects.
     ProjectListResponse listProjects(in ListProjectsRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListProjectsUrl(request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        return content.deserializeJson!ProjectListResponse();
+        return getJson!ProjectListResponse(buildListProjectsUrl(request));
     }
 
     /// Create a project.
     Project createProject(in CreateProjectRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto body = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(buildUrl("/organization/projects"), body, http);
-        return content.deserializeJson!Project();
+        return postJson!Project("/organization/projects", request);
     }
 
     /// Retrieve a project by ID.
@@ -423,12 +261,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/organization/projects/" ~ projectId), http);
-        return content.deserializeJson!Project();
+        return getJson!Project("/organization/projects/" ~ projectId);
     }
 
     /// Modify a project.
@@ -436,14 +269,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto body = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(buildUrl("/organization/projects/" ~ projectId), body, http);
-        return content.deserializeJson!Project();
+        return postJson!Project("/organization/projects/" ~ projectId, request);
     }
 
     /// Archive a project.
@@ -451,12 +277,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        auto content = cast(char[]) post!ubyte(buildUrl("/organization/projects/" ~ projectId ~ "/archive"), "{}", http);
-        return content.deserializeJson!Project();
+        return postJson!Project("/organization/projects/" ~ projectId ~ "/archive", EmptyRequest());
     }
 
     /// List users in a project.
@@ -464,14 +285,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListProjectUsersUrl(projectId, request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        return content.deserializeJson!ProjectUserListResponse();
+        return getJson!ProjectUserListResponse(buildListProjectUsersUrl(projectId, request));
     }
 
     /// Add a user to a project.
@@ -479,33 +293,7 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto url = buildUrl("/organization/projects/" ~ projectId ~ "/users");
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Creating project user: ", url);
-        }
-        auto body = serializeJson(request);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Request body: ", body);
-        }
-        auto content = cast(char[]) post!ubyte(url, body, http);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Failed to create project user. Response: ", content);
-        }
-        return content.deserializeJson!ProjectUser();
+        return postJson!ProjectUser("/organization/projects/" ~ projectId ~ "/users", request);
     }
 
     /// Retrieve a project user by ID.
@@ -514,13 +302,7 @@ public:
     in (projectId.length > 0)
     in (userId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(
-            buildUrl("/organization/projects/" ~ projectId ~ "/users/" ~ userId), http);
-        return content.deserializeJson!ProjectUser();
+        return getJson!ProjectUser("/organization/projects/" ~ projectId ~ "/users/" ~ userId);
     }
 
     /// Modify a project user's role.
@@ -529,14 +311,7 @@ public:
     in (projectId.length > 0)
     in (userId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto body = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(buildUrl("/organization/projects/" ~ projectId ~ "/users/" ~ userId), body, http);
-        return content.deserializeJson!ProjectUser();
+        return postJson!ProjectUser("/organization/projects/" ~ projectId ~ "/users/" ~ userId, request);
     }
 
     /// Delete a user from a project.
@@ -545,19 +320,7 @@ public:
     in (projectId.length > 0)
     in (userId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        import std.array : appender;
-
-        auto buf = appender!(char[])();
-        http.url = buildUrl("/organization/projects/" ~ projectId ~ "/users/" ~ userId);
-        http.method = HTTP.Method.del;
-        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
-        http.perform();
-        auto content = buf.data;
-        return content.deserializeJson!DeleteProjectUserResponse();
+        return deleteJson!DeleteProjectUserResponse("/organization/projects/" ~ projectId ~ "/users/" ~ userId);
     }
 
     /// List service accounts for a project.
@@ -565,14 +328,8 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListProjectServiceAccountsUrl(projectId, request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        return content.deserializeJson!ProjectServiceAccountListResponse();
+        return getJson!ProjectServiceAccountListResponse(
+            buildListProjectServiceAccountsUrl(projectId, request));
     }
 
     /// Create a project service account.
@@ -580,15 +337,9 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto body = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(
-            buildUrl("/organization/projects/" ~ projectId ~ "/service_accounts"), body, http);
-        return content.deserializeJson!CreateProjectServiceAccountResponse();
+        return postJson!CreateProjectServiceAccountResponse(
+            "/organization/projects/" ~ projectId ~ "/service_accounts",
+            request);
     }
 
     /// Retrieve a project service account by ID.
@@ -597,13 +348,8 @@ public:
     in (projectId.length > 0)
     in (serviceAccountId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(
-            buildUrl("/organization/projects/" ~ projectId ~ "/service_accounts/" ~ serviceAccountId), http);
-        return content.deserializeJson!ProjectServiceAccount();
+        return getJson!ProjectServiceAccount(
+            "/organization/projects/" ~ projectId ~ "/service_accounts/" ~ serviceAccountId);
     }
 
     /// Delete a project service account.
@@ -612,19 +358,8 @@ public:
     in (projectId.length > 0)
     in (serviceAccountId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        import std.array : appender;
-
-        auto buf = appender!(char[])();
-        http.url = buildUrl("/organization/projects/" ~ projectId ~ "/service_accounts/" ~ serviceAccountId);
-        http.method = HTTP.Method.del;
-        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
-        http.perform();
-        auto content = buf.data;
-        return content.deserializeJson!ProjectServiceAccountDeleteResponse();
+        return deleteJson!ProjectServiceAccountDeleteResponse(
+            "/organization/projects/" ~ projectId ~ "/service_accounts/" ~ serviceAccountId);
     }
 
     /// List API keys for a project.
@@ -632,33 +367,10 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        import std.format : format;
-        import std.uri : encodeComponent;
-
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildUrl("/organization/projects/" ~ projectId ~ "/api_keys");
-        string sep = "?";
-        if (request.limit)
-            url ~= format("%slimit=%s", sep, request.limit), sep = "&";
-        if (request.after.length)
-            url ~= format("%safter=%s", sep, encodeComponent(request.after));
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Project API keys URL: ", url);
-        }
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Failed to list project API keys. Response: ", content);
-        }
-        return content.deserializeJson!ProjectApiKeyListResponse();
+        auto b = QueryParamsBuilder("/organization/projects/" ~ projectId ~ "/api_keys");
+        b.add("limit", request.limit);
+        b.add("after", request.after);
+        return getJson!ProjectApiKeyListResponse(b.finish());
     }
 
     /// Retrieve a project API key by ID.
@@ -666,13 +378,8 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (keyId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(
-            buildUrl("/organization/projects/" ~ projectId ~ "/api_keys/" ~ keyId), http);
-        return content.deserializeJson!ProjectApiKey();
+        return getJson!ProjectApiKey(
+            "/organization/projects/" ~ projectId ~ "/api_keys/" ~ keyId);
     }
 
     /// Delete a project API key.
@@ -680,32 +387,8 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (keyId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        auto url = buildUrl("/organization/projects/" ~ projectId ~ "/api_keys/" ~ keyId);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Deleting project API key: ", url);
-        }
-        http.url = url;
-        http.method = HTTP.Method.del;
-        import std.array : appender;
-
-        auto buf = appender!(char[])();
-        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
-        http.perform();
-        auto content = buf.data;
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Failed to delete project API key. Response: ", content);
-        }
-        return content.deserializeJson!DeleteProjectApiKeyResponse();
+        return deleteJson!DeleteProjectApiKeyResponse(
+            "/organization/projects/" ~ projectId ~ "/api_keys/" ~ keyId);
     }
 
     /// List rate limits for a project.
@@ -713,27 +396,8 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListProjectRateLimitsUrl(projectId, request);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Project rate limits URL: ", url);
-        }
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Failed to list project rate limits. Response: ", content);
-        }
-
-        return content.deserializeJson!ProjectRateLimitListResponse();
+        return getJson!ProjectRateLimitListResponse(
+            buildListProjectRateLimitsUrl(projectId, request));
     }
 
     /// Create a project rate limit.
@@ -741,27 +405,9 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (projectId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto url = buildUrl("/organization/projects/" ~ projectId ~ "/rate_limits");
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Creating project rate limit: ", url);
-        }
-        auto body = serializeJson(request);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Request body: ", body);
-        }
-        auto content = cast(char[]) post!ubyte(url, body, http);
-        return content.deserializeJson!ProjectRateLimit();
+        return postJson!ProjectRateLimit(
+            "/organization/projects/" ~ projectId ~ "/rate_limits",
+            request);
     }
 
     /// Modify a project rate limit.
@@ -769,55 +415,32 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (limitId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto body = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(
-            buildUrl("/organization/projects/" ~ projectId ~ "/rate_limits/" ~ limitId), body, http);
-        return content.deserializeJson!ProjectRateLimit();
+        return postJson!ProjectRateLimit(
+            "/organization/projects/" ~ projectId ~ "/rate_limits/" ~ limitId,
+            request);
     }
 
     /// List organization certificates.
     ListCertificatesResponse listCertificates() @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(buildUrl("/organization/certificates"), http);
-        return content.deserializeJson!ListCertificatesResponse();
+        return getJson!ListCertificatesResponse("/organization/certificates");
     }
 
     /// Activate organization certificates.
     ListCertificatesResponse activateCertificates(in ToggleCertificatesRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto body = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(buildUrl("/organization/certificates/activate"), body, http);
-        return content.deserializeJson!ListCertificatesResponse();
+        return postJson!ListCertificatesResponse(
+            "/organization/certificates/activate", request);
     }
 
     /// Deactivate organization certificates.
     ListCertificatesResponse deactivateCertificates(in ToggleCertificatesRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto body = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(buildUrl("/organization/certificates/deactivate"), body, http);
-        return content.deserializeJson!ListCertificatesResponse();
+        return postJson!ListCertificatesResponse(
+            "/organization/certificates/deactivate", request);
     }
 
     /// Modify a certificate.
@@ -825,166 +448,71 @@ public:
     in (config.apiKey != null && config.apiKey.length > 0)
     in (certificateId.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-        http.addRequestHeader("Content-Type", "application/json");
-
-        auto body = serializeJson(request);
-        auto content = cast(char[]) post!ubyte(buildUrl("/organization/certificates/" ~ certificateId), body, http);
-        return content.deserializeJson!Certificate();
+        return postJson!Certificate(
+            "/organization/certificates/" ~ certificateId, request);
     }
 
     /// List cost reports for the organization.
     UsageResponse listCosts(in ListCostsRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListCostsUrl(request);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Costs URL: ", url);
-        }
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        debug scope (exit)
-        {
-            import std.stdio : writeln;
-
-            writeln("Failed to list costs. Response: ", content);
-        }
-
-        return content.deserializeJson!UsageResponse();
+        return getJson!UsageResponse(buildListCostsUrl(request));
     }
 
     /// List usage reports for a specific type.
     UsageResponse listUsageCompletions(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListUsageUrl("completions", request);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Usage completions URL: ", url);
-        }
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        debug scope (failure)
-        {
-            import std.stdio : writeln;
-
-            writeln("Failed to list usage completions. Response: ", content);
-        }
-
-        return content.deserializeJson!UsageResponse();
+        return getJson!UsageResponse(buildListUsageUrl("completions", request));
     }
 
     ///
     UsageResponse listUsageEmbeddings(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListUsageUrl("embeddings", request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        return content.deserializeJson!UsageResponse();
+        return getJson!UsageResponse(buildListUsageUrl("embeddings", request));
     }
 
     ///
     UsageResponse listUsageImages(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListUsageUrl("images", request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        return content.deserializeJson!UsageResponse();
+        return getJson!UsageResponse(buildListUsageUrl("images", request));
     }
 
     ///
     UsageResponse listUsageModerations(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListUsageUrl("moderations", request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        return content.deserializeJson!UsageResponse();
+        return getJson!UsageResponse(buildListUsageUrl("moderations", request));
     }
 
     ///
     UsageResponse listUsageAudioSpeeches(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListUsageUrl("audio_speeches", request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        return content.deserializeJson!UsageResponse();
+        return getJson!UsageResponse(buildListUsageUrl("audio_speeches", request));
     }
 
     ///
     UsageResponse listUsageAudioTranscriptions(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListUsageUrl("audio_transcriptions", request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        return content.deserializeJson!UsageResponse();
+        return getJson!UsageResponse(buildListUsageUrl("audio_transcriptions", request));
     }
 
     ///
     UsageResponse listUsageVectorStores(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListUsageUrl("vector_stores", request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        return content.deserializeJson!UsageResponse();
+        return getJson!UsageResponse(buildListUsageUrl("vector_stores", request));
     }
 
     ///
     UsageResponse listUsageCodeInterpreterSessions(in ListUsageRequest request) @system
     in (config.apiKey != null && config.apiKey.length > 0)
     {
-        auto http = HTTP();
-        setupHttpByConfig(http);
-        http.addRequestHeader("Accept", "application/json; charset=utf-8");
-
-        string url = buildListUsageUrl("code_interpreter_sessions", request);
-
-        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
-        return content.deserializeJson!UsageResponse();
+        return getJson!UsageResponse(buildListUsageUrl("code_interpreter_sessions", request));
     }
 }
 

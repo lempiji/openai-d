@@ -216,4 +216,86 @@ mixin template ClientHelpers()
         }
     }
 
+    private HTTP makeHttp(string accept, string contentType = "") @system
+    {
+        import core.lifetime : move;
+
+        auto http = HTTP();
+        setupHttpByConfig(http);
+        if (accept.length)
+            http.addRequestHeader("Accept", accept);
+        if (contentType.length)
+            http.addRequestHeader("Content-Type", contentType);
+        return move(http);
+    }
+
+    private T getJson(T)(string path) @system
+    {
+        import mir.deser.json : deserializeJson;
+        import std.stdio : writeln;
+
+        auto url = buildUrl(path);
+        auto http = makeHttp("application/json; charset=utf-8");
+        auto content = cast(char[]) get!(HTTP, ubyte)(url, http);
+        debug scope (failure)
+        {
+            writeln("# getJson(" ~ url ~ ") response:");
+            writeln(content);
+        }
+        return content.deserializeJson!T();
+    }
+
+    private T postJson(T, R)(string path, auto ref R body) @system
+    {
+        import mir.ser.json : serializeJson;
+        import mir.deser.json : deserializeJson;
+
+        auto url = buildUrl(path);
+        auto http = makeHttp(
+            "application/json; charset=utf-8",
+            "application/json");
+        auto req = serializeJson(body);
+        debug scope (failure)
+        {
+            import std.stdio : writeln;
+
+            writeln("# postJson -> " ~ url);
+            writeln(req);
+        }
+        auto content = cast(char[]) post!ubyte(url, req, http);
+        debug scope (failure)
+        {
+            import std.stdio : writeln;
+
+            writeln("# postJson <- " ~ url);
+            writeln(content);
+        }
+        return content.deserializeJson!T();
+    }
+
+    private T deleteJson(T)(string path) @system
+    {
+        import std.array : appender;
+        import mir.deser.json : deserializeJson;
+
+        auto url = buildUrl(path);
+        auto http = makeHttp("application/json; charset=utf-8");
+        auto buf = appender!(char[])();
+        http.onReceive = (ubyte[] data) { buf.put(cast(char[]) data); return data.length; };
+        http.url = url;
+        http.method = HTTP.Method.del;
+        http.perform();
+        auto content = buf.data;
+        debug scope (failure)
+        {
+            import std.stdio : writeln;
+
+            writeln("# deleteJson <- " ~ url);
+            writeln(content);
+        }
+        if (content.length == 0)
+            return T.init;
+        return content.deserializeJson!T();
+    }
+
 }
