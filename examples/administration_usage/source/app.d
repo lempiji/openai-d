@@ -43,6 +43,6 @@ void main()
 
     writeln("Completions:     ", usageCompletions);
     writeln("Embeddings:      ", usageEmbeddings);
-    writeln("Audios(speechs): ", usageAudioSpeeches);
+    writeln("Audios(speeches): ", usageAudioSpeeches);
     writeln("Images:          ", usageImages);
 }
