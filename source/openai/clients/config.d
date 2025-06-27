@@ -197,3 +197,30 @@ class OpenAIClientConfig
         write(filePath, serializeJson(this));
     }
 }
+
+@("validate - openai mode")
+unittest
+{
+    auto cfg = new OpenAIClientConfig("k");
+    cfg.validate();
+}
+
+@("validate - azure mode")
+unittest
+{
+    auto cfg = new OpenAIClientConfig("k");
+    cfg.apiBase = "https://ex.api.cognitive.microsoft.com";
+    cfg.deploymentId = "dep";
+    cfg.validate();
+}
+
+@("validate - azure missing deployment")
+unittest
+{
+    import std.exception : assertThrown;
+
+    auto cfg = new OpenAIClientConfig("k");
+    cfg.apiBase = "https://ex.api.cognitive.microsoft.com";
+    cfg.deploymentId = "";
+    assertThrown!Exception(cfg.validate());
+}

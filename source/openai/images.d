@@ -173,3 +173,32 @@ unittest
     assert(res.data.length == 1);
     assert(res.data[0].b64Json == "aa");
 }
+
+@("ImageResponse fromJson with url")
+unittest
+{
+    import mir.deser.json : deserializeJson;
+
+    const json = `{"created":1,"data":[{"url":"https://img"}]}`;
+    auto res = deserializeJson!ImageResponse(json);
+    assert(res.data[0].url == "https://img");
+}
+
+@("ImageResponse with revised prompt")
+unittest
+{
+    import mir.deser.json : deserializeJson;
+
+    const json = `{"created":1,"data":[{"revised_prompt":"ok"}]}`;
+    auto res = deserializeJson!ImageResponse(json);
+    assert(res.data[0].revisedPrompt == "ok");
+}
+
+@("ImageResponse missing data throws")
+unittest
+{
+    import std.exception : assertThrown;
+    import mir.deser.json : deserializeJson;
+
+    assertThrown!Exception(deserializeJson!ImageResponse(`{"created":1}`));
+}
