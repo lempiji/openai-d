@@ -49,7 +49,7 @@ See the [examples](examples) directory for full sample programs.
   - [x] tools (function_call)
   - [x] structured output
   - [x] input vision
-  - [ ] stream [(design)](docs/chat-streaming-design.md)
+  - [ ] stream [(design)](docs/design/proposals/0001-chat-streaming-design.md)
 - [ ] [Realtime (Beta)](https://platform.openai.com/docs/api-reference/realtime) (TODO)
 - [x] [Audio](https://platform.openai.com/docs/api-reference/audio)
   - [x] speech
