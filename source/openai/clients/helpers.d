@@ -112,6 +112,38 @@ unittest
     assert(b.finish() == "https://example.com?ids[]=foo%20bar&ids[]=baz");
 }
 
+@("QueryParamsBuilder finish with multiple types")
+unittest
+{
+    auto b = QueryParamsBuilder("https://api.test");
+    b.add("q", "hello world");
+    b.add("flag", true);
+    b.add("page", 2);
+    assert(b.finish() == "https://api.test?q=hello%20world&flag=true&page=2");
+}
+
+@("QueryParamsBuilder ignores empty values")
+unittest
+{
+    string[] ids;
+    auto b = QueryParamsBuilder("https://api.test");
+    b.add("q", "");
+    b.add("flag", false);
+    b.add("page", 0);
+    b.add("ids", ids);
+    assert(b.finish() == "https://api.test");
+}
+
+@("QueryParamsBuilder negative integer")
+unittest
+{
+    auto b = QueryParamsBuilder("https://api.test");
+    b.add("offset", -5);
+    import std.algorithm.searching : endsWith;
+
+    assert(b.finish().endsWith("offset=-5"));
+}
+
 @system struct MultipartPart
 {
     string name;

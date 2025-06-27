@@ -1003,3 +1003,36 @@ unittest
     auto jsonString = serializeJson(tool);
     assert(jsonString == `{"type":"local_shell"}`);
 }
+
+@("ResponsesResponse fromJson normal")
+unittest
+{
+    import mir.deser.json : deserializeJson;
+
+    enum json = `{"id":"res_1","object":"response","created_at":1,"status":"completed","error":null,"incomplete_details":null,"instructions":null,"max_output_tokens":null,"model":"gpt-4","output":[],"parallel_tool_calls":false,"previous_response_id":null,"reasoning":{},"store":true,"temperature":0.2,"text":{"format":{"type":"text"}},"tool_choice":"none","tools":[],"top_p":1.0,"truncation":"none","usage":{"input_tokens":1,"output_tokens":1,"total_tokens":2},"user":null,"metadata":null}`;
+    auto res = deserializeJson!ResponsesResponse(json);
+    assert(res.id == "res_1");
+    assert(res.output.length == 0);
+    assert(res.text.format.type == TextResponseFormatType.Text);
+}
+
+@("ResponsesResponse ignores extra fields")
+unittest
+{
+    import mir.deser.json : deserializeJson;
+
+    enum json = `{"id":"res_1","object":"response","created_at":1,"status":"completed","model":"gpt-4","output":[],"parallel_tool_calls":false,"reasoning":{},"store":true,"temperature":0.0,"text":{"format":{"type":"text"}},"tool_choice":"none","tools":[],"top_p":1.0,"truncation":"none","usage":{"input_tokens":1,"output_tokens":1,"total_tokens":2},"extra":"x"}`;
+    auto res = deserializeJson!ResponsesResponse(json);
+    assert(res.id == "res_1");
+    assert(res.temperature == 0.0);
+}
+
+@("ResponsesResponse missing required field throws")
+unittest
+{
+    import std.exception : assertThrown;
+    import mir.deser.json : deserializeJson;
+
+    enum json = `{"object":"response"}`; // missing many fields
+    assertThrown!Exception(deserializeJson!ResponsesResponse(json));
+}
