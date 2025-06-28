@@ -69,9 +69,16 @@
 
 ## 7. Development Workflow
 
+### Design Phase
+
+* Follow `docs/design/AGENT.md` when drafting or updating proposals or ADRs.
+* Tests and linter are not required if you only change design documents.
+
+### Implementation Phase
+
 1. Modify code.
-2. Run formatter and linter
-3. Run tests and coverage
+2. Run formatter and linter.
+3. Run tests and coverage.
 4. Build examples
 
    1. If you’ve modified any example group (e.g. `chat`, `audio`, `administration`), build **core** plus those groups:
