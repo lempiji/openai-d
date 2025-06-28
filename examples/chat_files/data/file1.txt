@@ -1,0 +1,3 @@
+This is the first sample text file used in the chat_files example.
+It contains a short story about a quick brown fox jumping over a lazy dog.
+The purpose is to give the model a bit of context to summarize.

@@ -1,6 +1,5 @@
 # Changelog
-
-## [v0.9.0] - 2025-06-28
+## [v0.9.0] - Unreleased
 ### Added
 - Added `OpenAIAdminClient` with comprehensive administration modules (projects, API keys, invites, users, service accounts, rate limits, certificates, audit logs, usage).
 - Introduced `Responses` and `Images` API implementations.
@@ -11,6 +10,8 @@
 - Numerous example programs demonstrating new features.
 - Integrated Codecov and improved CI caching of Dub packages.
 - Added `ChatUserMessageFileContent` type and `userChatMessageWithFile` helper for attaching files in chat messages.
+- Added `userChatMessageWithFiles` helper for attaching multiple files in one chat message.
+- chat_files example now uploads multiple files and asks the model to analyze both.
 
 ### Changed
 - Switched optional fields to `mir.algebraic.Nullable`.

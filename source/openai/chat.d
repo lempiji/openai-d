@@ -457,6 +457,62 @@ unittest
 }
 
 ///
+ChatMessage userChatMessageWithFiles(string text, string[] fileIds, string name = null)
+{
+    ChatUserMessageContentItem[] contentItems;
+
+    foreach (fileId; fileIds)
+    {
+        ChatUserMessageFileContent fileContent;
+        fileContent.file.fileId = fileId;
+        contentItems ~= ChatUserMessageContentItem(fileContent);
+    }
+
+    ChatUserMessageTextContent textContent;
+    textContent.text = text;
+    contentItems ~= ChatUserMessageContentItem(textContent);
+
+    return ChatMessage("user", ChatMessageContent(contentItems), name);
+}
+
+/// ditto
+unittest
+{
+    string text = "Analyze these files";
+    string[] ids = ["file_1", "file_2"];
+    string name = "UserFiles";
+
+    auto message = userChatMessageWithFiles(text, ids, name);
+
+    assert(message.role == "user");
+    assert(message.name == name);
+
+    auto content = message.content.get!(ChatUserMessageContentItem[]);
+
+    assert(content.length == 3);
+    assert(content[0].get!ChatUserMessageFileContent().file.fileId == ids[0]);
+    assert(content[1].get!ChatUserMessageFileContent().file.fileId == ids[1]);
+    assert(content[2].get!ChatUserMessageTextContent().text == text);
+}
+
+/// ditto
+unittest
+{
+    string text = "Analyze these";
+    string[] ids = ["file_3", "file_4"];
+
+    auto message = userChatMessageWithFiles(text, ids);
+
+    import mir.ser.json;
+
+    string jsonString = serializeJson(message);
+
+    string expectedJson = `{"role":"user","content":[{"type":"file","file":{"file_id":"file_3"}},{"type":"file","file":{"file_id":"file_4"}},{"type":"text","text":"Analyze these"}]}`;
+
+    assert(jsonString == expectedJson);
+}
+
+///
 ChatMessage assistantChatMessage(string content, string name = null)
 {
     return ChatMessage("assistant", ChatMessageContent(content), name);
