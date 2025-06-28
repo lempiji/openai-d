@@ -126,7 +126,26 @@ struct ChatUserMessageImageContent
 }
 
 ///
-alias ChatUserMessageContentItem = Algebraic!(ChatUserMessageTextContent, ChatUserMessageImageContent);
+@serdeIgnoreUnexpectedKeys
+struct ChatUserMessageFile
+{
+    @serdeKeys("file_id")
+    string fileId;
+}
+
+@serdeIgnoreUnexpectedKeys
+@serdeDiscriminatedField("type", "file")
+struct ChatUserMessageFileContent
+{
+    @serdeKeys("file")
+    ChatUserMessageFile file;
+}
+
+///
+alias ChatUserMessageContentItem = Algebraic!(
+    ChatUserMessageTextContent,
+    ChatUserMessageImageContent,
+    ChatUserMessageFileContent);
 ///
 alias ChatMessageContent = Algebraic!(typeof(null), string, ChatUserMessageContentItem[]);
 
@@ -381,6 +400,58 @@ unittest
     string jsonString = serializeJson(message);
 
     string expectedJson = `{"role":"user","content":[{"type":"text","text":"Check out these images:"},{"type":"image_url","image_url":{"url":"https://example.com/image1.jpg"}},{"type":"image_url","image_url":{"url":"https://example.com/image2.jpg"}}],"name":"User12345"}`;
+
+    assert(jsonString == expectedJson);
+}
+
+///
+ChatMessage userChatMessageWithFile(string text, string fileId, string name = null)
+{
+    ChatUserMessageContentItem[] contentItems;
+
+    ChatUserMessageFileContent fileContent;
+    fileContent.file.fileId = fileId;
+    contentItems ~= ChatUserMessageContentItem(fileContent);
+
+    ChatUserMessageTextContent textContent;
+    textContent.text = text;
+    contentItems ~= ChatUserMessageContentItem(textContent);
+
+    return ChatMessage("user", ChatMessageContent(contentItems), name);
+}
+
+/// ditto
+unittest
+{
+    string text = "What is the first dragon?";
+    string fileId = "file_123";
+    string name = "UserX";
+
+    auto message = userChatMessageWithFile(text, fileId, name);
+
+    assert(message.role == "user");
+    assert(message.name == name);
+
+    auto content = message.content.get!(ChatUserMessageContentItem[]);
+
+    assert(content.length == 2);
+    assert(content[0].get!ChatUserMessageFileContent().file.fileId == fileId);
+    assert(content[1].get!ChatUserMessageTextContent().text == text);
+}
+
+/// ditto
+unittest
+{
+    string text = "What is the first dragon?";
+    string fileId = "file_456";
+
+    auto message = userChatMessageWithFile(text, fileId);
+
+    import mir.ser.json;
+
+    string jsonString = serializeJson(message);
+
+    string expectedJson = `{"role":"user","content":[{"type":"file","file":{"file_id":"file_456"}},{"type":"text","text":"What is the first dragon?"}]}`;
 
     assert(jsonString == expectedJson);
 }
