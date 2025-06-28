@@ -1,0 +1,6 @@
+name "chat_files"
+description "Upload a file and ask questions about it using chat completions."
+authors "lempiji"
+license "MIT"
+
+dependency "openai-d" path="../.."
