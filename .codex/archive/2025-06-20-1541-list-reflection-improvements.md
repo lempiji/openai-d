@@ -1,7 +1,7 @@
 ### :book: Reflection for [2025-06-20 15:41]
   - **Task**: Add reflection listing script
   - **Objective**: Provide a helper to quickly review all outstanding improvements
-  - **Outcome**: Implemented `list_reflections.d` and documented its usage in AGENTS.md
+  - **Outcome**: Implemented `list_reflections.d` (later removed) and documented its usage in AGENTS.md
 
 #### :sparkles: What went well
   - D's standard library made file processing straightforward
