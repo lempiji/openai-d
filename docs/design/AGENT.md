@@ -105,10 +105,11 @@ Adopt PostgreSQL 14 for OLTP workloads.
 1. **Draft Proposal** in `docs/design/proposals/`.
 2. **Review & Iterate** with stakeholders; update `status` to `Under Review`.
 3. On **approval**, change `status` to `Approved` and tag the PR.
-4. **Implementation**: link PR to Proposal (e.g., “Implements Proposal 0001”).
+4. **Implementation** may begin *only after* the Proposal is `Approved` and any required ADR is `Accepted`. Link the PR to the document (e.g., “Implements Proposal 0001”).
 5. When an architectural decision is needed as a result, **create ADR** in `docs/design/adr/`, referencing the Proposal.
 6. **Review ADR** with architecture team; update `status` to `Accepted`.
 7. Tag implementation PRs with `This change implements ADR-XXXX`.
+8. Never start coding while the Proposal or ADR is still in `Draft` or `Under Review`.
 
 ---
 
@@ -156,6 +157,14 @@ Adopt PostgreSQL 14 for OLTP workloads.
 * Regularly audit `docs/adr/` for deprecated entries.
 * Use cross‑references to maintain a clear history of decisions.
 
+## 9. Implementation Discipline
+
+To avoid a mismatch between planned work and committed code:
+
+* Finish drafting your Proposal or ADR before writing any implementation code.
+* Wait until its `status` is `Approved` (Proposal) or `Accepted` (ADR) prior to opening implementation PRs.
+* Implementation PRs referencing drafts will be rejected to prevent wasted effort.
+* Skipping these steps risks delivering features that no longer match the agreed design.
 ---
 
 *By following this structure and workflow, teams can ensure transparent decision‑making, easy onboarding for new members, and a traceable evolution of both features and architecture.*

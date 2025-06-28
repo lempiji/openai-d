@@ -73,6 +73,7 @@
 
 * Follow `docs/design/AGENT.md` when drafting or updating proposals or ADRs.
 * Tests and linter are not required if you only change design documents.
+* Complete and approve the proposal or ADR **before** starting implementation to avoid plan/code divergence.
 
 ### Implementation Phase
 
