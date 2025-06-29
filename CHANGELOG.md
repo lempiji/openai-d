@@ -1,7 +1,7 @@
 # Changelog
-## [v0.9.0] - Unreleased
+## v0.9.0 - 2025-06-29
 ### Added
-- Added `OpenAIAdminClient` with comprehensive administration modules (projects, API keys, invites, users, service accounts, rate limits, certificates, audit logs, usage).
+- Added `OpenAIAdminClient` with comprehensive administration modules (projects, API keys, invites, users, service accounts, rate limits, audit logs, usage).
 - Introduced `Responses` and `Images` API implementations.
 - Added `Audio` API with speech, transcription, and translation support.
 - Implemented `Files` API and lifecycle example program.
@@ -9,9 +9,9 @@
 - Added `validate` method and environment-based creation in `OpenAIClientConfig`.
 - Numerous example programs demonstrating new features.
 - Integrated Codecov and improved CI caching of Dub packages.
-- Added `ChatUserMessageFileContent` type and `userChatMessageWithFile` helper for attaching files in chat messages.
-- Added `userChatMessageWithFiles` helper for attaching multiple files in one chat message.
-- chat_files example now uploads multiple files and asks the model to analyze both.
+- Added `ChatUserMessageFileContent` type and helper functions for attaching files in chat messages.
+- Added `messageContentItemFromFile` and `messageContentItemFromFileData` helpers for creating file content items.
+- `chat_files` example demonstrates how to upload files and create messages with file attachments.
 
 ### Changed
 - Switched optional fields to `mir.algebraic.Nullable`.
