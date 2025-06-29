@@ -9,14 +9,12 @@ void main()
 {
     auto client = new OpenAIClient();
 
-    // Load local image and convert to data URL
-    auto bytes = cast(ubyte[]) read("assets/cat.png");
-    string dataUri = to!string("data:image/png;base64," ~ Base64.encode(bytes));
+    ChatUserMessageContentItem[] contents;
+    contents ~= messageContentItem("この画像の内容を詳しく説明してください。");
+    contents ~= messageContentItemFromImageFile("assets/cat.png");
 
     auto request = chatCompletionRequest(openai.GPT4OMini /* gpt-4o */ , [
-        userChatMessageWithImages("この画像の内容を詳しく説明してください。", [
-            dataUri
-        ])
+        userChatMessage(contents)
     ], 1024, 0);
 
     auto response = client.chatCompletion(request);

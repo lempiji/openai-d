@@ -129,8 +129,14 @@ struct ChatUserMessageImageContent
 @serdeIgnoreUnexpectedKeys
 struct ChatUserMessageFile
 {
-    @serdeKeys("file_id")
+    @serdeOptional @serdeIgnoreDefault @serdeKeys("file_data")
+    string fileData;
+
+    @serdeOptional @serdeIgnoreDefault @serdeKeys("file_id")
     string fileId;
+
+    @serdeOptional @serdeIgnoreDefault @serdeKeys("filename")
+    string fileName;
 }
 
 @serdeIgnoreUnexpectedKeys
@@ -146,6 +152,58 @@ alias ChatUserMessageContentItem = Algebraic!(
     ChatUserMessageTextContent,
     ChatUserMessageImageContent,
     ChatUserMessageFileContent);
+
+///
+ChatUserMessageContentItem messageContentItem(string text)
+{
+    ChatUserMessageTextContent content;
+    content.text = text;
+    return ChatUserMessageContentItem(content);
+}
+
+///
+ChatUserMessageContentItem messageContentItemFromImageFile(string filePath, string detail = null) @system
+{
+    import std.file : read;
+    import std.base64 : Base64;
+    import std.conv : text;
+    import std.path : baseName;
+
+    ubyte[] fileData = cast(ubyte[]) read(filePath);
+    string url = text("data:", getImageMimeType(filePath), ";base64,", Base64.encode(fileData));
+
+    return messageContentItemFromImageUrl(url, detail);
+}
+
+///
+ChatUserMessageContentItem messageContentItemFromImageUrl(string imageUrl, string detail = null)
+{
+    ChatUserMessageImageContent content;
+    content.imageUrl = ChatUserMessageImageUrl(imageUrl, detail);
+    return ChatUserMessageContentItem(content);
+}
+
+///
+ChatUserMessageContentItem messageContentItemFromFile(string filePath) @system
+{
+    import std.file : read;
+    import std.path : baseName;
+
+    return messageContentItemFromFileData(cast(ubyte[]) read(filePath), baseName(filePath));
+}
+
+///
+ChatUserMessageContentItem messageContentItemFromFileData(in ubyte[] fileData, string fileName = null)
+{
+    import std.base64 : Base64;
+    import std.conv : text;
+
+    ChatUserMessageFile messageFile;
+    messageFile.fileData = text("data:application/pdf;base64,", Base64.encode(fileData));
+    messageFile.fileName = fileName;
+    return ChatUserMessageContentItem(ChatUserMessageFileContent(messageFile));
+}
+
 ///
 alias ChatMessageContent = Algebraic!(typeof(null), string, ChatUserMessageContentItem[]);
 
@@ -405,111 +463,9 @@ unittest
 }
 
 ///
-ChatMessage userChatMessageWithFile(string text, string fileId, string name = null)
+ChatMessage userChatMessage(ChatUserMessageContentItem[] contents, string name = null)
 {
-    ChatUserMessageContentItem[] contentItems;
-
-    ChatUserMessageFileContent fileContent;
-    fileContent.file.fileId = fileId;
-    contentItems ~= ChatUserMessageContentItem(fileContent);
-
-    ChatUserMessageTextContent textContent;
-    textContent.text = text;
-    contentItems ~= ChatUserMessageContentItem(textContent);
-
-    return ChatMessage("user", ChatMessageContent(contentItems), name);
-}
-
-/// ditto
-unittest
-{
-    string text = "What is the first dragon?";
-    string fileId = "file_123";
-    string name = "UserX";
-
-    auto message = userChatMessageWithFile(text, fileId, name);
-
-    assert(message.role == "user");
-    assert(message.name == name);
-
-    auto content = message.content.get!(ChatUserMessageContentItem[]);
-
-    assert(content.length == 2);
-    assert(content[0].get!ChatUserMessageFileContent().file.fileId == fileId);
-    assert(content[1].get!ChatUserMessageTextContent().text == text);
-}
-
-/// ditto
-unittest
-{
-    string text = "What is the first dragon?";
-    string fileId = "file_456";
-
-    auto message = userChatMessageWithFile(text, fileId);
-
-    import mir.ser.json;
-
-    string jsonString = serializeJson(message);
-
-    string expectedJson = `{"role":"user","content":[{"type":"file","file":{"file_id":"file_456"}},{"type":"text","text":"What is the first dragon?"}]}`;
-
-    assert(jsonString == expectedJson);
-}
-
-///
-ChatMessage userChatMessageWithFiles(string text, string[] fileIds, string name = null)
-{
-    ChatUserMessageContentItem[] contentItems;
-
-    foreach (fileId; fileIds)
-    {
-        ChatUserMessageFileContent fileContent;
-        fileContent.file.fileId = fileId;
-        contentItems ~= ChatUserMessageContentItem(fileContent);
-    }
-
-    ChatUserMessageTextContent textContent;
-    textContent.text = text;
-    contentItems ~= ChatUserMessageContentItem(textContent);
-
-    return ChatMessage("user", ChatMessageContent(contentItems), name);
-}
-
-/// ditto
-unittest
-{
-    string text = "Analyze these files";
-    string[] ids = ["file_1", "file_2"];
-    string name = "UserFiles";
-
-    auto message = userChatMessageWithFiles(text, ids, name);
-
-    assert(message.role == "user");
-    assert(message.name == name);
-
-    auto content = message.content.get!(ChatUserMessageContentItem[]);
-
-    assert(content.length == 3);
-    assert(content[0].get!ChatUserMessageFileContent().file.fileId == ids[0]);
-    assert(content[1].get!ChatUserMessageFileContent().file.fileId == ids[1]);
-    assert(content[2].get!ChatUserMessageTextContent().text == text);
-}
-
-/// ditto
-unittest
-{
-    string text = "Analyze these";
-    string[] ids = ["file_3", "file_4"];
-
-    auto message = userChatMessageWithFiles(text, ids);
-
-    import mir.ser.json;
-
-    string jsonString = serializeJson(message);
-
-    string expectedJson = `{"role":"user","content":[{"type":"file","file":{"file_id":"file_3"}},{"type":"file","file":{"file_id":"file_4"}},{"type":"text","text":"Analyze these"}]}`;
-
-    assert(jsonString == expectedJson);
+    return ChatMessage("user", ChatMessageContent(contents), name);
 }
 
 ///
@@ -929,4 +885,39 @@ struct ChatCompletionResponse
     ///
     @serdeKeys("system_fingerprint")
     string systemFingerprint;
+}
+
+private:
+
+immutable string[string] mimeImageTypes = [
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".gif": "image/gif",
+    ".webp": "image/webp",
+    ".bmp": "image/bmp",
+    ".tiff": "image/tiff",
+    ".svg": "image/svg+xml"
+];
+
+string getImageMimeType(string filePath)
+{
+    import std.file : exists;
+    import std.path : extension;
+    import std.string : toLower;
+
+    if (!exists(filePath))
+    {
+        throw new Exception("File does not exist: " ~ filePath);
+    }
+
+    string ext = extension(filePath).toLower();
+    if (ext in mimeImageTypes)
+    {
+        return mimeImageTypes[ext];
+    }
+    else
+    {
+        throw new Exception("Unsupported image file type: " ~ ext);
+    }
 }
